@@ -11,7 +11,7 @@ const navLinks = [
 
 export default function Header() {
   return (
-    <header className="w-full bg-white border-b border-gray-100">
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
         <a href="/" className="shrink-0">
           <Image src="/logo.png" alt="النقابة العامة لصيادلة مصر" width={220} height={70} className="h-14 w-auto" priority />

@@ -4,10 +4,12 @@
   --color-primary: #0B5D3B;
   --color-primary-dark: #083D28;
   --color-primary-light: #6FBF4A;
+  --color-brand-green: #00AA29;
   --color-dark: #141B29;
   --color-surface-muted: #F2F3F5;
 
   --font-sans: var(--font-cairo), sans-serif;
+  --radius-pill: 999px;
 }
 
 body {
