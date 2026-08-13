@@ -95,7 +95,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-14 pt-6 border-t border-white/10 text-center text-xs text-white/40">
-          © 2025 جميع الحقوق محفوظة - نقابة الصيادلة
+          © 2026 جميع الحقوق محفوظة - نقابة الصيادلة
         </div>
       </div>
     </footer>
