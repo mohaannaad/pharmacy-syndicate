@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
+import LoginModal from "./LoginModal";
 
 const navLinks = [
   { label: "الرئيسية", href: "/", active: true },
@@ -10,6 +14,8 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const [showLogin, setShowLogin] = useState(false);
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
@@ -34,11 +40,21 @@ export default function Header() {
             <input type="text" placeholder="ابحث عن صيدلية" className="bg-transparent outline-none text-sm w-full text-right" />
             <Search className="w-4 h-4 text-primary shrink-0" />
           </div>
-          <button className="bg-primary text-white px-5 py-2 rounded-pill text-sm font-medium whitespace-nowrap">
+          <button
+            onClick={() => setShowLogin(true)}
+            className="bg-primary text-white px-5 py-2 rounded-pill text-sm font-medium whitespace-nowrap"
+          >
             تسجيل دخول
           </button>
         </div>
       </div>
+
+      {showLogin && (
+        <LoginModal
+          onClose={() => setShowLogin(false)}
+          onSwitchToRegister={() => setShowLogin(false)}
+        />
+      )}
     </header>
   );
 }
