@@ -8,13 +8,18 @@ const newsItem = {
   source: "موقع EDA الرسمي",
 };
 
-export default function NewsSection() {
+interface NewsSectionProps {
+  title?: string;
+  subtitle?: string;
+}
+
+export default function NewsSection({ title = "أخر الاخبار", subtitle = "تابع اخر الاخبار والفعاليات" }: NewsSectionProps) {
   return (
     <section className="bg-white py-16">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-right">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">أخر الاخبار</h2>
-          <p className="mt-2 text-gray-500">تابع اخر الاخبار والفعاليات</p>
+         <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{title}</h2>
+<p className="mt-2 text-gray-500">{subtitle}</p>
         </div>
 
         <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -24,21 +24,25 @@ export default function ExistingMemberRegisterPage() {
         <div className="max-w-md mx-auto px-6">
           <RegisterSteps steps={steps} current={step} />
 
-          {step === 1 && (
-            <div className="space-y-5">
-              <div>
-                <label className="text-sm text-gray-700">رقم القيد</label>
-                <input type="text" placeholder="أدخل رقم القيد" className="mt-2 w-full bg-white rounded-xl px-4 py-3 text-sm outline-none text-right shadow-sm" />
-              </div>
-              <div>
-                <label className="text-sm text-gray-700">الرقم القومي</label>
-                <input type="text" placeholder="أدخل الرقم القومي المكون من 14 رقم" className="mt-2 w-full bg-white rounded-xl px-4 py-3 text-sm outline-none text-right shadow-sm" />
-              </div>
-              <button onClick={() => setStep(2)} className="w-full bg-primary text-white py-3 rounded-pill font-medium">
-                تحقق من البيانات
-              </button>
-            </div>
-          )}
+     {step === 1 && (
+  <div className="space-y-5">
+    <div>
+      <label className="text-sm text-gray-700">رقم القيد</label>
+      <input type="text" placeholder="أدخل رقم القيد" className="mt-2 w-full bg-white rounded-xl px-4 py-3 text-sm outline-none text-right shadow-sm" />
+    </div>
+    <div>
+      <label className="text-sm text-gray-700">الرقم القومي</label>
+      <input type="text" placeholder="أدخل الرقم القومي المكون من 14 رقم" className="mt-2 w-full bg-white rounded-xl px-4 py-3 text-sm outline-none text-right shadow-sm" />
+    </div>
+    <div>
+      <label className="text-sm text-gray-700">رقم الهاتف</label>
+      <input type="text" placeholder="أدخل رقم الهاتف" className="mt-2 w-full bg-white rounded-xl px-4 py-3 text-sm outline-none text-right shadow-sm" />
+    </div>
+    <button onClick={() => setStep(2)} className="w-full bg-primary text-white py-3 rounded-pill font-medium">
+      تحقق من البيانات
+    </button>
+  </div>
+)}
 
           {step === 2 && (
             <div className="space-y-5 text-center">

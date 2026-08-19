@@ -4,12 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
 import LoginModal from "./LoginModal";
+import RegisterDropdown from "./RegisterDropdown";
 
 const navLinks = [
   { label: "الرئيسية", href: "/", active: true },
   { label: "الشهادات", href: "/certificates" },
   { label: "الخدمات", href: "/services" },
-  { label: "الفروع", href: "/branches" },
+  { label: "النقابات الفرعية", href: "/branches" },
   { label: "الصيدليات", href: "/pharmacies" },
 ];
 
@@ -37,9 +38,12 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <div className="hidden lg:flex items-center bg-gray-100 rounded-pill px-4 py-2 gap-2 w-64">
-            <input type="text" placeholder="ابحث عن صيدلية" className="bg-transparent outline-none text-sm w-full text-right" />
+            <input type="text" placeholder="ابحث في الموقع عن .." className="bg-transparent outline-none text-sm w-full text-right" />
             <Search className="w-4 h-4 text-primary shrink-0" />
           </div>
+
+          <RegisterDropdown />
+
           <button
             onClick={() => setShowLogin(true)}
             className="bg-primary text-white px-5 py-2 rounded-pill text-sm font-medium whitespace-nowrap"
@@ -50,10 +54,7 @@ export default function Header() {
       </div>
 
       {showLogin && (
-        <LoginModal
-          onClose={() => setShowLogin(false)}
-          onSwitchToRegister={() => setShowLogin(false)}
-        />
+        <LoginModal onClose={() => setShowLogin(false)} onSwitchToRegister={() => setShowLogin(false)} />
       )}
     </header>
   );

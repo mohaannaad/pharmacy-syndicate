@@ -1,76 +1,57 @@
-import Image from "next/image";
-import { Headset, BadgeCheck, Users, UserPlus, UserCheck } from "lucide-react";
+"use client";
 
-const stats = [
-  { icon: Headset, value: "24 / 7", label: "دعم متواصل" },
-  { icon: BadgeCheck, value: "+100K", label: "شهادة صادرة" },
-  { icon: Users, value: "+50K", label: "عضو مسجل" },
+import { useState, useEffect } from "react";
+import Image from "next/image";
+
+const slides = [
+  { image: "/banner-1.jpg", title: "خدمات نقابية إلكترونية… أسهل وأسرع", subtitle: "نحو تجربة رقمية متكاملة تتيح لأعضاء النقابة إنجاز العديد من الخدمات والاستعلامات إلكترونيًا بكل سهولة." },
+  { image: "/banner-2.jpg", title: "نطوّر خدماتنا لخدمة صيادلتنا", subtitle: "تعمل النقابة على تطوير خدماتها وتحسين تجربة الأعضاء، بما يواكب التحول الرقمي واحتياجات الصيادلة." },
+  { image: "/banner-3.jpg", title: "تابع أحدث أخبار وفعاليات النقابة", subtitle: "كن على اطلاع دائم بآخر قرارات النقابة، والفعاليات، والأنشطة، وكل ما يهم أعضاء نقابة صيادلة مصر." },
 ];
 
 export default function HeroSection() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActive((prev) => (prev + 1) % slides.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="bg-white px-4 md:px-8 pt-4">
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary-dark to-primary-light">
-        <div
-          className="absolute inset-0 opacity-[0.10] bg-repeat"
-          style={{ backgroundImage: "url('/hero-pattern.png')", backgroundSize: "180px" }}
-        />
-
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 pt-8 flex flex-col md:flex-row items-end justify-between gap-4">
-          <div className="shrink-0 order-1 self-end">
-            <Image src="/doctor.png" alt="طبيب صيدلي" width={340} height={380} className="w-56 md:w-72 h-auto block" priority />
+      <section className="relative overflow-hidden rounded-3xl h-[420px] md:h-[480px]">
+        {slides.map((slide, i) => (
+          <div
+            key={i}
+            className="absolute inset-0 transition-opacity duration-700"
+            style={{ opacity: i === active ? 1 : 0, pointerEvents: i === active ? "auto" : "none" }}
+          >
+            <Image src={slide.image} alt={slide.title} fill priority={i === 0} className="object-cover" />
+            <div className="absolute inset-0 bg-black/30" />
           </div>
+        ))}
 
-    {/* عمود الكلام */}
-<div className="absolute top-1/2 -translate-y-1/2 left-[230px] w-[500px] text-white text-right flex flex-col items-end gap-4">
-
-  <div>
-    <h1 className="text-3xl md:text-4xl font-bold leading-relaxed">
-      النقابة العامة لصيادلة مصر
-    </h1>
-
-    <p className="mt-2 text-white/80 text-base md:text-lg">
-      منصة رقمية متكاملة لخدمة الصيادلة والخريجين الجدد
-    </p>
-  </div>
-
-  <div className="flex flex-wrap gap-4 justify-end">
-    <button className="flex items-center gap-2 bg-primary-light text-white px-7 py-3 rounded-full text-base font-bold">
-      <UserCheck className="w-5 h-5" />
-      تسجيل عضو حالي
-    </button>
-
-    <button className="flex items-center gap-2 bg-transparent border border-white text-white px-7 py-3 rounded-full text-base font-bold">
-      <UserPlus className="w-5 h-5" />
-      تسجيل خريج جديد
-    </button>
-  </div>
-
-  <div className="mt-5 flex flex-wrap gap-8 justify-end">
-    {stats.map((stat) => {
-      const Icon = stat.icon;
-
-      return (
-        <div key={stat.label} className="flex items-center gap-2">
-          <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center shrink-0">
-            <Icon className="w-5 h-5 text-primary-dark" />
-          </div>
-
-          <div className="text-right">
-            <div className="font-bold text-lg">
-              {stat.value}
-            </div>
-
-            <div className="text-sm text-white/70">
-              {stat.label}
-            </div>
+        <div key={active} className="absolute inset-0 flex items-center justify-start">
+          <div className="max-w-xl ps-8 md:ps-50 pe-6 text-right animate-slide-fade">
+            <h1 className="text-2xl md:text-4xl font-bold text-white leading-relaxed">{slides[active].title}</h1>
+            <p className="mt-3 text-white/85 text-sm md:text-base">{slides[active].subtitle}</p>
+            <button className="mt-5 bg-[#D1AA43] text-white px-6 py-2.5 rounded-pill text-sm font-medium">
+              اقرأ المزيد
+            </button>
           </div>
         </div>
-      );
-    })}
-  </div>
 
-</div>
+        <div className="absolute bottom-6 inset-x-0 flex items-center justify-center gap-2">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              className={`h-1.5 rounded-full transition-all ${i === active ? "w-6 bg-white" : "w-1.5 bg-white/40"}`}
+              aria-label={`الانتقال للبانر ${i + 1}`}
+            />
+          ))}
         </div>
       </section>
     </div>

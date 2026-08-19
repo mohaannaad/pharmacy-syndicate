@@ -8,6 +8,10 @@ export default function Home() {
       <HeroSection />
       <ServicesSection />
       <NewsSection />
+      <NewsSection
+        title="اخبار النقابات الفرعية"
+        subtitle="تابع مستجدات وأنشطة نقابات الصيادلة الفرعية في جميع المحافظات"
+      />
     </main>
   );
 }
