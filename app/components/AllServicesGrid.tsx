@@ -1,4 +1,4 @@
-import Image from "next/image";
+import ServiceCard from "./ServiceCard";
 
 const services = [
   { icon: "/service-ad.png", title: "اضافة اعلان", desc: "انشاء وادارة إعلاناتك داخل المنصة" },
@@ -16,17 +16,9 @@ export default function AllServicesGrid() {
   return (
     <section className="bg-surface-muted py-16">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-x-8 gap-y-12">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
           {services.map((service) => (
-            <div key={service.title} className="flex flex-col items-center text-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center">
-                <Image src={service.icon} alt={service.title} width={40} height={40} className="w-9 h-9 object-contain" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-900">{service.title}</div>
-                <div className="text-sm text-gray-500 mt-1">{service.desc}</div>
-              </div>
-            </div>
+            <ServiceCard key={service.title} {...service} />
           ))}
         </div>
 

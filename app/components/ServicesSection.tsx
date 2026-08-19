@@ -1,4 +1,5 @@
-import Image from "next/image";
+import ServiceCard from "./ServiceCard";
+import Link from "next/link";
 
 const services = [
   { icon: "/service-ad.png", title: "اضافة اعلان", desc: "انشاء وادارة إعلاناتك داخل المنصة" },
@@ -15,23 +16,15 @@ export default function ServicesSection() {
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900">الخدمات</h2>
         <p className="mt-2 text-gray-500">خدمات إلكترونية لتسهيل معاملاتك النقابية</p>
 
-        <div className="mt-12 grid grid-cols-2 md:grid-cols-5 gap-8">
+        <div className="mt-12 grid grid-cols-2 md:grid-cols-5 gap-6">
           {services.map((service) => (
-            <div key={service.title} className="flex flex-col items-center text-center gap-4">
-              <div className="w-20 h-20 rounded-full bg-white shadow-sm flex items-center justify-center">
-                <Image src={service.icon} alt={service.title} width={40} height={40} className="w-9 h-9 object-contain" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-900">{service.title}</div>
-                <div className="text-sm text-gray-500 mt-1">{service.desc}</div>
-              </div>
-            </div>
+            <ServiceCard key={service.title} {...service} />
           ))}
         </div>
 
-        <button className="mt-12 bg-brand-green text-white px-8 py-3 rounded-pill font-medium">
-          جميع الخدمات
-        </button>
+      <Link href="/services" className="mt-12 inline-block bg-brand-green text-white px-8 py-3 rounded-pill font-medium">
+  جميع الخدمات
+</Link>
       </div>
     </section>
   );
