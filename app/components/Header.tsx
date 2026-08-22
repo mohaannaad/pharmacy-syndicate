@@ -58,7 +58,7 @@ export default function Header() {
 
         <div className="flex items-center gap-3">
           <div className="hidden lg:flex items-center bg-gray-100 rounded-pill px-4 py-2 gap-2 w-64">
-            <input type="text" placeholder="ابحث عن صيدلية" className="bg-transparent outline-none text-sm w-full text-right" />
+            <input type="text" placeholder="ابحث في الموقع عن .." className="bg-transparent outline-none text-sm w-full text-right" />
             <Search className="w-4 h-4 text-primary shrink-0" />
           </div>
 

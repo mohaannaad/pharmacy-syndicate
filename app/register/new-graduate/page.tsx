@@ -22,7 +22,7 @@ export default function NewGraduateRegisterPage() {
 
       <section className="bg-surface-muted py-14">
         <div className="max-w-3xl mx-auto px-6">
-          <RegisterSteps steps={steps} current={step} />
+          <RegisterSteps steps={steps} current={step} onStepClick={setStep} />
 
           {step === 1 && (
             <div>
