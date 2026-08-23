@@ -13,7 +13,7 @@ const navLinks = [
   { label: "الشهادات", href: "/certificates" },
   { label: "الخدمات", href: "/services" },
   { label: "نقابات فرعية", href: "/branches" },
-  { label: "الصيدليات", href: "/pharmacies" },
+  { label: "الصيدليات", href: "/services/pharmacies" },
 ];
 
 export default function Header() {
@@ -23,9 +23,20 @@ export default function Header() {
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
   const [underline, setUnderline] = useState({ left: 0, width: 0 });
 
-  const activeIndex = navLinks.findIndex((link) =>
-    link.href === "/" ? pathname === "/" : pathname.startsWith(link.href)
-  );
+ const activeIndex = (() => {
+  const exactMatch = navLinks.findIndex((link) => link.href === pathname);
+  if (exactMatch !== -1) return exactMatch;
+
+  const partialMatches = navLinks
+    .map((link, i) => ({ i, href: link.href }))
+    .filter((link) => link.href !== "/" && pathname.startsWith(link.href));
+
+  if (partialMatches.length === 0) return -1;
+
+  return partialMatches.reduce((best, current) =>
+    current.href.length > best.href.length ? current : best
+  ).i;
+})();
 
   useEffect(() => {
     const activeLink = linkRefs.current[activeIndex];
