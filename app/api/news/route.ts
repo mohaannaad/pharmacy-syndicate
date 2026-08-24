@@ -17,8 +17,9 @@ export async function POST(request: Request) {
 
   const newItem = await prisma.news.create({
     data: {
+      type: body.type,
       title: body.title,
-      description: body.description,
+      content: body.content || null,
       imageUrl: body.imageUrl || null,
       youtubeUrl: body.youtubeUrl || null,
       order: body.order ?? 0,
