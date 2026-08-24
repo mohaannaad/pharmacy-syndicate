@@ -26,11 +26,17 @@ enum Role {
   ADMIN
 }
 model News {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  imageUrl    String?
-  youtubeUrl  String?
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  type       NewsType @default(ARTICLE)
+  title      String
+  content    String?
+  imageUrl   String?
+  youtubeUrl String?
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+}
+
+enum NewsType {
+  YOUTUBE
+  ARTICLE
 }
