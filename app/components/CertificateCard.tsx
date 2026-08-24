@@ -22,16 +22,16 @@ export default function CertificateCard({ title, date, number, price, status }: 
 
   return (
     <div className="bg-white rounded-2xl shadow-sm p-5">
-      <div className="flex items-start justify-between">
-        <div className={`w-9 h-9 rounded-full ${config.bg} flex items-center justify-center shrink-0`}>
-          <StatusIcon className={`w-4 h-4 ${config.text}`} />
+           <div className="flex items-start justify-between">
+        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+          <FileEdit className="w-4 h-4 text-primary" />
         </div>
         <div className="text-right flex-1 mx-3">
           <div className="font-bold text-gray-900">{title}</div>
           <div className="text-xs text-gray-400 mt-1">{date}</div>
         </div>
-        <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-          <FileEdit className="w-4 h-4 text-primary" />
+        <div className={`w-9 h-9 rounded-full ${config.bg} flex items-center justify-center shrink-0`}>
+          <StatusIcon className={`w-4 h-4 ${config.text}`} />
         </div>
       </div>
 
