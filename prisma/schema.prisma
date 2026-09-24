@@ -73,3 +73,41 @@ enum AdStatus {
   COMPLETED
   REJECTED
 }
+
+model Complaint {
+  id               String            @id @default(cuid())
+  ticketNumber     String            @unique
+  category         ComplaintCategory
+  title            String
+  details          String
+  attachments      String[]
+  submitterName    String
+  submitterContact String
+  status           ComplaintStatus   @default(RECEIVED)
+  adminResponse    String?
+  escalated        Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  respondedAt      DateTime?
+}
+
+enum ComplaintCategory {
+  MEMBERSHIP
+  CERTIFICATES_CARDS
+  SUBSCRIPTIONS
+  INSTALLMENTS_PROJECTS
+  TRIPS_COURSES_EVENTS
+  ADS
+  TECHNICAL_ISSUE
+  ADMINISTRATIVE
+  OTHER
+}
+
+enum ComplaintStatus {
+  RECEIVED
+  UNDER_REVIEW
+  NEEDS_INFO
+  TRANSFERRED
+  RESPONDED
+  CLOSED
+  REJECTED
+}
