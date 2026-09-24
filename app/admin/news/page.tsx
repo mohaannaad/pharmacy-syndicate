@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Trash2, GripVertical } from "lucide-react";
+import { Trash2, GripVertical, Newspaper as NewsIcon, Video, FileText } from "lucide-react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 
 type NewsType = "YOUTUBE" | "ARTICLE";
@@ -101,101 +101,142 @@ export default function AdminNewsPage() {
     });
   }
 
+  const articleCount = newsList.filter((n) => n.type === "ARTICLE").length;
+  const youtubeCount = newsList.filter((n) => n.type === "YOUTUBE").length;
+
   return (
-    <main className="max-w-4xl mx-auto px-6 py-10" dir="rtl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">إدارة الأخبار</h1>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <form onSubmit={handleSubmit} className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6 space-y-4">
+          <h2 className="font-bold text-gray-900">إضافة خبر جديد</h2>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 space-y-4 mb-10">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">نوع الخبر</label>
-          <div className="flex gap-4">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="radio" checked={newsType === "ARTICLE"} onChange={() => setNewsType("ARTICLE")} />
-              مقال كامل
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="radio" checked={newsType === "YOUTUBE"} onChange={() => setNewsType("YOUTUBE")} />
-              فيديو يوتيوب
-            </label>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">العنوان</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
-        </div>
-
-        {newsType === "ARTICLE" ? (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">نص المقال</label>
-              <textarea value={content} onChange={(e) => setContent(e.target.value)} required rows={6} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">صورة الغلاف</label>
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={(e) => setFile(e.target.files?.[0] || null)}
-                required
-                className="w-full text-sm text-gray-500 file:ml-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-white file:text-sm file:font-medium file:cursor-pointer hover:file:bg-primary-dark"
-              />
-            </div>
-          </>
-        ) : (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">رابط يوتيوب</label>
-            <input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" dir="ltr" />
+            <label className="block text-sm font-medium text-gray-700 mb-1">نوع الخبر</label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input type="radio" checked={newsType === "ARTICLE"} onChange={() => setNewsType("ARTICLE")} />
+                مقال كامل
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="radio" checked={newsType === "YOUTUBE"} onChange={() => setNewsType("YOUTUBE")} />
+                فيديو يوتيوب
+              </label>
+            </div>
           </div>
-        )}
 
-        <button type="submit" disabled={loading} className="bg-primary text-white px-6 py-2 rounded-pill text-sm font-medium">
-          {loading ? "جاري الإضافة..." : "إضافة الخبر"}
-        </button>
-      </form>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">العنوان</label>
+            <input value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+          </div>
 
-      <h2 className="text-lg font-bold text-gray-900 mb-4">الأخبار الحالية ({newsList.length})</h2>
-      <p className="text-xs text-gray-400 mb-3">اسحب من المقبض على اليمين لإعادة الترتيب</p>
+          {newsType === "ARTICLE" ? (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">نص المقال</label>
+                <textarea value={content} onChange={(e) => setContent(e.target.value)} required rows={5} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
+              </div>
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="news-list">
-          {(provided) => (
-            <div className="space-y-3" ref={provided.innerRef} {...provided.droppableProps}>
-              {newsList.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      className={`bg-white rounded-xl shadow-sm p-4 flex items-center justify-between ${snapshot.isDragging ? "shadow-lg ring-2 ring-primary/30" : ""}`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span {...provided.dragHandleProps} className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing">
-                          <GripVertical className="w-4 h-4" />
-                        </span>
-                        <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500">
-                          {item.type === "YOUTUBE" ? "يوتيوب" : "مقال"}
-                        </span>
-                        <span className="font-bold text-gray-900">{item.title}</span>
-                      </div>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="flex items-center gap-1 text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        حذف
-                      </button>
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">صورة الغلاف</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  required
+                  className="w-full text-sm text-gray-500 file:ml-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-white file:text-sm file:font-medium file:cursor-pointer hover:file:bg-primary-dark"
+                />
+              </div>
+            </>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">رابط يوتيوب</label>
+              <input value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" dir="ltr" />
             </div>
           )}
-        </Droppable>
-      </DragDropContext>
-    </main>
+
+          <button type="submit" disabled={loading} className="bg-primary text-white px-6 py-2 rounded-pill text-sm font-medium">
+            {loading ? "جاري الإضافة..." : "إضافة الخبر"}
+          </button>
+        </form>
+
+        <div className="space-y-4">
+          <div className="bg-white rounded-2xl shadow-sm p-5">
+            <p className="text-xs text-gray-400">إجمالي الأخبار</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">{newsList.length}</p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <FileText className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">مقالات</p>
+              <p className="font-bold text-gray-900">{articleCount}</p>
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center shrink-0">
+              <Video className="w-4 h-4 text-red-500" />
+            </div>
+            <div>
+              <p className="text-xs text-gray-400">فيديوهات يوتيوب</p>
+              <p className="font-bold text-gray-900">{youtubeCount}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm p-6">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="font-bold text-gray-900">الأخبار الحالية</h2>
+          <span className="text-xs text-gray-400">اسحب من المقبض لإعادة الترتيب</span>
+        </div>
+
+        {newsList.length === 0 ? (
+          <div className="text-center py-12 text-gray-400">
+            <NewsIcon className="w-8 h-8 mx-auto mb-2 opacity-40" />
+            لا توجد أخبار مضافة بعد
+          </div>
+        ) : (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="news-list">
+              {(provided) => (
+                <div className="mt-3 space-y-2" ref={provided.innerRef} {...provided.droppableProps}>
+                  {newsList.map((item, index) => (
+                    <Draggable key={item.id} draggableId={item.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={`flex items-center justify-between rounded-xl border border-gray-100 px-4 py-3 ${snapshot.isDragging ? "shadow-lg ring-2 ring-primary/30 bg-white" : "bg-surface-muted"}`}
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <span {...provided.dragHandleProps} className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing shrink-0">
+                              <GripVertical className="w-4 h-4" />
+                            </span>
+                            <span className="text-xs bg-white border border-gray-200 px-2 py-0.5 rounded-full text-gray-500 shrink-0">
+                              {item.type === "YOUTUBE" ? "يوتيوب" : "مقال"}
+                            </span>
+                            <span className="font-medium text-gray-900 truncate">{item.title}</span>
+                          </div>
+                          <button
+                            onClick={() => handleDelete(item.id)}
+                            className="flex items-center gap-1 text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            حذف
+                          </button>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        )}
+      </div>
+    </div>
   );
 }
