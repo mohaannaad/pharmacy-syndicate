@@ -111,3 +111,12 @@ enum ComplaintStatus {
   CLOSED
   REJECTED
 }
+
+model Fee {
+  id        String   @id @default(cuid())
+  name      String
+  price     Int
+  note      String?
+  order     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
