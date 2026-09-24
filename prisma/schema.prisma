@@ -40,3 +40,36 @@ enum NewsType {
   YOUTUBE
   ARTICLE
 }
+
+model Ad {
+  id          String   @id @default(cuid())
+  placement   AdPlacement
+  duration    String
+  price       Int
+  title       String
+  description String
+  contactInfo String
+  fileUrl     String?
+  status      AdStatus @default(DRAFT)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+}
+
+enum AdPlacement {
+  WEBSITE
+  HQ
+  BOTH
+}
+
+enum AdStatus {
+  DRAFT
+  UNDER_REVIEW
+  NEEDS_EDIT
+  APPROVED_AWAITING_PAYMENT
+  PAID
+  SCHEDULED
+  PUBLISHED
+  COMPLETED
+  REJECTED
+}

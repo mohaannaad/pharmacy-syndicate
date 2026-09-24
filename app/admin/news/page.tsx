@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, GripVertical } from "lucide-react";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 
 type NewsType = "YOUTUBE" | "ARTICLE";
 
@@ -67,7 +68,7 @@ export default function AdminNewsPage() {
       }),
     });
 
-       setTitle("");
+    setTitle("");
     setContent("");
     setYoutubeUrl("");
     setFile(null);
@@ -76,12 +77,28 @@ export default function AdminNewsPage() {
     loadNews();
   }
 
-    async function handleDelete(id: string) {
+  async function handleDelete(id: string) {
     const confirmed = window.confirm("هل تريد حذف الخبر ؟ هذا الاجراء لا يمكن التراجع عنه.");
     if (!confirmed) return;
 
     await fetch(`/api/news/${id}`, { method: "DELETE" });
     loadNews();
+  }
+
+  async function handleDragEnd(result: DropResult) {
+    if (!result.destination) return;
+
+    const reordered = Array.from(newsList);
+    const [moved] = reordered.splice(result.source.index, 1);
+    reordered.splice(result.destination.index, 0, moved);
+
+    setNewsList(reordered);
+
+    await fetch("/api/news/reorder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderedIds: reordered.map((item) => item.id) }),
+    });
   }
 
   return (
@@ -115,7 +132,7 @@ export default function AdminNewsPage() {
               <textarea value={content} onChange={(e) => setContent(e.target.value)} required rows={6} className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
             </div>
 
-                        <div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">صورة الغلاف</label>
               <input
                 type="file"
@@ -140,26 +157,45 @@ export default function AdminNewsPage() {
       </form>
 
       <h2 className="text-lg font-bold text-gray-900 mb-4">الأخبار الحالية ({newsList.length})</h2>
+      <p className="text-xs text-gray-400 mb-3">اسحب من المقبض على اليمين لإعادة الترتيب</p>
 
-            <div className="space-y-3">
-        {newsList.map((item) => (
-          <div key={item.id} className="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500">
-                {item.type === "YOUTUBE" ? "يوتيوب" : "مقال"}
-              </span>
-              <span className="font-bold text-gray-900">{item.title}</span>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="news-list">
+          {(provided) => (
+            <div className="space-y-3" ref={provided.innerRef} {...provided.droppableProps}>
+              {newsList.map((item, index) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      className={`bg-white rounded-xl shadow-sm p-4 flex items-center justify-between ${snapshot.isDragging ? "shadow-lg ring-2 ring-primary/30" : ""}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span {...provided.dragHandleProps} className="text-gray-300 hover:text-gray-500 cursor-grab active:cursor-grabbing">
+                          <GripVertical className="w-4 h-4" />
+                        </span>
+                        <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500">
+                          {item.type === "YOUTUBE" ? "يوتيوب" : "مقال"}
+                        </span>
+                        <span className="font-bold text-gray-900">{item.title}</span>
+                      </div>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="flex items-center gap-1 text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        حذف
+                      </button>
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
             </div>
-            <button
-              onClick={() => handleDelete(item.id)}
-              className="flex items-center gap-1 text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              حذف
-            </button>
-          </div>
-        ))}
-      </div>
+          )}
+        </Droppable>
+      </DragDropContext>
     </main>
   );
 }
