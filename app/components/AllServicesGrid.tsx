@@ -10,6 +10,7 @@ const services = [
   { icon: "/service-refund.png", title: "الاسترداد", desc: "إرسال طلبات استرداد المدفوعات ومتابعتها", href: "/services/refund" },
  { icon: "/service-pharmacy-location.png", title: "موقع الصيدليات", desc: "ابحث عن أقرب صيدلية في محيطك بسهولة", href: "/services/pharmacies" },
   { icon: "/service-new-member.png", title: "عضو جديد", desc: "بدء إجراءات الانضمام لنقابة الصيادلة", href: "/register/new-graduate" },
+  { icon: "/service-activities.png", title: "الرحلات والفعاليات", desc: "احجز في الرحلات والكورسات والفعاليات القادمة", href: "/services/activities" },
 ];
 
 export default function AllServicesGrid() {
