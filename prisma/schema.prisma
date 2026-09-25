@@ -143,3 +143,45 @@ enum ActivityCategory {
   RAMADAN_SUHOOR
   OTHER
 }
+
+model CertificateRequest {
+  id               String             @id @default(cuid())
+  type             CertificateType
+  destination      String?
+  attachments      String[]
+  deliveryMethod   DeliveryMethod
+  price            Int
+  memberName       String
+  membershipNumber String
+  contactInfo      String
+  status           CertificateStatus  @default(AWAITING_PAYMENT)
+  createdAt        DateTime           @default(now())
+}
+
+enum CertificateType {
+  GOOD_CONDUCT_AR
+  GOOD_CONDUCT_EN
+  MBA_ISLESCA
+  DBA_ISLESCA
+  MBA_NAVAL_ACADEMY
+  DBA_NAVAL_ACADEMY
+  DIPLOMA_NAVAL_ACADEMY
+  MBA_ARAB_ACADEMY
+  DBA_ARAB_ACADEMY
+}
+
+enum DeliveryMethod {
+  ELECTRONIC
+  DELIVERY
+  PICKUP
+}
+
+enum CertificateStatus {
+  DRAFT
+  AWAITING_PAYMENT
+  PAID
+  UNDER_REVIEW
+  ISSUED
+  COMPLETED
+  REJECTED
+}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Newspaper, Megaphone, LayoutDashboard, Bell, User, AlertTriangle, CircleDollarSign, CalendarDays } from "lucide-react";
+import { Newspaper, Megaphone, LayoutDashboard, Bell, User, AlertTriangle, CircleDollarSign, CalendarDays, FileText } from "lucide-react";
 
 const menuItems = [
   { label: "لوحة التحكم", href: "/admin", icon: LayoutDashboard },
@@ -12,6 +12,7 @@ const menuItems = [
    { label: "الشكاوى", href: "/admin/complaints", icon: AlertTriangle },
    { label: "الرسوم", href: "/admin/fees", icon: CircleDollarSign },
    { label: "الرحلات والفعاليات", href: "/admin/activities", icon: CalendarDays },
+   { label: "الشهادات", href: "/admin/certificates", icon: FileText },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

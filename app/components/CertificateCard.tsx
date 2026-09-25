@@ -1,6 +1,13 @@
 import { FileEdit, Ban, Download, History } from "lucide-react";
 
-type Status = "pending" | "rejected" | "approved";
+type Status =
+  | "DRAFT"
+  | "AWAITING_PAYMENT"
+  | "PAID"
+  | "UNDER_REVIEW"
+  | "ISSUED"
+  | "COMPLETED"
+  | "REJECTED";
 
 interface CertificateCardProps {
   title: string;
@@ -11,13 +18,17 @@ interface CertificateCardProps {
 }
 
 const statusConfig: Record<Status, { icon: typeof History; bg: string; text: string }> = {
-  pending: { icon: History, bg: "bg-yellow-100", text: "text-yellow-600" },
-  rejected: { icon: Ban, bg: "bg-red-100", text: "text-red-500" },
-  approved: { icon: Download, bg: "bg-primary", text: "text-white" },
+  DRAFT: { icon: History, bg: "bg-gray-100", text: "text-gray-500" },
+  AWAITING_PAYMENT: { icon: History, bg: "bg-yellow-100", text: "text-yellow-600" },
+  PAID: { icon: History, bg: "bg-blue-100", text: "text-blue-600" },
+  UNDER_REVIEW: { icon: History, bg: "bg-orange-100", text: "text-orange-600" },
+  ISSUED: { icon: Download, bg: "bg-primary", text: "text-white" },
+  COMPLETED: { icon: Download, bg: "bg-primary", text: "text-white" },
+  REJECTED: { icon: Ban, bg: "bg-red-100", text: "text-red-500" },
 };
 
 export default function CertificateCard({ title, date, number, price, status }: CertificateCardProps) {
-  const config = statusConfig[status];
+  const config = statusConfig[status] ?? statusConfig.DRAFT;
   const StatusIcon = config.icon;
 
   return (
