@@ -185,3 +185,74 @@ enum CertificateStatus {
   COMPLETED
   REJECTED
 }
+model GraduateApplication {
+  id                     String             @id @default(cuid())
+  serial                 Int                @unique @default(autoincrement())
+
+  // البيانات الشخصية
+  fullNameAr             String
+  fullNameEn             String
+  nationalId             String
+  phone                  String
+  email                  String
+  gender                 Gender
+  nationality            String
+  religion               String
+  birthDate              DateTime
+  birthGovernorate       String
+  idIssuer               String
+
+  // محل الإقامة
+  governorate            String
+  city                   String
+  district               String
+  street                 String
+  buildingNo             String
+  apartment              String?
+  landmark               String?
+
+  // البيانات الأكاديمية
+  universityType         UniversityType
+  universityName         String
+  universityCountry      String?
+  studyStartYear         Int
+  graduationYear         Int
+  studyYears             Int
+  grade                  String
+  highSchoolType         String
+  highSchoolYear         Int
+  hasPreviousQualification Boolean          @default(false)
+  previousQualification  String?
+  previousRejection      Boolean            @default(false)
+
+  // المستندات: [{ key, label, original, url }]
+  documents              Json
+
+  declarationAccepted    Boolean            @default(false)
+  fee                    Int?
+  status                 GraduateStatus     @default(AWAITING_PAYMENT)
+  adminNote              String?
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum UniversityType {
+  GOVERNMENT
+  PRIVATE
+  FOREIGN
+}
+
+enum GraduateStatus {
+  AWAITING_PAYMENT
+  UNDER_REVIEW
+  NEEDS_COMPLETION
+  AWAITING_ORIGINALS
+  LICENSING
+  REGISTERED
+  REJECTED
+}
