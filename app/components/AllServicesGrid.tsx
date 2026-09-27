@@ -6,7 +6,6 @@ const services = [
   { icon: "/service-complaint.png", title: "تقديم شكوى", desc: "إرسال الشكاوى ومتابعتها إلكترونيًا", href: "/services/complaint" },
   { icon: "/service-fees.png", title: "رسوم", desc: "جميع الرسوم المعتمدة لخدمات النقابة", href: "/services/fees" },
   { icon: "/service-card.png", title: "تجديد الكارنيه", desc: "تجديد بطاقة العضوية بسهولة وسرعة", href: "/services/renew-card" },
-  { icon: "/service-bmi.png", title: "كتلة الجسم", desc: "احسب مؤشر كتلة جسمك بسهولة وسرعة", href: "/services/bmi" },
   { icon: "/service-refund.png", title: "الاسترداد", desc: "إرسال طلبات استرداد المدفوعات ومتابعتها", href: "/services/refund" },
  { icon: "/service-pharmacy-location.png", title: "موقع الصيدليات", desc: "ابحث عن أقرب صيدلية في محيطك بسهولة", href: "/services/pharmacies" },
   { icon: "/service-new-member.png", title: "عضو جديد", desc: "بدء إجراءات الانضمام لنقابة الصيادلة", href: "/register/new-graduate" },
