@@ -221,6 +221,8 @@ model GraduateApplication {
   grade                  String
   highSchoolType         String
   highSchoolYear         Int
+  highSchoolScore        Float?
+  highSchoolPercent      Float?
   hasPreviousQualification Boolean          @default(false)
   previousQualification  String?
   previousRejection      Boolean            @default(false)
@@ -229,6 +231,7 @@ model GraduateApplication {
   documents              Json
 
   declarationAccepted    Boolean            @default(false)
+  category               Int?
   fee                    Int?
   status                 GraduateStatus     @default(AWAITING_PAYMENT)
   adminNote              String?

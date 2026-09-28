@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/prisma";
 import { NextResponse } from "next/server";
-import { getRequiredDocuments, calculateFee, trackingNumber } from "../../lib/graduate";
+import { getRequiredDocuments, calculateFee, trackingNumber, isNationalityAllowed, determinePrivateCategory } from "../../lib/graduate";
 
 // لوحة التحكم هتستخدمها بعدين لعرض كل الطلبات
 export async function GET() {
@@ -16,6 +16,11 @@ export async function POST(request: Request) {
   // 1) الرقم القومي لازم يكون 14 رقم
   if (!/^\d{14}$/.test(body.nationalId || "")) {
     return NextResponse.json({ error: "الرقم القومي لازم يكون 14 رقم" }, { status: 400 });
+  }
+
+  // 1-ب) الجنسيات المسموح بيها بس (مصري / فلسطيني / سوداني)
+  if (!isNationalityAllowed(body.nationality)) {
+    return NextResponse.json({ error: "لا يتم قيد الجنسيات الأجنبية بالنقابة باستثناء الجنسيتين الفلسطينية والسودانية" }, { status: 400 });
   }
 
   // 2) لازم يكون موافق على الإقرار
@@ -51,9 +56,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `مستندات ناقصة: ${missing.map((d) => d.label).join("، ")}` }, { status: 400 });
   }
 
-  // 5) الرسوم: الحكومي بتتحسب فورًا، الخاص/الخارجي بعد ما النقابة تحدد الفئة
+   // 5) الفئة والرسوم:
+  //    - الحكومي: رسوم ثابتة فورًا
+  //    - الخاص: الفئة بتتحدد تلقائيًا من نسبة الثانوية (لو سنتها موجودة في الجدول)
+  //    - الخارجي أو سنة مش في الجدول: الموظف يحدد الفئة وقت المراجعة
   const graduationYear = Number(body.graduationYear);
-  const fee = calculateFee(body.universityType, graduationYear);
+  const highSchoolPercent = Number(body.highSchoolPercent) || null;
+  const category =
+    body.universityType === "PRIVATE" && highSchoolPercent
+      ? determinePrivateCategory(body.universityName, Number(body.highSchoolYear), highSchoolPercent)
+      : null;
+  const fee = calculateFee(body.universityType, graduationYear, category ?? undefined);
 
   const application = await prisma.graduateApplication.create({
     data: {
@@ -86,12 +99,15 @@ export async function POST(request: Request) {
       grade: body.grade,
       highSchoolType: body.highSchoolType,
       highSchoolYear: Number(body.highSchoolYear),
+            highSchoolScore: Number(body.highSchoolScore) || null,
+      highSchoolPercent,
       hasPreviousQualification: !!body.hasPreviousQualification,
       previousQualification: body.previousQualification || null,
       previousRejection: !!body.previousRejection,
 
       documents: required.map((d) => ({ ...d, url: uploaded[d.key] })),
       declarationAccepted: true,
+      category,
       fee,
       status: fee === null ? "UNDER_REVIEW" : "AWAITING_PAYMENT",
     },

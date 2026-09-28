@@ -12,7 +12,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
   }
 
-  const data: { status?: typeof application.status; adminNote?: string | null; fee?: number } = {};
+    const data: { status?: typeof application.status; adminNote?: string | null; fee?: number; category?: number } = {};
 
   // 1) تحديد فئة الجامعة (للخاص والخارجي) → الرسوم تتحسب والطلب يروح "في انتظار الدفع"
   if (body.category) {
@@ -22,6 +22,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: "فئة غير صحيحة" }, { status: 400 });
     }
     data.fee = fee;
+        data.category = category;
     data.status = "AWAITING_PAYMENT";
   }
 

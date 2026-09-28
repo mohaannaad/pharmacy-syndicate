@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useAutoRefresh } from "../../lib/useAutoRefresh";
 import { GraduationCap, Search, ChevronDown, ChevronUp, ExternalLink, Trash2, Clock, AlertCircle } from "lucide-react";
-import { GRADUATE_STATUS_LABELS, PRIVATE_CATEGORY_FEES, trackingNumber } from "../../lib/graduate";
+import { GRADUATE_STATUS_LABELS, PRIVATE_CATEGORY_FEES, CATEGORY_LABELS, trackingNumber } from "../../lib/graduate";
 
 interface GraduateDocument {
   key: string;
@@ -42,10 +42,13 @@ interface GraduateApplication {
   grade: string;
   highSchoolType: string;
   highSchoolYear: number;
+    highSchoolScore: number | null;
+  highSchoolPercent: number | null;
   hasPreviousQualification: boolean;
   previousQualification: string | null;
   previousRejection: boolean;
   documents: GraduateDocument[];
+    category: number | null;
   fee: number | null;
   status: string;
   adminNote: string | null;
@@ -75,7 +78,8 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const needsCategory = app.universityType !== "GOVERNMENT" && app.fee === null;
+    // الخاص والخارجي: الموظف يقدر يحدد الفئة أو يغيّرها
+  const canSetCategory = app.universityType !== "GOVERNMENT";
   const needsReason = status === "NEEDS_COMPLETION" || status === "REJECTED";
 
   async function save(payload: Record<string, unknown>) {
@@ -176,6 +180,8 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
               <InfoRow label="سنوات الدراسة" value={`${app.studyStartYear} - ${app.graduationYear} (${app.studyYears} سنوات)`} />
               <InfoRow label="التقدير" value={app.grade} />
               <InfoRow label="الثانوية" value={`${app.highSchoolType} (${app.highSchoolYear})`} />
+                            <InfoRow label="نسبة الثانوية" value={app.highSchoolPercent ? `${app.highSchoolPercent}%${app.highSchoolScore ? ` (${app.highSchoolScore} درجة)` : ""}` : null} />
+              {app.category && <InfoRow label="الفئة" value={CATEGORY_LABELS[app.category]} />}
               <InfoRow label="مؤهل سابق" value={app.hasPreviousQualification ? app.previousQualification : "لا يوجد"} />
               {app.universityType === "FOREIGN" && <InfoRow label="رفض سابق" value={app.previousRejection ? "نعم" : "لا"} />}
             </div>
@@ -200,10 +206,12 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
           <div className="bg-white rounded-xl p-4 space-y-4">
             <h4 className="font-bold text-sm text-gray-900">الإجراء</h4>
 
-            {needsCategory && (
+                       {canSetCategory && (
               <div className="flex items-end gap-2 flex-wrap bg-amber-50 border border-amber-200 rounded-lg p-3">
                 <div className="flex-1 min-w-[200px]">
-                  <label className="text-xs text-amber-800">تحديد فئة الجامعة (لحساب الرسوم)</label>
+                                    <label className="text-xs text-amber-800">
+                    {app.category ? `الفئة الحالية: ${CATEGORY_LABELS[app.category]} — تغيير الفئة:` : "تحديد فئة الجامعة (لحساب الرسوم)"}
+                  </label>
                   <select value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white outline-none">
                     <option value="">اختر الفئة</option>
                     {Object.entries(PRIVATE_CATEGORY_FEES).map(([cat, price]) => (

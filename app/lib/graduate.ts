@@ -178,3 +178,69 @@ export const GRADUATE_STATUS_LABELS: Record<string, { label: string; color: stri
   REGISTERED: { label: "تم القيد", color: "bg-green-100 text-green-700" },
   REJECTED: { label: "مرفوض", color: "bg-gray-200 text-gray-700" },
 };
+
+// ---------------------------------------------------------------------
+// الجنسيات المسموح بقيدها
+// ---------------------------------------------------------------------
+// لا يتم قيد الجنسيات الأجنبية باستثناء الفلسطينية والسودانية
+export const NATIONALITIES = ["مصري", "فلسطيني", "سوداني", "أخرى"];
+
+export function isNationalityAllowed(nationality: string) {
+  return ["مصري", "فلسطيني", "سوداني"].includes(nationality);
+}
+
+// ---------------------------------------------------------------------
+// نسب قبول الجامعات الخاصة (حسب سنة الثانوية العامة)
+// ---------------------------------------------------------------------
+// privateMin  = تنسيق الجامعات الخاصة (المجلس الأعلى للجامعات)
+// fivePercent = قرار الجمعية العمومية (5% أقل من التنسيق الحكومي)
+// النسب مكتوبة كنسبة مئوية (85 = 85%)
+interface AdmissionThreshold {
+  privateMin: number;
+  fivePercent: number;
+}
+
+const PRIVATE_THRESHOLDS: Record<number, AdmissionThreshold> = {
+  2014: { privateMin: 85, fivePercent: 91.5 },
+  2015: { privateMin: 85, fivePercent: 91.5 },
+  2016: { privateMin: 90, fivePercent: 92.2 },
+  2017: { privateMin: 90, fivePercent: 90.9 },
+  2018: { privateMin: 89.5, fivePercent: 91.8 },
+  2019: { privateMin: 89.5, fivePercent: 92.8 },
+  2020: { privateMin: 90, fivePercent: 93.05 },
+};
+
+// جامعة سيناء ليها نسب خاصة بيها
+const SINAI_THRESHOLDS: Record<number, AdmissionThreshold> = {
+  2014: { privateMin: 80, fivePercent: 86.4 },
+  2015: { privateMin: 80, fivePercent: 86.4 },
+  2016: { privateMin: 85, fivePercent: 87 },
+  2017: { privateMin: 85, fivePercent: 85.9 },
+  2018: { privateMin: 85, fivePercent: 86.8 },
+  2019: { privateMin: 85, fivePercent: 87.8 },
+  2020: { privateMin: 85, fivePercent: 88.05 },
+};
+
+// المجموع الكلي للثانوية العامة المصرية
+export const HIGH_SCHOOL_TOTAL = 410;
+
+export function getAdmissionThreshold(universityName: string, highSchoolYear: number) {
+  const table = universityName.includes("سيناء") ? SINAI_THRESHOLDS : PRIVATE_THRESHOLDS;
+  return table[highSchoolYear] ?? null;
+}
+
+// بتحدد فئة الخريج (1 أو 2 أو 3) من نسبة الثانوية
+// بترجع null لو سنة الثانوية مش موجودة في الجدول → الموظف يحددها يدويًا
+export function determinePrivateCategory(universityName: string, highSchoolYear: number, percent: number): 1 | 2 | 3 | null {
+  const threshold = getAdmissionThreshold(universityName, highSchoolYear);
+  if (!threshold || !percent) return null;
+  if (percent >= threshold.fivePercent) return 1; // خاص عادي
+  if (percent >= threshold.privateMin) return 2; // خاص
+  return 3; // المجموع الأقل
+}
+
+export const CATEGORY_LABELS: Record<number, string> = {
+  1: "فئة أولى — خاص عادي",
+  2: "فئة ثانية — خاص",
+  3: "فئة ثالثة — المجموع الأقل",
+};

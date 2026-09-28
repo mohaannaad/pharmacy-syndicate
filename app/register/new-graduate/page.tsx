@@ -15,6 +15,11 @@ import {
   getRequiredDocuments,
   calculateFee,
   lateFee,
+    NATIONALITIES,
+  isNationalityAllowed,
+  determinePrivateCategory,
+  HIGH_SCHOOL_TOTAL,
+  CATEGORY_LABELS,
   type UniversityType,
   type Gender,
 } from "../../lib/graduate";
@@ -56,6 +61,8 @@ const emptyForm = {
   grade: "",
   highSchoolType: "",
   highSchoolYear: "",
+    highSchoolScore: "",
+  highSchoolPercent: "",
   hasPreviousQualification: false,
   previousQualification: "",
   previousRejection: false,
@@ -67,7 +74,7 @@ type GraduateForm = typeof emptyForm;
 const REQUIRED_BY_STEP: Record<number, (keyof GraduateForm)[]> = {
   1: ["fullNameAr", "fullNameEn", "nationalId", "phone", "email", "gender", "nationality", "religion", "birthDate", "birthGovernorate", "idIssuer"],
   2: ["governorate", "city", "district", "street", "buildingNo"],
-  3: ["universityType", "universityName", "studyStartYear", "graduationYear", "studyYears", "grade", "highSchoolType", "highSchoolYear"],
+    3: ["universityType", "universityName", "studyStartYear", "graduationYear", "studyYears", "grade", "highSchoolType", "highSchoolYear", "highSchoolPercent"],
 };
 
 // الرقم القومي المصري فيه تاريخ الميلاد والنوع:
@@ -144,7 +151,13 @@ export default function NewGraduateRegisterPage() {
       })
     : [];
 
-  const fee = form.universityType && form.graduationYear ? calculateFee(form.universityType, Number(form.graduationYear)) : null;
+    // فئة الجامعة الخاصة بتتحدد تلقائيًا من نسبة الثانوية
+  const category =
+    form.universityType === "PRIVATE" && form.highSchoolPercent
+      ? determinePrivateCategory(form.universityName, Number(form.highSchoolYear), Number(form.highSchoolPercent))
+      : null;
+
+  const fee = form.universityType && form.graduationYear ? calculateFee(form.universityType, Number(form.graduationYear), category ?? undefined) : null;
   const late = form.graduationYear ? lateFee(Number(form.graduationYear)) : 0;
 
   function validateStep(current: number) {
@@ -155,11 +168,14 @@ export default function NewGraduateRegisterPage() {
       if (!/^\d{14}$/.test(form.nationalId)) return "الرقم القومي لازم يكون 14 رقم";
       if (!/^01\d{9}$/.test(form.phone)) return "رقم الهاتف لازم يكون 11 رقم ويبدأ بـ 01";
       if (!/^\S+@\S+\.\S+$/.test(form.email)) return "البريد الإلكتروني غير صحيح";
+            if (!isNationalityAllowed(form.nationality)) return "لا يتم قيد الجنسيات الأجنبية بالنقابة باستثناء الجنسيتين الفلسطينية والسودانية";
     }
     if (current === 3) {
       if (form.universityType === "FOREIGN" && !form.universityCountry.trim()) return "من فضلك اكتب دولة الجامعة";
       if (Number(form.graduationYear) < Number(form.studyStartYear)) return "سنة التخرج لازم تكون بعد سنة بداية الدراسة";
       if (form.hasPreviousQualification && !form.previousQualification.trim()) return "من فضلك اكتب بيانات المؤهل السابق";
+            const percent = Number(form.highSchoolPercent);
+      if (!(percent > 0 && percent <= 100)) return "نسبة الثانوية العامة غير صحيحة";
     }
     if (current === 4) {
       const missingDocs = requiredDocs.filter((d) => !documents[d.key]);
@@ -291,8 +307,12 @@ export default function NewGraduateRegisterPage() {
               <Field label="تاريخ الميلاد">
                 <input type="date" value={form.birthDate} onChange={(e) => update("birthDate", e.target.value)} className={inputClass} />
               </Field>
-              <Field label="الجنسية">
-                <input type="text" value={form.nationality} onChange={(e) => update("nationality", e.target.value)} className={inputClass} />
+                            <Field label="الجنسية">
+                <select value={form.nationality} onChange={(e) => update("nationality", e.target.value)} className={inputClass}>
+                  {NATIONALITIES.map((n) => (
+                    <option key={n} value={n}>{n}</option>
+                  ))}
+                </select>
               </Field>
               <Field label="الديانة">
                 <select value={form.religion} onChange={(e) => update("religion", e.target.value)} className={inputClass}>
@@ -435,6 +455,20 @@ export default function NewGraduateRegisterPage() {
                       ))}
                     </select>
                   </Field>
+                  
+                  {form.highSchoolType === "ثانوية عامة مصرية" ? (
+                    <Field label={`مجموع الثانوية العامة (من ${HIGH_SCHOOL_TOTAL})`} hint={form.highSchoolPercent ? `النسبة: ${form.highSchoolPercent}%` : undefined}>
+                      <input type="number" step="0.5" min="0" max={HIGH_SCHOOL_TOTAL} value={form.highSchoolScore} onChange={(e) => {
+                        const score = e.target.value;
+                        const percent = score ? ((Number(score) / HIGH_SCHOOL_TOTAL) * 100).toFixed(2) : "";
+                        setForm((prev) => ({ ...prev, highSchoolScore: score, highSchoolPercent: percent }));
+                      }} placeholder="مثال: 369" className={inputClass} dir="ltr" />
+                    </Field>
+                  ) : (
+                    <Field label="النسبة المئوية للثانوية (%)" hint="كما هي مذكورة في إفادة النسبة المعادلة">
+                      <input type="number" step="0.01" min="0" max="100" value={form.highSchoolPercent} onChange={(e) => setForm((prev) => ({ ...prev, highSchoolScore: "", highSchoolPercent: e.target.value }))} placeholder="مثال: 90" className={inputClass} dir="ltr" />
+                    </Field>
+                  )}
                 </div>
               )}
 
@@ -504,6 +538,8 @@ export default function NewGraduateRegisterPage() {
                 <ReviewRow label="الجامعة" value={`${form.universityName} (${universityTypeLabel})`} />
                 <ReviewRow label="سنة التخرج" value={form.graduationYear} />
                 <ReviewRow label="التقدير" value={form.grade} />
+                                <ReviewRow label="نسبة الثانوية" value={form.highSchoolPercent ? `${form.highSchoolPercent}%` : ""} />
+                {category && <ReviewRow label="الفئة" value={CATEGORY_LABELS[category]} />}
                 <ReviewRow label="المستندات المرفوعة" value={`${requiredDocs.length} مستند`} />
               </div>
 
