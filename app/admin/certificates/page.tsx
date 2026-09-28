@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAutoRefresh } from "../../lib/useAutoRefresh";
 import { FileText, Trash2, ExternalLink, Clock } from "lucide-react";
 
 interface CertRequest {
@@ -54,9 +55,7 @@ export default function AdminCertificatesPage() {
     setRequests(data);
   }
 
-  useEffect(() => {
-    loadRequests();
-  }, []);
+      useAutoRefresh(loadRequests);
 
   async function updateStatus(id: string, status: string) {
     await fetch(`/api/certificates/${id}`, {

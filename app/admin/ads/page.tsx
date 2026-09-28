@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAutoRefresh } from "../../lib/useAutoRefresh";
 import { Check, X, Pencil, Trash2, ExternalLink, Megaphone, Clock, CircleDollarSign } from "lucide-react";
 
 interface AdItem {
@@ -49,9 +50,7 @@ export default function AdminAdsPage() {
     setAds(data);
   }
 
-  useEffect(() => {
-    loadAds();
-  }, []);
+      useAutoRefresh(loadAds);
 
   async function updateStatus(id: string, status: string) {
     await fetch(`/api/ads/${id}`, {

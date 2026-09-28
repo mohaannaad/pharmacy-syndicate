@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAutoRefresh } from "../../lib/useAutoRefresh";
 import { AlertTriangle, Send, Trash2, ExternalLink, Clock, CheckCircle2 } from "lucide-react";
 
 interface ComplaintItem {
@@ -50,9 +51,7 @@ export default function AdminComplaintsPage() {
     setComplaints(data);
   }
 
-  useEffect(() => {
-    loadComplaints();
-  }, []);
+      useAutoRefresh(loadComplaints);
 
   async function updateStatus(id: string, status: string) {
     await fetch(`/api/complaints/${id}`, {

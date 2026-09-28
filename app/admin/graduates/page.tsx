@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAutoRefresh } from "../../lib/useAutoRefresh";
 import { GraduationCap, Search, ChevronDown, ChevronUp, ExternalLink, Trash2, Clock, AlertCircle } from "lucide-react";
 import { GRADUATE_STATUS_LABELS, PRIVATE_CATEGORY_FEES, trackingNumber } from "../../lib/graduate";
 
@@ -259,9 +260,7 @@ export default function AdminGraduatesPage() {
     setApplications(data);
   }
 
-  useEffect(() => {
-    loadApplications();
-  }, []);
+    useAutoRefresh(loadApplications);
 
   const pendingCount = applications.filter((a) => a.status === "UNDER_REVIEW").length;
   const needsCompletionCount = applications.filter((a) => a.status === "NEEDS_COMPLETION").length;
