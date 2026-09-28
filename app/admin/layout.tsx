@@ -3,10 +3,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Newspaper, Megaphone, LayoutDashboard, Bell, User, AlertTriangle, CircleDollarSign, CalendarDays, FileText, GraduationCap, IdCard } from "lucide-react";
+import { Newspaper, Megaphone, LayoutDashboard, Bell, User, AlertTriangle, CircleDollarSign, CalendarDays, FileText, GraduationCap, IdCard, LayoutGrid } from "lucide-react";
 
 const menuItems = [
   { label: "لوحة التحكم", href: "/admin", icon: LayoutDashboard },
+    { label: "خدمات الرئيسية", href: "/admin/home-services", icon: LayoutGrid },
   { label: "الأخبار", href: "/admin/news", icon: Newspaper },
   { label: "الإعلانات", href: "/admin/ads", icon: Megaphone },
    { label: "الشكاوى", href: "/admin/complaints", icon: AlertTriangle },

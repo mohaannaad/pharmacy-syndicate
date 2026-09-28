@@ -2,6 +2,9 @@ import HeroSection from "./components/HeroSection";
 import ServicesSection from "./components/ServicesSection";
 import NewsSection from "./components/NewsSection";
 
+// الصفحة بتتبني مع كل زيارة، عشان أي تغيير في الداشبورد يظهر فورًا
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <main>
