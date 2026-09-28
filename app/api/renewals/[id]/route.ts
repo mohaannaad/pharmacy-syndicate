@@ -14,6 +14,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!renewal) {
     return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
   }
+  // الطلب المرفوض نهائي، مينفعش يتعدل
+  if (renewal.status === "REJECTED") {
+    return NextResponse.json({ error: "الطلب المرفوض نهائي ولا يمكن تعديله، والعضو يقدر يعمل طلب جديد" }, { status: 400 });
+  }
 
   if (!RENEWAL_STATUS_LABELS[body.status]) {
     return NextResponse.json({ error: "حالة غير صحيحة" }, { status: 400 });
@@ -22,7 +26,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "من فضلك اكتب سبب الرفض" }, { status: 400 });
   }
 
-  const justPaid = renewal.status === "AWAITING_PAYMENT" && body.status !== "AWAITING_PAYMENT" && body.status !== "REJECTED";
+    const wasPaid = renewal.status !== "AWAITING_PAYMENT";
+
+  // طلب مدفوع مينفعش يرجع "في انتظار الدفع"
+  if (wasPaid && body.status === "AWAITING_PAYMENT") {
+    return NextResponse.json({ error: "الطلب ده مدفوع بالفعل، مينفعش يرجع لحالة في انتظار الدفع" }, { status: 400 });
+  }
+
+  const justPaid = !wasPaid && body.status !== "AWAITING_PAYMENT" && body.status !== "REJECTED";
+  const rejectedAfterPayment = wasPaid && body.status === "REJECTED";
 
   const updated = await prisma.renewalRequest.update({
     where: { id },
@@ -42,6 +54,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         address: renewal.address,
         ...(renewal.photoUrl ? { photoUrl: renewal.photoUrl } : {}),
       },
+    });
+  }
+  // اترفض بعد ما اتدفع → نرجّع آخر سنة مسددة زي ما كانت قبل الطلب
+  // (استرداد المبلغ بيتم يدويًا من النقابة)
+  if (rejectedAfterPayment) {
+    await prisma.member.update({
+      where: { id: renewal.memberId },
+      data: { lastPaidYear: Math.min(...renewal.years) - 1 },
     });
   }
 

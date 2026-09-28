@@ -11,6 +11,15 @@ export async function GET() {
     where: { memberId: member.id, status: { in: ["AWAITING_PAYMENT", "RECEIVED", "UNDER_REVIEW", "ISSUED"] } },
     orderBy: { createdAt: "desc" },
   });
+  // آخر طلب اترفض (عشان نعرّف العضو بالسبب)
+  const lastRequest = await prisma.renewalRequest.findFirst({
+    where: { memberId: member.id },
+    orderBy: { createdAt: "desc" },
+  });
+  const rejectedRequest =
+    lastRequest && lastRequest.status === "REJECTED"
+      ? { number: renewalNumber(lastRequest.serial, lastRequest.createdAt), adminNote: lastRequest.adminNote }
+      : null;
 
   return NextResponse.json({
     member: {
@@ -30,5 +39,6 @@ export async function GET() {
           adminNote: openRequest.adminNote,
         }
       : null,
+    rejectedRequest,
   });
 }

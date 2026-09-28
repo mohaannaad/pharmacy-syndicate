@@ -21,6 +21,7 @@ interface MemberData {
     total: number;
   };
   openRequest: { number: string; status: string; total: number; adminNote: string | null } | null;
+    rejectedRequest: { number: string; adminNote: string | null } | null;
 }
 
 const money = (n: number) => `${n.toLocaleString("ar-EG")} جنيه`;
@@ -126,7 +127,7 @@ export default function RenewCardPage() {
     );
   }
 
-  const { member, renewal, openRequest } = data;
+    const { member, renewal, openRequest, rejectedRequest } = data;
   const deliveryFee = deliveryMethod === "DELIVERY" ? CARD_DELIVERY_FEE : 0;
   const total = renewal.total + deliveryFee;
 
@@ -182,6 +183,20 @@ export default function RenewCardPage() {
               <p className="font-bold text-primary text-lg">{member.lastPaidYear}</p>
             </div>
           </div>
+
+                    {/* ---------- آخر طلب اترفض ---------- */}
+          {!openRequest && rejectedRequest && (
+            <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-2xl p-5 text-sm text-red-800">
+              <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold">
+                  تم رفض طلبك السابق <span dir="ltr">{rejectedRequest.number}</span>
+                </p>
+                {rejectedRequest.adminNote && <p className="mt-1">السبب: {rejectedRequest.adminNote}</p>}
+                <p className="mt-1 text-red-700">يمكنك تقديم طلب جديد بعد تصحيح السبب.</p>
+              </div>
+            </div>
+          )}
 
           {/* ---------- عنده طلب مفتوح ---------- */}
           {openRequest && (

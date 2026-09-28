@@ -61,6 +61,7 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
   }
 
   const changed = status !== item.status || note !== (item.adminNote || "");
+    const isFinal = item.status === "REJECTED";
 
   return (
     <div className="rounded-xl border border-gray-100 bg-surface-muted p-4">
@@ -112,7 +113,7 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
         <div>
           <label className="text-xs text-gray-500">الحالة</label>
-          <select value={status} onChange={(e) => setStatus(e.target.value)} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white outline-none">
+                       <select value={status} disabled={isFinal} onChange={(e) => setStatus(e.target.value)} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white outline-none disabled:bg-gray-100">
             {Object.entries(RENEWAL_STATUS_LABELS).map(([value, { label }]) => (
               <option key={value} value={value}>{label}</option>
             ))}
@@ -120,9 +121,9 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
         </div>
         <div className="md:col-span-2">
           <label className="text-xs text-gray-500">{status === "REJECTED" ? "سبب الرفض (إجباري — هيظهر للعضو)" : "ملاحظة للعضو (اختياري)"}</label>
-          <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder={status === "ISSUED" ? "مثال: الكارنيه جاهز للاستلام من مقر النقابة" : ""} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white outline-none" />
+          <input type="text" value={note} disabled={isFinal} onChange={(e) => setNote(e.target.value)} placeholder={status === "ISSUED" ? "مثال: الكارنيه جاهز للاستلام من مقر النقابة" : ""} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white outline-none" />
         </div>
-        <button type="button" disabled={!changed || saving} onClick={save} className="bg-primary text-white text-sm py-2 rounded-lg font-medium disabled:opacity-40">
+        <button type="button"    disabled={!changed || saving || isFinal} onClick={save} className="bg-primary text-white text-sm py-2 rounded-lg font-medium disabled:opacity-40">
           {saving ? "جاري الحفظ..." : "حفظ"}
         </button>
       </div>
@@ -130,7 +131,11 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
       {item.status === "AWAITING_PAYMENT" && status !== "AWAITING_PAYMENT" && status !== "REJECTED" && (
         <p className="mt-2 text-xs text-amber-700">⚠️ عند الحفظ هيتسجل إن الطلب اتدفع، وآخر عام مسدد عند العضو هيتحدث لـ {Math.max(...item.years)}.</p>
       )}
+      {item.status !== "AWAITING_PAYMENT" && !isFinal && status === "REJECTED" && (
+        <p className="mt-2 text-xs text-red-700">⚠️ الطلب ده مدفوع. عند الرفض، آخر عام مسدد عند العضو هيرجع لـ {Math.min(...item.years) - 1}، والمبلغ يتم استرداده يدويًا.</p>
+      )}
 
+      {isFinal && <p className="mt-2 text-xs text-gray-500">الطلب مرفوض (نهائي). العضو يقدر يعمل طلب جديد.</p>}
       {error && (
         <div className="mt-2 flex items-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
