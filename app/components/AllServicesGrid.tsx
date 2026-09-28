@@ -6,8 +6,7 @@ const services = [
   { icon: "/service-complaint.png", title: "تقديم شكوى", desc: "إرسال الشكاوى ومتابعتها إلكترونيًا", href: "/services/complaint" },
   { icon: "/service-fees.png", title: "رسوم", desc: "جميع الرسوم المعتمدة لخدمات النقابة", href: "/services/fees" },
     { icon: "/service-card.png", title: "تجديد الاشتراك وتجديد الكارنيه", desc: "سداد الاشتراك السنوي وتجديد بطاقة العضوية", href: "/services/renew-card" },
-  { icon: "/service-refund.png", title: "الاسترداد", desc: "إرسال طلبات استرداد المدفوعات ومتابعتها", href: "/services/refund" },
- { icon: "/service-pharmacy-location.png", title: "موقع الصيدليات", desc: "ابحث عن أقرب صيدلية في محيطك بسهولة", href: "/services/pharmacies" },
+   { icon: "/service-pharmacy-location.png", title: "موقع الصيدليات", desc: "ابحث عن أقرب صيدلية في محيطك بسهولة", href: "/services/pharmacies" },
   { icon: "/service-new-member.png", title: "عضو جديد", desc: "بدء إجراءات الانضمام لنقابة الصيادلة", href: "/register/new-graduate" },
   { icon: "/service-activities.png", title: "الرحلات والفعاليات", desc: "احجز في الرحلات والكورسات والفعاليات القادمة", href: "/services/activities" },
 ];
