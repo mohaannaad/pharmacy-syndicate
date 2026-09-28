@@ -6,7 +6,7 @@ const services = [
   { icon: "/service-certificate.png", title: "استخراج شهادة", desc: "طلب الشهادات الرسمية ومتابعتها بشكل فوري" },
   { icon: "/service-complaint.png", title: "تقديم شكوى", desc: "إرسال الشكاوى ومتابعتها إلكترونيًا" },
   { icon: "/service-fees.png", title: "رسوم", desc: "جميع الرسوم المعتمدة لخدمات النقابة" },
-  { icon: "/service-card.png", title: "تجديد الكارنيه", desc: "تجديد بطاقة العضوية بسهولة وسرعة" },
+    { icon: "/service-card.png", title: "تجديد الاشتراك وتجديد الكارنيه", desc: "سداد الاشتراك السنوي وتجديد بطاقة العضوية" },
 ];
 
 export default function ServicesSection() {

@@ -259,3 +259,53 @@ enum GraduateStatus {
   REGISTERED
   REJECTED
 }
+
+// ⚠️ مؤقت: بيانات الأعضاء هنا للتجربة بس.
+// لما API النقابة (Oracle) يجهز، البيانات هتيجي منه بدل الجدول ده.
+model Member {
+  id               String           @id @default(cuid())
+  membershipNumber String           @unique
+  nationalId       String           @unique
+  fullName         String
+  phone            String
+  address          String
+  photoUrl         String?
+  lastPaidYear     Int
+  renewals         RenewalRequest[]
+  createdAt        DateTime         @default(now())
+}
+
+model RenewalRequest {
+  id                String         @id @default(cuid())
+  serial            Int            @unique @default(autoincrement())
+  memberId          String
+  member            Member         @relation(fields: [memberId], references: [id])
+  years             Int[]
+  subscriptionTotal Int
+  lateTotal         Int
+  deliveryFee       Int            @default(0)
+  total             Int
+  phone             String
+  address           String
+  photoUrl          String?
+  deliveryMethod    CardDelivery
+  deliveryAddress   String?
+  status            RenewalStatus  @default(AWAITING_PAYMENT)
+  adminNote         String?
+  paidAt            DateTime?
+  createdAt         DateTime       @default(now())
+}
+
+enum CardDelivery {
+  DELIVERY
+  PICKUP
+}
+
+enum RenewalStatus {
+  AWAITING_PAYMENT
+  RECEIVED
+  UNDER_REVIEW
+  ISSUED
+  DELIVERED
+  REJECTED
+}
