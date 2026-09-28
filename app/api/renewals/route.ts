@@ -1,6 +1,7 @@
 import { prisma } from "../../lib/prisma";
 import { NextResponse } from "next/server";
 import { calculateRenewal, renewalNumber, CARD_DELIVERY_FEE } from "../../lib/renewal";
+import { getCurrentMember } from "../../lib/currentMember";
 
 // لوحة التحكم: كل طلبات التجديد
 export async function GET() {
@@ -14,11 +15,8 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = await request.json();
 
-  // 1) نتأكد من العضو تاني في السيرفر (منصدقش الصفحة)
-  const member = await prisma.member.findUnique({ where: { membershipNumber: String(body.membershipNumber || "").trim() } });
-  if (!member || member.nationalId !== String(body.nationalId || "").trim()) {
-    return NextResponse.json({ error: "رقم القيد أو الرقم القومي غير صحيح" }, { status: 404 });
-  }
+   // 1) العضو اللي عامل تسجيل دخول (مؤقتًا: العضو التجريبي)
+  const member = await getCurrentMember();
 
   // 2) لازم يكون عليه سنين مستحقة
   const renewal = calculateRenewal(member.lastPaidYear);
