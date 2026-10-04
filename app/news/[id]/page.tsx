@@ -1,6 +1,8 @@
 import { prisma } from "../../lib/prisma";
 import { notFound } from "next/navigation";
 import PageHeader from "../../components/PageHeader";
+// الصفحة بتتبني مع كل زيارة، عشان أي تغيير في الداشبورد يظهر فورًا
+export const dynamic = "force-dynamic";
 
 export default async function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

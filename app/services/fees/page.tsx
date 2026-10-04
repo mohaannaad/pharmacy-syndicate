@@ -2,6 +2,9 @@ import { CircleDollarSign } from "lucide-react";
 import PageHeader from "../../components/PageHeader";
 import { prisma } from "../../lib/prisma";
 
+// الصفحة بتتبني مع كل زيارة، عشان أي تغيير في الداشبورد يظهر فورًا
+export const dynamic = "force-dynamic";
+
 export default async function FeesPage() {
   const fees = await prisma.fee.findMany({ orderBy: { order: "asc" } });
 

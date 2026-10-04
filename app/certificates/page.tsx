@@ -5,6 +5,9 @@ import SearchInput from "../components/SearchInput";
 import CertificateCard from "../components/CertificateCard";
 import { prisma } from "../lib/prisma";
 
+// الصفحة بتتبني مع كل زيارة، عشان أي تغيير في الداشبورد يظهر فورًا
+export const dynamic = "force-dynamic";
+
 const TYPE_LABELS: Record<string, string> = {
   GOOD_CONDUCT_AR: "شهادة حسن سير وسلوك (عربي)",
   GOOD_CONDUCT_EN: "شهادة حسن سير وسلوك (إنجليزي)",

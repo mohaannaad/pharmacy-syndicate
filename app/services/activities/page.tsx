@@ -2,6 +2,9 @@ import { CalendarDays, MapPin, Users, Clock } from "lucide-react";
 import PageHeader from "../../components/PageHeader";
 import { prisma } from "../../lib/prisma";
 
+// الصفحة بتتبني مع كل زيارة، عشان أي تغيير في الداشبورد يظهر فورًا
+export const dynamic = "force-dynamic";
+
 const CATEGORY_LABELS: Record<string, string> = {
   TRIP: "رحلة",
   COURSE: "كورس تدريبي",
