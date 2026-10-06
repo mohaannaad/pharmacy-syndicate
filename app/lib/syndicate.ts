@@ -1,4 +1,5 @@
 import type { Prisma } from "../generated/prisma/client";
+import { prisma } from "./prisma";
 
 // =====================================================================
 // ⚠️ طبقة النقابة المؤقتة (Mock)
@@ -44,4 +45,51 @@ export async function issueMembershipNumber(tx: Prisma.TransactionClient, data: 
   });
 
   return membershipNumber;
+}
+
+// =====================================================================
+// البحث عن عضو في سجلات النقابة (برقم القيد + الرقم القومي)
+// ---------------------------------------------------------------------
+// مؤقتًا: بندوّر في جدول الأعضاء عندنا، وفيه أعضاء تجريبيين بيتضافوا لوحدهم.
+// لما API النقابة يجهز، الدالة دي هتسأل Oracle بدل كده.
+// =====================================================================
+
+export interface SyndicateMember {
+  membershipNumber: string;
+  nationalId: string;
+  fullName: string;
+  phone: string; // رقم الموبايل المسجل في النقابة
+}
+
+// أعضاء تجريبيين للتجربة (كأنهم مسجلين في النقابة من زمان)
+const MOCK_REGISTRY = [
+  { membershipNumber: "23456", nationalId: "28503150101234", fullName: "سارة أحمد محمود السيد", phone: "01123456789", address: "12 شارع الجمهورية، المنصورة، الدقهلية", lastPaidYear: 2025 },
+  { membershipNumber: "34567", nationalId: "27811200201234", fullName: "محمد عبد الله حسن علي", phone: "01234567890", address: "8 شارع فيصل، الهرم، الجيزة", lastPaidYear: 2024 },
+];
+
+let mockSeeded = false;
+async function seedMockRegistry() {
+  if (mockSeeded) return;
+  for (const member of MOCK_REGISTRY) {
+    await prisma.member.upsert({ where: { membershipNumber: member.membershipNumber }, update: {}, create: member });
+  }
+  mockSeeded = true;
+}
+
+export async function findSyndicateMember(membershipNumber: string, nationalId: string): Promise<SyndicateMember | null> {
+  await seedMockRegistry();
+  const member = await prisma.member.findUnique({ where: { membershipNumber } });
+  // لازم الرقمين يكونوا لنفس الشخص
+  if (!member || member.nationalId !== nationalId) return null;
+  return {
+    membershipNumber: member.membershipNumber,
+    nationalId: member.nationalId,
+    fullName: member.fullName,
+    phone: member.phone,
+  };
+}
+
+// تحديث رقم موبايل العضو في سجلات النقابة (بعد ما الموظف يوافق على الرقم الجديد)
+export async function updateSyndicateMemberPhone(tx: Prisma.TransactionClient, membershipNumber: string, phone: string) {
+  await tx.member.update({ where: { membershipNumber }, data: { phone } });
 }

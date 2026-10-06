@@ -221,7 +221,7 @@ model GraduateApplication {
   // صاحب الطلب (حساب الخريج)
   userId                 String?
   user                   User?              @relation(fields: [userId], references: [id])
-  
+
   // البيانات الشخصية
   fullNameAr             String
   fullNameEn             String
@@ -349,4 +349,29 @@ model SiteSetting {
   key       String   @id
   value     Json
   updatedAt DateTime @updatedAt
+}
+
+// عضو قديم غيّر رقم موبايله: بيطلب حساب برقم جديد، والموظف بيراجع البطاقة قبل التفعيل
+model MemberAccountRequest {
+  id               String              @id @default(cuid())
+  membershipNumber String
+  nationalId       String
+  fullName         String
+  oldPhone         String
+  newPhone         String
+  passwordHash     String
+  idFrontUrl       String
+  idBackUrl        String
+  status           MemberAccountStatus @default(PENDING)
+  adminNote        String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([nationalId])
+}
+
+enum MemberAccountStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
