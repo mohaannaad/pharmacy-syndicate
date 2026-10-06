@@ -22,6 +22,7 @@ model User {
   role             Role      @default(GRADUATE)
   membershipNumber String?   @unique
   sessions         Session[]
+    graduateApplications GraduateApplication[]
   createdAt        DateTime  @default(now())
 }
 
@@ -217,6 +218,10 @@ model GraduateApplication {
   id                     String             @id @default(cuid())
   serial                 Int                @unique @default(autoincrement())
 
+  // صاحب الطلب (حساب الخريج)
+  userId                 String?
+  user                   User?              @relation(fields: [userId], references: [id])
+  
   // البيانات الشخصية
   fullNameAr             String
   fullNameEn             String
