@@ -16,7 +16,7 @@ const OTP_MINUTES = 5; // صلاحية الرمز
 const RESEND_SECONDS = 60; // أقل وقت بين رمزين لنفس التليفون
 const MAX_ATTEMPTS = 5; // أقصى عدد محاولات غلط
 
-async function sendSms(phone: string, message: string) {
+export async function sendSms(phone: string, message: string) {
   if (OTP_DEMO_MODE) {
     console.log(`📱 [رسالة تجريبية] إلى ${phone}: ${message}`);
     return;
