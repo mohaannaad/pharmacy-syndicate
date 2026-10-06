@@ -11,19 +11,47 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+// ===================== الحسابات وتسجيل الدخول =====================
 model User {
-  id        String   @id @default(cuid())
-  fullName  String
-  email     String   @unique
-  password  String
-  phone     String?
-  role      Role     @default(MEMBER)
-  createdAt DateTime @default(now())
+  id               String    @id @default(cuid())
+  fullName         String
+  nationalId       String    @unique
+  phone            String    @unique
+  email            String?   @unique
+  passwordHash     String
+  role             Role      @default(GRADUATE)
+  membershipNumber String?   @unique
+  sessions         Session[]
+  createdAt        DateTime  @default(now())
 }
 
 enum Role {
+  GRADUATE
   MEMBER
   ADMIN
+}
+
+// كل جهاز داخل بحساب ليه "جلسة"، والكوكي فيها مفتاح الجلسة
+model Session {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// رموز التحقق اللي بتتبعت على التليفون
+model OtpCode {
+  id         String    @id @default(cuid())
+  phone      String
+  purpose    String
+  codeHash   String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone, purpose])
 }
 model News {
   id         String   @id @default(cuid())

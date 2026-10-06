@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Search } from "lucide-react";
 import LoginModal from "./LoginModal";
 import RegisterDropdown from "./RegisterDropdown";
+import UserMenu, { type CurrentUser } from "./UserMenu";
 
 const navLinks = [
   { label: "الرئيسية", href: "/" },
@@ -18,6 +19,8 @@ const navLinks = [
 
 export default function Header() {
   const [showLogin, setShowLogin] = useState(false);
+  const [user, setUser] = useState<CurrentUser | null>(null);
+  const [userLoaded, setUserLoaded] = useState(false);
   const pathname = usePathname();
   const navRef = useRef<HTMLDivElement>(null);
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -37,6 +40,15 @@ export default function Header() {
     current.href.length > best.href.length ? current : best
   ).i;
 })();
+
+  // نسأل السيرفر: فيه حد داخل؟
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => setUser(data.user))
+      .catch(() => setUser(null))
+      .finally(() => setUserLoaded(true));
+  }, []);
 
   useEffect(() => {
     const activeLink = linkRefs.current[activeIndex];
@@ -61,10 +73,7 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <span
-            className="absolute bottom-0 h-0.5 bg-primary-light transition-all duration-300 ease-out"
-            style={{ left: underline.left, width: underline.width }}
-          />
+          <span className="absolute bottom-0 h-0.5 bg-primary-light transition-all duration-300 ease-out" style={{ left: underline.left, width: underline.width }} />
         </nav>
 
         <div className="flex items-center gap-3">
@@ -73,19 +82,21 @@ export default function Header() {
             <Search className="w-4 h-4 text-primary shrink-0" />
           </div>
 
-          <RegisterDropdown />
+          {userLoaded && user && <UserMenu user={user} />}
 
-          <button
-            onClick={() => setShowLogin(true)}
-            className="bg-primary text-white px-5 py-2 rounded-pill text-sm font-medium whitespace-nowrap"
-          >
-            تسجيل دخول
-          </button>
+          {userLoaded && !user && (
+            <>
+              <RegisterDropdown />
+              <button type="button" onClick={() => setShowLogin(true)} className="bg-primary text-white px-5 py-2 rounded-pill text-sm font-medium whitespace-nowrap">
+                تسجيل دخول
+              </button>
+            </>
+          )}
         </div>
       </div>
 
       {showLogin && (
-        <LoginModal onClose={() => setShowLogin(false)} onSwitchToRegister={() => setShowLogin(false)} />
+        <LoginModal onClose={() => setShowLogin(false)} onSwitchToRegister={() => { window.location.href = "/signup"; }} />
       )}
     </header>
   );

@@ -24,7 +24,7 @@ export default function RegisterDropdown() {
             <UserCheck className="w-4 h-4 text-primary shrink-0" />
             تسجيل عضو حالي
           </a>
-          <a href="/register/new-graduate" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-sm text-gray-700 text-right border-t border-gray-100">
+          <a href="/signup" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-sm text-gray-700 text-right border-t border-gray-100">
             <GraduationCap className="w-4 h-4 text-primary shrink-0" />
             تسجيل خريج جديد
           </a>
