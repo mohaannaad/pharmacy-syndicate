@@ -15,8 +15,12 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = await request.json();
 
-   // 1) العضو اللي عامل تسجيل دخول (مؤقتًا: العضو التجريبي)
-  const member = await getCurrentMember();
+     // 1) العضو اللي عامل تسجيل دخول
+  const current = await getCurrentMember();
+  if ("error" in current) {
+    return NextResponse.json({ error: current.error }, { status: current.status });
+  }
+  const member = current.member;
 
   // 2) لازم يكون عليه سنين مستحقة
   const renewal = calculateRenewal(member.lastPaidYear);

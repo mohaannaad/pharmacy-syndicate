@@ -38,6 +38,7 @@ function Row({ label, value, bold = false }: { label: string; value: string; bol
 export default function RenewCardPage() {
   const [data, setData] = useState<MemberData | null>(null);
   const [loadError, setLoadError] = useState(false);
+    const [access, setAccess] = useState<{ status: number; message: string } | null>(null);
 
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
@@ -52,9 +53,14 @@ export default function RenewCardPage() {
 
   // أول ما الصفحة تفتح: نجيب بيانات العضو
   useEffect(() => {
-    fetch("/api/members/me")
-      .then((res) => res.json())
-      .then((json: MemberData) => {
+        fetch("/api/members/me")
+      .then(async (res) => {
+        const json = await res.json();
+        // مش داخل، أو داخل بس مش عضو
+        if (!res.ok) {
+          setAccess({ status: res.status, message: json.error });
+          return;
+        }
         setData(json);
         setPhone(json.member.phone);
         setAddress(json.member.address);
@@ -117,7 +123,27 @@ export default function RenewCardPage() {
       <main>
         {header}
         <section className="bg-surface-muted py-20 text-center text-gray-500">
-          {loadError ? (
+                  {access ? (
+            <div className="max-w-md mx-auto px-6">
+              <div className="bg-white rounded-2xl shadow-sm p-8">
+                <User className="w-12 h-12 text-primary mx-auto" />
+                <p className="mt-4 font-bold text-gray-900">{access.message}</p>
+                {access.status === 401 && (
+                  <>
+                    <p className="mt-2 text-sm text-gray-500">ادخل من زرار «تسجيل الدخول» اللي فوق، برقم القيد وكلمة المرور.</p>
+                    <a href="/register/existing-member" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
+                      معنديش حساب؟ سجّل كعضو حالي
+                    </a>
+                  </>
+                )}
+                {access.status === 403 && (
+                  <a href="/my-requests" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
+                    متابعة طلب القيد
+                  </a>
+                )}
+              </div>
+            </div>
+          ) : loadError ? (
             <p>حصلت مشكلة في تحميل بياناتك، حاول تحديث الصفحة.</p>
           ) : (
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />

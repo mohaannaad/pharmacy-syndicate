@@ -5,7 +5,11 @@ import { calculateRenewal, renewalNumber } from "../../../lib/renewal";
 
 // بيرجّع بيانات العضو الحالي + السنين المستحقة عليه + أي طلب تجديد مفتوح
 export async function GET() {
-  const member = await getCurrentMember();
+  const current = await getCurrentMember();
+  if ("error" in current) {
+    return NextResponse.json({ error: current.error }, { status: current.status });
+  }
+  const member = current.member;
 
   const openRequest = await prisma.renewalRequest.findFirst({
     where: { memberId: member.id, status: { in: ["AWAITING_PAYMENT", "RECEIVED", "UNDER_REVIEW", "ISSUED"] } },

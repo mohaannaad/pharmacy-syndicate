@@ -1,26 +1,26 @@
 import { prisma } from "./prisma";
+import { getCurrentUser } from "./auth";
 
 // =====================================================================
-// ⚠️ مؤقت لحد ما نعمل تسجيل الدخول والحسابات
+// العضو اللي عامل تسجيل دخول
 // ---------------------------------------------------------------------
-// الدالة دي بترجع "العضو اللي عامل تسجيل دخول".
-// دلوقتي بترجع عضو تجريبي ثابت (وبتعمله في قاعدة البيانات أول مرة لوحدها).
-// لما نعمل تسجيل الدخول، هنغيّر الدالة دي بس، وكل الخدمات هتشتغل على العضو الحقيقي.
+// بنجيب الحساب الداخل، ونتأكد إنه عضو، وبعدين نجيب بياناته من سجلات النقابة
+// (مؤقتًا جدول الأعضاء عندنا، ولما API النقابة يجهز هتيجي من هناك).
 // =====================================================================
-
-const DEMO_MEMBER = {
-  membershipNumber: "12345",
-  nationalId: "29001011234567",
-  fullName: "أحمد محمد علي حسن",
-  phone: "01012345678",
-  address: "15 شارع التحرير، الدقي، الجيزة",
-  lastPaidYear: 2023,
-};
 
 export async function getCurrentMember() {
-  return prisma.member.upsert({
-    where: { membershipNumber: DEMO_MEMBER.membershipNumber },
-    update: {},
-    create: DEMO_MEMBER,
-  });
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: "لازم تسجّل دخول الأول", status: 401 } as const;
+  }
+  if (user.role !== "MEMBER" || !user.membershipNumber) {
+    return { error: "الخدمة دي متاحة للأعضاء المقيدين بالنقابة بس", status: 403 } as const;
+  }
+
+  const member = await prisma.member.findUnique({ where: { membershipNumber: user.membershipNumber } });
+  if (!member) {
+    return { error: "بيانات عضويتك مش موجودة في سجلات النقابة، تواصل مع النقابة", status: 404 } as const;
+  }
+
+  return { member } as const;
 }
