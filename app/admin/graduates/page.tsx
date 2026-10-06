@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAutoRefresh } from "../../lib/useAutoRefresh";
-import { GraduationCap, Search, ChevronDown, ChevronUp, ExternalLink, Trash2, Clock, AlertCircle } from "lucide-react";
+import { GraduationCap, Search, ChevronDown, ChevronUp, ExternalLink, Trash2, Clock, AlertCircle, BadgeCheck } from "lucide-react";
 import { GRADUATE_STATUS_LABELS, PRIVATE_CATEGORY_FEES, CATEGORY_LABELS, trackingNumber } from "../../lib/graduate";
 
 interface GraduateDocument {
@@ -52,6 +52,7 @@ interface GraduateApplication {
   fee: number | null;
   status: string;
   adminNote: string | null;
+    user: { membershipNumber: string | null } | null;
   createdAt: string;
 }
 
@@ -98,6 +99,21 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
     }
     onChanged();
   }
+    // إصدار رقم القيد → الحساب يتحول لعضو
+  async function issueMembershipNumber() {
+    if (!window.confirm("هيتم إصدار رقم قيد وتحويل حساب الخريج لعضو. متأكد؟")) return;
+    setSaving(true);
+    setError("");
+    const res = await fetch(`/api/graduates/${app.id}/register`, { method: "POST" });
+    const data = await res.json();
+    setSaving(false);
+    if (!res.ok) {
+      setError(data.error || "حصلت مشكلة");
+      return;
+    }
+    window.alert(`تم القيد بنجاح ✅ رقم القيد: ${data.membershipNumber}`);
+    onChanged();
+  }
 
   async function handleDelete() {
     if (!window.confirm("متأكد إنك عايز تحذف الطلب ده نهائيًا؟")) return;
@@ -122,6 +138,11 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
             <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
               {app.fee !== null ? `${app.fee} جنيه` : "الرسوم لم تحدد"}
             </span>
+                        {app.user?.membershipNumber && (
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">
+                رقم القيد: <span dir="ltr">{app.user.membershipNumber}</span>
+              </span>
+            )}
           </div>
           <h3 className="font-bold text-gray-900 mt-2">{app.fullNameAr}</h3>
           <p className="text-sm text-gray-500 mt-1">{app.universityName} — دفعة {app.graduationYear}</p>
@@ -224,13 +245,24 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
                 </button>
               </div>
             )}
+                        {app.status === "LICENSING" && (
+              <div className="flex items-center justify-between gap-3 flex-wrap bg-green-50 border border-green-200 rounded-lg p-3">
+                <p className="text-xs text-green-800">
+                  الطلب خلص كل المراحل. لما تدوس "إصدار رقم القيد" الخريج هياخد رقم قيد، وحسابه هيتحول لعضو.
+                </p>
+                <button type="button" disabled={saving} onClick={issueMembershipNumber} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-xs px-4 py-2.5 rounded-lg font-bold disabled:opacity-50">
+                  <BadgeCheck className="w-4 h-4" />
+                  إصدار رقم القيد
+                </button>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
                 <label className="text-xs text-gray-500">حالة الطلب</label>
                 <select value={status} onChange={(e) => setStatus(e.target.value)} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white outline-none">
                   {Object.entries(GRADUATE_STATUS_LABELS).map(([value, { label }]) => (
-                    <option key={value} value={value}>{label}</option>
+                                        <option key={value} value={value} disabled={value === "REGISTERED" && app.status !== "REGISTERED"}>{label}</option>
                   ))}
                 </select>
               </div>

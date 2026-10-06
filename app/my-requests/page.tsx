@@ -99,6 +99,9 @@ export default function MyRequestsPage() {
                     <p className="text-sm text-gray-500 mt-1">
                       رقم القيد: <span className="font-bold text-primary" dir="ltr">{data.user.membershipNumber}</span>
                     </p>
+                                        <p className="text-xs text-gray-400 mt-1">
+                      من دلوقتي تقدر تدخل برقم القيد ده بنفس كلمة السر
+                    </p>
                   </div>
                 </div>
               )}

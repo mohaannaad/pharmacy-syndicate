@@ -8,6 +8,7 @@ import { buildGraduateApplication } from "../../lib/graduateServer";
 export async function GET() {
   const applications = await prisma.graduateApplication.findMany({
     orderBy: { createdAt: "desc" },
+        include: { user: { select: { membershipNumber: true } } },
   });
   return NextResponse.json(applications);
 }

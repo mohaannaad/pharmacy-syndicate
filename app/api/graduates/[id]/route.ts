@@ -37,6 +37,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     if ((body.status === "NEEDS_COMPLETION" || body.status === "REJECTED") && !String(body.adminNote || "").trim()) {
       return NextResponse.json({ error: "من فضلك اكتب السبب" }, { status: 400 });
     }
+        // "تم القيد" مبتتعملش يدوي، لازم من زرار "إصدار رقم القيد"
+    if (body.status === "REGISTERED" && application.status !== "REGISTERED") {
+      return NextResponse.json({ error: "حالة «تم القيد» بتتعمل من زرار «إصدار رقم القيد» بس" }, { status: 400 });
+    }
     data.status = body.status as typeof application.status;
   }
 
