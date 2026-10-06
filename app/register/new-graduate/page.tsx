@@ -1,7 +1,6 @@
 "use client";
-
-import { useState } from "react";
-import { AlertCircle, CheckCircle2, Printer, Info } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AlertCircle, CheckCircle2, Printer, Info, Loader2, Lock, FileText } from "lucide-react";
 import PageHeader from "../../components/PageHeader";
 import RegisterSteps from "../../components/RegisterSteps";
 import DocumentUploadRow from "../../components/DocumentUploadRow";
@@ -20,6 +19,7 @@ import {
   determinePrivateCategory,
   HIGH_SCHOOL_TOTAL,
   CATEGORY_LABELS,
+    GRADUATE_STATUS_LABELS,
   type UniversityType,
   type Gender,
 } from "../../lib/graduate";
@@ -110,6 +110,47 @@ function ReviewRow({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+// بيحوّل طلب محفوظ في قاعدة البيانات لشكل الفورم (عشان الاستكمال)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function applicationToForm(a: any): GraduateForm {
+  const text = (v: unknown) => (v === null || v === undefined ? "" : String(v));
+  return {
+    fullNameAr: text(a.fullNameAr),
+    fullNameEn: text(a.fullNameEn),
+    nationalId: text(a.nationalId),
+    phone: text(a.phone),
+    email: text(a.email),
+    gender: a.gender,
+    nationality: text(a.nationality),
+    religion: text(a.religion),
+    birthDate: text(a.birthDate).slice(0, 10),
+    birthGovernorate: text(a.birthGovernorate),
+    idIssuer: text(a.idIssuer),
+    governorate: text(a.governorate),
+    city: text(a.city),
+    district: text(a.district),
+    street: text(a.street),
+    buildingNo: text(a.buildingNo),
+    apartment: text(a.apartment),
+    landmark: text(a.landmark),
+    universityType: a.universityType,
+    universityName: text(a.universityName),
+    universityCountry: text(a.universityCountry),
+    studyStartYear: text(a.studyStartYear),
+    graduationYear: text(a.graduationYear),
+    studyYears: text(a.studyYears),
+    grade: text(a.grade),
+    highSchoolType: text(a.highSchoolType),
+    highSchoolYear: text(a.highSchoolYear),
+    highSchoolScore: text(a.highSchoolScore),
+    highSchoolPercent: text(a.highSchoolPercent),
+    hasPreviousQualification: !!a.hasPreviousQualification,
+    previousQualification: text(a.previousQualification),
+    previousRejection: !!a.previousRejection,
+  };
+}
+
+type PageState = "loading" | "guest" | "notGraduate" | "hasOpen" | "ready" | "error";
 
 export default function NewGraduateRegisterPage() {
   const [step, setStep] = useState(1);
@@ -119,23 +160,67 @@ export default function NewGraduateRegisterPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ trackingNumber: string; fee: number | null } | null>(null);
+  
+  // حالة الصفحة: بنتأكد الأول إن الخريج داخل بحسابه، وإذا كان عنده طلب قبل كده
+  const [pageState, setPageState] = useState<PageState>("loading");
+  const [editingId, setEditingId] = useState<string | null>(null); // لو بيستكمل طلب قديم
+  const [adminNote, setAdminNote] = useState<string | null>(null);
+  const [openApp, setOpenApp] = useState<{ trackingNumber: string; status: string } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/graduates/mine")
+      .then(async (res) => {
+        if (res.status === 401) {
+          setPageState("guest");
+          return;
+        }
+        const data = await res.json();
+        if (data.user.role !== "GRADUATE") {
+          setPageState("notGraduate");
+          return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const open = data.applications.find((a: any) => a.status !== "REJECTED");
+
+        if (open && open.status !== "NEEDS_COMPLETION") {
+          // عنده طلب شغال → مينفعش يعمل طلب تاني
+          setOpenApp({ trackingNumber: open.trackingNumber, status: open.status });
+          setPageState("hasOpen");
+          return;
+        }
+
+        if (open) {
+          // "مطلوب استكمال" → نفتح نفس الطلب ببياناته عشان يعدّل
+          setForm(applicationToForm(open));
+          const docs: Record<string, string> = {};
+          for (const d of open.documents || []) docs[d.key] = d.url;
+          setDocuments(docs);
+          setEditingId(open.id);
+          setAdminNote(open.adminNote);
+        } else {
+          // طلب جديد → نملا البيانات اللي عندنا من الحساب
+          const parsed = parseNationalId(data.user.nationalId);
+          setForm((prev) => ({
+            ...prev,
+            fullNameAr: data.user.fullName,
+            nationalId: data.user.nationalId,
+            phone: data.user.phone,
+            birthDate: parsed ? parsed.birthDate : prev.birthDate,
+            gender: parsed ? parsed.gender : prev.gender,
+          }));
+        }
+        setPageState("ready");
+      })
+      .catch(() => setPageState("error"));
+  }, []);
 
   // دالة واحدة بتغيّر أي حقل في الفورم
   function update<K extends keyof GraduateForm>(key: K, value: GraduateForm[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  function handleNationalIdChange(value: string) {
-    const digits = value.replace(/\D/g, "").slice(0, 14);
-    const parsed = parseNationalId(digits);
-    setForm((prev) => ({
-      ...prev,
-      nationalId: digits,
-      // لو الرقم القومي صحيح، نملا تاريخ الميلاد والنوع تلقائيًا
-      birthDate: parsed ? parsed.birthDate : prev.birthDate,
-      gender: parsed ? parsed.gender : prev.gender,
-    }));
-  }
+ 
 
   // المستندات المطلوبة بتتحسب من الإجابات
   const requiredDocs = form.universityType
@@ -206,8 +291,9 @@ export default function NewGraduateRegisterPage() {
     setSubmitting(true);
     setError("");
     try {
-      const res = await fetch("/api/graduates", {
-        method: "POST",
+           // طلب جديد → POST، استكمال طلب قديم → PUT على نفس الطلب
+      const res = await fetch(editingId ? `/api/graduates/${editingId}` : "/api/graduates", {
+        method: editingId ? "PUT" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, documents, declarationAccepted: declaration }),
       });
@@ -227,12 +313,64 @@ export default function NewGraduateRegisterPage() {
 
   const universityOptions = form.universityType === "GOVERNMENT" ? GOVERNMENT_UNIVERSITIES : form.universityType === "PRIVATE" ? PRIVATE_UNIVERSITIES : [];
   const universityTypeLabel = UNIVERSITY_TYPES.find((t) => t.value === form.universityType)?.label || "";
+  // ======================= شاشات قبل الفورم =======================
+  if (pageState !== "ready" && !result) {
+    return (
+      <main>
+        <PageHeader title="طلب القيد بسجلات نقابة الصيادلة" subtitle="الخدمة متاحة لحسابات الخريجين الجدد" />
+        <section className="bg-surface-muted py-16">
+          <div className="max-w-md mx-auto px-6">
+            {pageState === "loading" && <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />}
+
+            {pageState === "error" && <p className="text-center text-gray-500">حصلت مشكلة في التحميل، حاول تحديث الصفحة.</p>}
+
+            {pageState === "guest" && (
+              <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+                <Lock className="w-12 h-12 text-primary mx-auto" />
+                <h2 className="mt-4 font-bold text-gray-900">لازم يكون عندك حساب الأول</h2>
+                <p className="mt-2 text-sm text-gray-500 leading-relaxed">أنشئ حساب خريج برقم هاتفك ورقمك القومي، وبعدها تقدر تقدّم طلب القيد وتتابعه.</p>
+                <a href="/signup" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
+                  إنشاء حساب خريج
+                </a>
+                <p className="mt-4 text-sm text-gray-500">عندك حساب؟ سجّل دخول من الزرار اللي فوق.</p>
+              </div>
+            )}
+
+            {pageState === "notGraduate" && (
+              <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+                <Info className="w-12 h-12 text-primary mx-auto" />
+                <h2 className="mt-4 font-bold text-gray-900">حسابك مقيد بالفعل</h2>
+                <p className="mt-2 text-sm text-gray-500">خدمة طلب القيد متاحة لحسابات الخريجين الجدد فقط.</p>
+                <a href="/services" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
+                  خدمات الأعضاء
+                </a>
+              </div>
+            )}
+
+            {pageState === "hasOpen" && openApp && (
+              <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+                <FileText className="w-12 h-12 text-primary mx-auto" />
+                <h2 className="mt-4 font-bold text-gray-900">لديك طلب قيد بالفعل</h2>
+                <p className="mt-3 font-bold text-primary text-xl" dir="ltr">{openApp.trackingNumber}</p>
+                <span className={`inline-block mt-3 text-xs px-3 py-1 rounded-full font-medium ${GRADUATE_STATUS_LABELS[openApp.status]?.color}`}>
+                  {GRADUATE_STATUS_LABELS[openApp.status]?.label}
+                </span>
+                <a href="/my-requests" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
+                  متابعة طلباتي
+                </a>
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   // ======================= شاشة النجاح =======================
   if (result) {
     return (
       <main>
-        <PageHeader title="تم إرسال طلب القيد" subtitle="احتفظ برقم المتابعة لمتابعة حالة طلبك" />
+                <PageHeader title={editingId ? "تم إعادة إرسال طلب القيد" : "تم إرسال طلب القيد"} subtitle="تقدر تتابع حالة طلبك في أي وقت من صفحة «طلباتي»" />
         <section className="bg-surface-muted py-14">
           <div className="max-w-2xl mx-auto px-6">
             <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
@@ -256,7 +394,11 @@ export default function NewGraduateRegisterPage() {
                 <p>٢. بعد الموافقة، سيتم إخطارك بموعد الحضور للنقابة لتسليم أصول المستندات المميزة بعلامة «أصل» وختم إيصال الدفع.</p>
               </div>
 
-              <button type="button" onClick={() => window.print()} className="mt-6 w-full border border-primary text-primary py-3 rounded-pill font-medium flex items-center justify-center gap-2">
+                           <a href="/my-requests" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
+                متابعة طلباتي
+              </a>
+
+              <button type="button" onClick={() => window.print()} className="mt-3 w-full border border-primary text-primary py-3 rounded-pill font-medium flex items-center justify-center gap-2">
                 <Printer className="w-4 h-4" />
                 طباعة الطلب
               </button>
@@ -275,6 +417,17 @@ export default function NewGraduateRegisterPage() {
       <section className="bg-surface-muted py-14">
         <div className="max-w-3xl mx-auto px-6">
           <RegisterSteps steps={steps} current={step} onStepClick={goToStep} />
+          
+          {editingId && (
+            <div className="mb-6 flex items-start gap-2 bg-red-50 text-red-800 text-sm rounded-xl px-4 py-3 border border-red-200 leading-relaxed">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold">طلبك محتاج استكمال</p>
+                {adminNote && <p className="mt-1">ملاحظة النقابة: {adminNote}</p>}
+                <p className="mt-1 text-red-700">عدّل المطلوب وارفع المستندات من جديد، وبعدين ابعت الطلب تاني من خطوة المراجعة.</p>
+              </div>
+            </div>
+          )}
 
           {/* ---------- الخطوة 1: البيانات الشخصية ---------- */}
           {step === 1 && (
@@ -285,14 +438,14 @@ export default function NewGraduateRegisterPage() {
               <Field label="الاسم بالكامل (إنجليزي)">
                 <input type="text" value={form.fullNameEn} onChange={(e) => update("fullNameEn", e.target.value)} placeholder="Full name as in passport" className={inputClass} dir="ltr" />
               </Field>
-              <Field label="الرقم القومي" hint="تاريخ الميلاد والنوع بيتملوا تلقائيًا من الرقم القومي">
-                <input type="text" inputMode="numeric" value={form.nationalId} onChange={(e) => handleNationalIdChange(e.target.value)} placeholder="14 رقم" className={inputClass} dir="ltr" />
+                            <Field label="الرقم القومي" hint="من حسابك — تاريخ الميلاد والنوع بيتملوا منه تلقائيًا">
+                <input type="text" value={form.nationalId} readOnly className={`${inputClass} bg-gray-100 text-gray-500 cursor-not-allowed`} dir="ltr" />
               </Field>
               <Field label="جهة إصدار البطاقة">
                 <input type="text" value={form.idIssuer} onChange={(e) => update("idIssuer", e.target.value)} placeholder="مثال: سجل مدني الدقي" className={inputClass} />
               </Field>
-              <Field label="رقم الهاتف">
-                <input type="tel" inputMode="numeric" value={form.phone} onChange={(e) => update("phone", e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01xxxxxxxxx" className={inputClass} dir="ltr" />
+                           <Field label="رقم الهاتف" hint="من حسابك">
+                <input type="tel" value={form.phone} readOnly className={`${inputClass} bg-gray-100 text-gray-500 cursor-not-allowed`} dir="ltr" />
               </Field>
               <Field label="البريد الإلكتروني">
                 <input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="name@example.com" className={inputClass} dir="ltr" />
@@ -585,7 +738,7 @@ export default function NewGraduateRegisterPage() {
               </button>
             ) : (
               <button type="button" onClick={handleSubmit} disabled={submitting} className="flex-1 bg-primary text-white py-3 rounded-pill font-medium disabled:opacity-60">
-                {submitting ? "جاري الإرسال..." : "إرسال الطلب"}
+                                {submitting ? "جاري الإرسال..." : editingId ? "إعادة إرسال الطلب" : "إرسال الطلب"}
               </button>
             )}
           </div>

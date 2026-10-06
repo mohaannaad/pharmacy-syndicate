@@ -14,6 +14,8 @@ interface AccountInfo {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function buildGraduateApplication(body: any, account: AccountInfo, existingCategory: number | null = null) {
+      // 0) نشيل أي مسافات زيادة (أو Tab) من أول وآخر كل خانة نصية
+  body = Object.fromEntries(Object.entries(body).map(([key, value]) => [key, typeof value === "string" ? value.trim() : value]));
   // 1) الجنسيات المسموح بيها بس (مصري / فلسطيني / سوداني)
   if (!isNationalityAllowed(body.nationality)) {
     return { error: "لا يتم قيد الجنسيات الأجنبية بالنقابة باستثناء الجنسيتين الفلسطينية والسودانية" };

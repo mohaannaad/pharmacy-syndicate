@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, LogOut, FileText, User } from "lucide-react";
+import { ChevronDown, LogOut, FileText, User, ClipboardList } from "lucide-react";
 
 const ROLE_LABELS: Record<string, string> = {
   GRADUATE: "خريج",
@@ -47,6 +47,10 @@ export default function UserMenu({ user }: { user: CurrentUser }) {
               )}
             </p>
           </div>
+                    <a href="/my-requests" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-sm text-gray-700">
+            <ClipboardList className="w-4 h-4 text-primary shrink-0" />
+            طلباتي
+          </a>
           {user.role === "GRADUATE" && (
             <a href="/register/new-graduate" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 text-sm text-gray-700">
               <FileText className="w-4 h-4 text-primary shrink-0" />
