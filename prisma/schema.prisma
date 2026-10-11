@@ -375,3 +375,17 @@ enum MemberAccountStatus {
   APPROVED
   REJECTED
 }
+
+
+// شرائح الصورة الرئيسية (Hero) في الصفحة الرئيسية — يتحكم فيها الموظف من الداشبورد
+model HeroSlide {
+  id         String   @id @default(cuid())
+  imageUrl   String
+  title      String?  // فاضي = مفيش كلام على الصورة
+  subtitle   String?
+  buttonText String?  // فاضي = مفيش زرار
+  link       String?  // الرابط اللي الزرار (أو الصورة كلها) بيودّي عليه
+  active     Boolean  @default(true)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+}

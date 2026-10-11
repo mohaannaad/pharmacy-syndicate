@@ -1,14 +1,17 @@
 import HeroSection from "./components/HeroSection";
 import ServicesSection from "./components/ServicesSection";
 import NewsSection from "./components/NewsSection";
+import { getActiveHeroSlides } from "./lib/heroSlides";
 
 // الصفحة بتتبني مع كل زيارة، عشان أي تغيير في الداشبورد يظهر فورًا
 export const dynamic = "force-dynamic";
 
-export default function Home() {
+export default async function Home() {
+  const heroSlides = await getActiveHeroSlides();
+
   return (
     <main>
-      <HeroSection />
+            <HeroSection slides={heroSlides} />
       <ServicesSection />
       <NewsSection />
             <NewsSection

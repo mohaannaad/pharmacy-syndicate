@@ -1,6 +1,6 @@
 import { prisma } from "./prisma";
 import { isValidNationalId } from "./auth";
-import { findSyndicateMember, SyndicateMember } from "./syndicate";
+import { findSyndicateMember, SyndicateMember, SyndicateUnavailableError } from "./syndicate";
 
 // =====================================================================
 // تسجيل العضو القديم: الفحوصات المشتركة بين كل الخطوات
@@ -25,7 +25,15 @@ export async function checkMemberEligibility(membershipNumberInput: unknown, nat
     return { error: "الرقم القومي لازم يكون 14 رقم", status: 400 };
   }
 
-  const member = await findSyndicateMember(membershipNumber, nationalId);
+    let member: SyndicateMember | null;
+  try {
+    member = await findSyndicateMember(membershipNumber, nationalId);
+  } catch (e) {
+    if (e instanceof SyndicateUnavailableError) {
+      return { error: "تعذّر الاتصال بسجلات النقابة حاليًا، يرجى المحاولة بعد قليل", status: 503 };
+    }
+    throw e;
+  }
   if (!member) {
     return { error: "البيانات دي مش مطابقة لسجلات النقابة، اتأكد من رقم القيد والرقم القومي", status: 404 };
   }
