@@ -65,6 +65,9 @@ export interface SyndicateMember {
 const MOCK_REGISTRY = [
   { membershipNumber: "23456", nationalId: "28503150101234", fullName: "سارة أحمد محمود السيد", phone: "01123456789", address: "12 شارع الجمهورية، المنصورة، الدقهلية", lastPaidYear: 2025 },
   { membershipNumber: "34567", nationalId: "27811200201234", fullName: "محمد عبد الله حسن علي", phone: "01234567890", address: "8 شارع فيصل، الهرم، الجيزة", lastPaidYear: 2024 },
+  { membershipNumber: "45678", nationalId: "28807120102345", fullName: "منى حسن إبراهيم عبد الله", phone: "01155566677", address: "15 شارع الهرم، الجيزة", lastPaidYear: 2025 },
+  { membershipNumber: "56789", nationalId: "29102250103456", fullName: "كريم سامي عبد العزيز", phone: "01277788899", address: "22 شارع النصر، طنطا، الغربية", lastPaidYear: 2023 },
+  { membershipNumber: "67890", nationalId: "28511300104567", fullName: "هبة محمود فتحي السيد", phone: "01099988877", address: "7 شارع سعد زغلول، الإسكندرية", lastPaidYear: 2026 },
 ];
 
 let mockSeeded = false;
