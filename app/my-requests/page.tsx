@@ -75,13 +75,13 @@ export default function MyRequestsPage() {
         <div className="max-w-2xl mx-auto px-6 space-y-5">
           {state === "loading" && <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />}
 
-          {state === "error" && <p className="text-center text-gray-500">حصلت مشكلة في التحميل، حاول تحديث الصفحة.</p>}
+          {state === "error" && <p className="text-center text-gray-500">حدث خطأ أثناء التحميل، يرجى تحديث الصفحة.</p>}
 
           {state === "guest" && (
             <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
               <Lock className="w-12 h-12 text-primary mx-auto" />
-              <h2 className="mt-4 font-bold text-gray-900">سجّل دخول عشان تشوف طلباتك</h2>
-              <p className="mt-2 text-sm text-gray-500">دوس «تسجيل دخول» من فوق، أو أنشئ حساب جديد.</p>
+              <h2 className="mt-4 font-bold text-gray-900">سجّل الدخول لعرض طلباتك</h2>
+              <p className="mt-2 text-sm text-gray-500">اضغط «تسجيل دخول» أعلى الصفحة، أو أنشئ حسابًا جديدًا.</p>
               <a href="/signup" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
                 إنشاء حساب خريج
               </a>
@@ -100,7 +100,7 @@ export default function MyRequestsPage() {
                       رقم القيد: <span className="font-bold text-primary" dir="ltr">{data.user.membershipNumber}</span>
                     </p>
                                         <p className="text-xs text-gray-400 mt-1">
-                      من دلوقتي تقدر تدخل برقم القيد ده بنفس كلمة السر
+                      يمكنك الآن تسجيل الدخول برقم القيد هذا وبكلمة المرور نفسها
                     </p>
                   </div>
                 </div>
@@ -110,7 +110,7 @@ export default function MyRequestsPage() {
               {data.applications.length === 0 && data.user.role === "GRADUATE" && (
                 <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
                   <FileText className="w-12 h-12 text-primary mx-auto" />
-                  <h2 className="mt-4 font-bold text-gray-900">لسه ما قدمتش طلب القيد</h2>
+                  <h2 className="mt-4 font-bold text-gray-900">لم تقدّم طلب القيد بعد</h2>
                   <p className="mt-2 text-sm text-gray-500">قدّم طلبك وارفع المستندات المطلوبة.</p>
                   <a href="/register/new-graduate" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
                     تقديم طلب القيد
@@ -144,7 +144,7 @@ export default function MyRequestsPage() {
                     <div className="mt-5 bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800">
                       <p className="font-bold flex items-center gap-2">
                         <AlertCircle className="w-4 h-4" />
-                        طلبك محتاج استكمال
+                        طلبك بحاجة إلى استكمال
                       </p>
                       {app.adminNote && <p className="mt-1">ملاحظة النقابة: {app.adminNote}</p>}
                       <a href="/register/new-graduate" className="mt-3 block w-full bg-primary text-white text-center py-2.5 rounded-pill font-medium">
@@ -162,7 +162,7 @@ export default function MyRequestsPage() {
 
                   {app.status === "AWAITING_ORIGINALS" && (
                     <div className="mt-5 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
-                      تم قبول طلبك مبدئيًا. برجاء الحضور للنقابة لتسليم أصول المستندات المميزة بكلمة «أصل» وختم إيصال الدفع.
+                      تم قبول طلبك مبدئيًا. يرجى الحضور إلى النقابة لتسليم أصول المستندات المميزة بكلمة «أصل» وختم إيصال الدفع.
                       {app.adminNote && <p className="mt-1">{app.adminNote}</p>}
                     </div>
                   )}

@@ -27,13 +27,13 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "حصلت مشكلة");
+        setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
         return;
       }
       // دخل بنجاح → نعيد تحميل الصفحة عشان الهيدر يتحدث
       window.location.reload();
     } catch {
-      setError("حصلت مشكلة في الاتصال، حاول مرة تانية");
+      setError("تعذّر الاتصال، يرجى المحاولة مرة أخرى");
     } finally {
       setLoading(false);
     }
@@ -51,13 +51,13 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label className="text-sm text-gray-600">رقم القيد / الرقم القومي / رقم الهاتف</label>
-            <input type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value.trim())} placeholder="أدخل أي واحد منهم" className="mt-2 w-full bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none text-right" dir="ltr" />
+            <input type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value.trim())} placeholder="أدخل أيًّا منها" className="mt-2 w-full bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none text-right" dir="ltr" />
           </div>
 
           <div>
             <label className="text-sm text-gray-600">كلمة المرور</label>
             <div className="mt-2 relative">
-              <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="ادخل كلمة المرور" className="w-full bg-gray-100 rounded-xl px-4 py-3 pl-11 text-sm outline-none text-right" />
+              <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="أدخل كلمة المرور" className="w-full bg-gray-100 rounded-xl px-4 py-3 pl-11 text-sm outline-none text-right" />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -77,7 +77,7 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
         </form>
 
         <div className="mt-4 text-center text-sm text-gray-500">
-          ليس لدي حساب؟{" "}
+          ليس لديك حساب؟{" "}
           <button type="button" onClick={onSwitchToRegister} className="text-primary font-bold">
             إنشاء حساب
           </button>

@@ -45,7 +45,7 @@ export default function ExistingMemberRegisterPage() {
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "حصلت مشكلة");
+    if (!res.ok) throw new Error(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
     return data;
   }
 
@@ -56,7 +56,7 @@ export default function ExistingMemberRegisterPage() {
       await action();
     } catch (e) {
       const message = (e as Error).message;
-      setError(message === "Failed to fetch" ? "حصلت مشكلة في الاتصال، حاول مرة تانية" : message);
+      setError(message === "Failed to fetch" ? "تعذّر الاتصال، يرجى المحاولة مرة أخرى" : message);
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ export default function ExistingMemberRegisterPage() {
   // الخطوة 2: نبعت رمز التحقق (على الرقم القديم أو الجديد)
   function sendCode() {
     if (changingPhone && (!idFrontUrl || !idBackUrl)) {
-      setError("ارفع صورة البطاقة من الوش والضهر");
+      setError("يرجى رفع صورة البطاقة من الوجه والظهر");
       return;
     }
     run(async () => {
@@ -88,8 +88,8 @@ export default function ExistingMemberRegisterPage() {
 
   // الخطوة 3: إنشاء الحساب (أو إرسال الطلب للمراجعة)
   function submit() {
-    if (password.length < 8) return setError("كلمة المرور لازم تكون 8 حروف أو أرقام على الأقل");
-    if (password !== confirm) return setError("كلمتين المرور مش متطابقين");
+    if (password.length < 8) return setError("يجب ألا تقل كلمة المرور عن 8 أحرف أو أرقام");
+    if (password !== confirm) return setError("كلمتا المرور غير متطابقتين");
     run(async () => {
       const data = await post("/api/auth/member/signup", {
         membershipNumber,
@@ -113,16 +113,16 @@ export default function ExistingMemberRegisterPage() {
 
   return (
     <main>
-      <PageHeader title="تسجيل عضو حالي" subtitle="لو انت عضو مقيد بالنقابة، اعمل حسابك الإلكتروني برقم القيد والرقم القومي" />
+      <PageHeader title="تسجيل عضو حالي" subtitle="إذا كنت عضوًا مقيدًا بالنقابة، أنشئ حسابك الإلكتروني باستخدام رقم القيد والرقم القومي" />
 
       <section className="bg-surface-muted py-14">
         <div className="max-w-md mx-auto px-6">
           {pendingDone ? (
             <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
               <Clock className="w-12 h-12 text-primary mx-auto" />
-              <h2 className="mt-4 font-bold text-gray-900">طلبك اتبعت للمراجعة</h2>
+              <h2 className="mt-4 font-bold text-gray-900">تم إرسال طلبك للمراجعة</h2>
               <p className="mt-2 text-sm text-gray-500 leading-relaxed">
-                موظف النقابة هيراجع صورة البطاقة والرقم الجديد. أول ما الطلب يتقبل هيوصلك رسالة على <span dir="ltr">{newPhone}</span>، وتقدر تدخل برقم القيد وكلمة المرور اللي اخترتها.
+                سيراجع موظف النقابة صورة البطاقة والرقم الجديد، وفور قبول الطلب ستصلك رسالة على <span dir="ltr">{newPhone}</span>، ويمكنك بعدها تسجيل الدخول برقم القيد وكلمة المرور التي اخترتها.
               </p>
               <a href="/" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
                 الرجوع للرئيسية
@@ -140,7 +140,7 @@ export default function ExistingMemberRegisterPage() {
                   </div>
                   <div>
                     <label className="text-sm text-gray-700">الرقم القومي</label>
-                    <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, "").slice(0, 14))} placeholder="14 رقم" className={inputClass} dir="ltr" />
+                    <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, "").slice(0, 14))} placeholder="14 رقمًا" className={inputClass} dir="ltr" />
                   </div>
                 </div>
               )}
@@ -155,12 +155,12 @@ export default function ExistingMemberRegisterPage() {
                     </div>
                   </div>
 
-                  <p className="text-sm text-gray-700">هنبعت رمز التحقق على موبايلك:</p>
+                  <p className="text-sm text-gray-700">سيتم إرسال رمز التحقق إلى هاتفك المحمول:</p>
 
                   <button type="button" onClick={() => setPhoneChoice("same")} className={`w-full flex items-center gap-3 bg-white rounded-xl p-4 text-right border-2 ${phoneChoice === "same" ? "border-primary" : "border-transparent"}`}>
                     <Smartphone className="w-5 h-5 text-primary shrink-0" />
                     <div>
-                      <p className="text-sm font-bold text-gray-900">الرقم ده معايا</p>
+                      <p className="text-sm font-bold text-gray-900">هذا الرقم ما زال معي</p>
                       <p className="text-xs text-gray-500 mt-0.5">
                         الرقم المسجل في النقابة: <span dir="ltr">{maskedPhone}</span>
                       </p>
@@ -170,20 +170,20 @@ export default function ExistingMemberRegisterPage() {
                   <button type="button" onClick={() => setPhoneChoice("changed")} className={`w-full flex items-center gap-3 bg-white rounded-xl p-4 text-right border-2 ${phoneChoice === "changed" ? "border-primary" : "border-transparent"}`}>
                     <RefreshCw className="w-5 h-5 text-primary shrink-0" />
                     <div>
-                      <p className="text-sm font-bold text-gray-900">غيّرت رقمي</p>
-                      <p className="text-xs text-gray-500 mt-0.5">هتكتب رقمك الجديد وترفع صورة البطاقة، والموظف هيراجع طلبك</p>
+                      <p className="text-sm font-bold text-gray-900">قمت بتغيير رقمي</p>
+                      <p className="text-xs text-gray-500 mt-0.5">أدخل رقمك الجديد وارفع صورة البطاقة، وسيراجع موظف النقابة طلبك</p>
                     </div>
                   </button>
 
                   {changingPhone && (
                     <div className="bg-white rounded-xl shadow-sm p-4 space-y-3">
                       <div>
-                        <label className="text-sm text-gray-700">رقم الموبايل الجديد</label>
+                        <label className="text-sm text-gray-700">رقم الهاتف المحمول الجديد</label>
                         <input type="tel" inputMode="numeric" value={newPhone} onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01xxxxxxxxx" className={`${inputClass} bg-surface-muted`} dir="ltr" />
                       </div>
                       <div>
-                        <DocumentUploadRow label="صورة البطاقة (الوش)" uploaded={!!idFrontUrl} onUpload={setIdFrontUrl} />
-                        <DocumentUploadRow label="صورة البطاقة (الضهر)" uploaded={!!idBackUrl} onUpload={setIdBackUrl} />
+                        <DocumentUploadRow label="صورة البطاقة (الوجه)" uploaded={!!idFrontUrl} onUpload={setIdFrontUrl} />
+                        <DocumentUploadRow label="صورة البطاقة (الظهر)" uploaded={!!idBackUrl} onUpload={setIdBackUrl} />
                       </div>
                     </div>
                   )}
@@ -196,7 +196,7 @@ export default function ExistingMemberRegisterPage() {
                     <div className="flex items-start gap-2 bg-yellow-50 text-yellow-800 text-sm rounded-xl px-4 py-3 border border-yellow-200">
                       <Info className="w-4 h-4 shrink-0 mt-0.5" />
                       <span>
-                        وضع تجريبي: الرسائل لسه مش متفعلة. رمز التحقق هو <b dir="ltr">{demoCode}</b>
+                        وضع تجريبي: خدمة الرسائل غير مفعّلة بعد. رمز التحقق هو <b dir="ltr">{demoCode}</b>
                       </span>
                     </div>
                   )}
@@ -204,13 +204,13 @@ export default function ExistingMemberRegisterPage() {
                     <label className="text-sm text-gray-700">رمز التحقق</label>
                     <input type="text" inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="الرمز المكون من 6 أرقام" className={`${inputClass} text-center tracking-widest`} dir="ltr" />
                     <p className="mt-1 text-xs text-gray-400">
-                      اتبعت على <span dir="ltr">{sentTo}</span>
+                      تم الإرسال إلى <span dir="ltr">{sentTo}</span>
                     </p>
                   </div>
                   <div>
                     <label className="text-sm text-gray-700">كلمة المرور</label>
                     <div className="relative">
-                      <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8 حروف أو أرقام على الأقل" className={`${inputClass} pl-11`} />
+                      <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8 أحرف أو أرقام على الأقل" className={`${inputClass} pl-11`} />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 translate-y-[-25%] text-gray-400">
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -222,7 +222,7 @@ export default function ExistingMemberRegisterPage() {
                   </div>
                   {changingPhone && (
                     <p className="text-xs text-gray-500 bg-white rounded-xl px-4 py-3">
-                      حسابك هيتفعّل بعد ما موظف النقابة يراجع صورة البطاقة والرقم الجديد.
+                      سيتم تفعيل حسابك بعد مراجعة موظف النقابة لصورة البطاقة والرقم الجديد.
                     </p>
                   )}
                 </div>
@@ -246,7 +246,7 @@ export default function ExistingMemberRegisterPage() {
               )}
 
               <p className="mt-6 text-center text-sm text-gray-500">
-                خريج جديد ولسه ملكش رقم قيد؟ <a href="/signup" className="text-primary font-bold">اعمل حساب خريج</a>
+                خريج جديد وليس لديك رقم قيد؟ <a href="/signup" className="text-primary font-bold">أنشئ حساب خريج</a>
               </p>
             </>
           )}

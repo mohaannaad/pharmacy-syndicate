@@ -15,13 +15,13 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
   }
   if (accountRequest.status !== "PENDING") {
-    return NextResponse.json({ error: "الطلب ده اتراجع قبل كده" }, { status: 400 });
+    return NextResponse.json({ error: "تمت مراجعة هذا الطلب من قبل" }, { status: 400 });
   }
 
   // ---------- الرفض ----------
   if (action === "reject") {
     if (!adminNote) {
-      return NextResponse.json({ error: "من فضلك اكتب سبب الرفض" }, { status: 400 });
+      return NextResponse.json({ error: "يرجى كتابة سبب الرفض" }, { status: 400 });
     }
     await prisma.memberAccountRequest.update({
       where: { id },
@@ -47,7 +47,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     },
   });
   if (conflict) {
-    return NextResponse.json({ error: "فيه حساب على البوابة بنفس رقم القيد أو الرقم القومي أو الموبايل، ارفض الطلب واكتب السبب" }, { status: 409 });
+    return NextResponse.json({ error: "يوجد حساب على البوابة بنفس رقم القيد أو الرقم القومي أو رقم الهاتف، يرجى رفض الطلب مع كتابة السبب" }, { status: 409 });
   }
 
   // كل الخطوات مع بعض: لو واحدة فشلت، ولا حاجة تتسجل
@@ -77,6 +77,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     { timeout: 20000 } // Neon ساعات بيبقى بطيء
   );
 
-  await sendSms(accountRequest.newPhone, `نقابة الصيادلة: تم تفعيل حسابك. تقدر تدخل برقم القيد ${accountRequest.membershipNumber} وكلمة المرور بتاعتك.`);
+  await sendSms(accountRequest.newPhone, `نقابة الصيادلة: تم تفعيل حسابك. يمكنك تسجيل الدخول برقم القيد ${accountRequest.membershipNumber} وكلمة المرور الخاصة بك.`);
   return NextResponse.json({ ok: true });
 }

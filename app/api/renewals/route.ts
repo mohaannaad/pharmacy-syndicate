@@ -33,12 +33,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "اختر طريقة استلام الكارنيه" }, { status: 400 });
   }
   if (body.deliveryMethod === "DELIVERY" && !String(body.deliveryAddress || "").trim()) {
-    return NextResponse.json({ error: "اكتب عنوان التوصيل" }, { status: 400 });
+    return NextResponse.json({ error: "يرجى إدخال عنوان التوصيل" }, { status: 400 });
   }
 
   // 4) رقم الهاتف
   if (!/^01\d{9}$/.test(String(body.phone || ""))) {
-    return NextResponse.json({ error: "رقم الهاتف لازم يكون 11 رقم ويبدأ بـ 01" }, { status: 400 });
+    return NextResponse.json({ error: "يجب أن يتكون رقم الهاتف من 11 رقمًا ويبدأ بـ 01" }, { status: 400 });
   }
 
   // 5) مفيش طلبين مفتوحين لنفس العضو

@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   const password = String(body.password || "");
 
   if (!identifier || !password) {
-    return NextResponse.json({ error: "اكتب بيانات الدخول وكلمة المرور" }, { status: 400 });
+    return NextResponse.json({ error: "يرجى إدخال بيانات الدخول وكلمة المرور" }, { status: 400 });
   }
 
   const user = await prisma.user.findFirst({
@@ -24,10 +24,10 @@ export async function POST(request: Request) {
     });
     if (accountRequest && verifyPassword(password, accountRequest.passwordHash)) {
       if (accountRequest.status === "PENDING") {
-        return NextResponse.json({ error: "طلب إنشاء حسابك لسه قيد المراجعة عند موظف النقابة، هيوصلك رسالة أول ما يتفعّل" }, { status: 403 });
+        return NextResponse.json({ error: "طلب إنشاء حسابك ما زال قيد المراجعة لدى موظف النقابة، وستصلك رسالة فور تفعيله" }, { status: 403 });
       }
       if (accountRequest.status === "REJECTED") {
-        return NextResponse.json({ error: `طلب إنشاء حسابك اترفض: ${accountRequest.adminNote || ""}. تقدر تقدّم طلب جديد من «تسجيل عضو حالي»` }, { status: 403 });
+        return NextResponse.json({ error: `تم رفض طلب إنشاء حسابك: ${accountRequest.adminNote || ""}. يمكنك تقديم طلب جديد من «تسجيل عضو حالي»` }, { status: 403 });
       }
     }
   }

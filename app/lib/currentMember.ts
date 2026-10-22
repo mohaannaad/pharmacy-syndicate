@@ -11,15 +11,15 @@ import { getCurrentUser } from "./auth";
 export async function getCurrentMember() {
   const user = await getCurrentUser();
   if (!user) {
-    return { error: "لازم تسجّل دخول الأول", status: 401 } as const;
+    return { error: "يجب تسجيل الدخول أولًا", status: 401 } as const;
   }
   if (user.role !== "MEMBER" || !user.membershipNumber) {
-    return { error: "الخدمة دي متاحة للأعضاء المقيدين بالنقابة بس", status: 403 } as const;
+    return { error: "هذه الخدمة متاحة للأعضاء المقيدين بالنقابة فقط", status: 403 } as const;
   }
 
   const member = await prisma.member.findUnique({ where: { membershipNumber: user.membershipNumber } });
   if (!member) {
-    return { error: "بيانات عضويتك مش موجودة في سجلات النقابة، تواصل مع النقابة", status: 404 } as const;
+    return { error: "بيانات عضويتك غير موجودة في سجلات النقابة، يرجى التواصل مع النقابة", status: 404 } as const;
   }
 
   return { member } as const;

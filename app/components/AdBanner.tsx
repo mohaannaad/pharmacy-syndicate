@@ -8,7 +8,7 @@ export default function AdBanner({ variant = "dark" }: AdBannerProps) {
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-blue-600 to-cyan-400 text-white p-6 flex items-center justify-between">
         <div className="text-right">
           <div className="text-xs font-bold bg-white/20 inline-block px-2 py-1 rounded">إعلان</div>
-          <div className="mt-2 text-lg md:text-xl font-bold">حلول صحية توصلك أينما كنت</div>
+          <div className="mt-2 text-lg md:text-xl font-bold">حلول صحية تصل إليك أينما كنت</div>
         </div>
         <div className="text-2xl md:text-3xl font-extrabold shrink-0">خصم 15%</div>
       </div>

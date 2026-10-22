@@ -94,7 +94,7 @@ export function getRequiredDocuments(a: DocumentAnswers): RequiredDocument[] {
     if (male) add("military", "موقف التجنيد", false);
     add("highSchool", "شهادة الثانوية العامة", false);
     add("criminal", "صحيفة الحالة الجنائية", true);
-    add("photos", "صورتين شخصيتين مختومتين من الجامعة", false);
+    add("photos", "صورتان شخصيتان مختومتان من الجامعة", false);
     if (foreigner) add("nationality", "شهادة اكتساب الجنسية", true);
     if (a.studyYears > 6) add("transcript", "بيان الدرجات", true);
     if (a.hasPreviousQualification) add("previous", "مستندات المؤهل السابق وإلغاء الترخيص العلمي السابق", false);
@@ -109,7 +109,7 @@ export function getRequiredDocuments(a: DocumentAnswers): RequiredDocument[] {
     if (male) add("military", "موقف التجنيد", false);
     add("highSchool", "شهادة الثانوية العامة أو ما يعادلها", false);
     add("criminal", "صحيفة الحالة الجنائية", true);
-    add("photos", "صورتين شخصيتين مختومتين من الجامعة", false);
+    add("photos", "صورتان شخصيتان مختومتان من الجامعة", false);
     if (foreigner) add("nationality", "شهادة اكتساب الجنسية", true);
     if (a.studyYears > 5) add("transcript", "بيان الدرجات", true);
     if (needsHighSchoolStatement(a.highSchoolType)) add("hsStatement", "إفادة من الجامعة بنسبة الثانوية العامة", false);
@@ -128,7 +128,7 @@ export function getRequiredDocuments(a: DocumentAnswers): RequiredDocument[] {
     add("highSchool", "شهادة الثانوية العامة", false);
     if (male) add("military", "موقف التجنيد", false);
     add("criminal", "صحيفة الحالة الجنائية موجهة إلى نقابة الصيادلة", true);
-    add("photos", "صورتين شخصيتين", false);
+    add("photos", "صورتان شخصيتان", false);
     if (foreigner) add("nationality", "مستند اكتساب الجنسية المصرية", false);
     if (a.hasPreviousQualification) add("previous", "مستندات المؤهل السابق", false);
     if (needsHighSchoolStatement(a.highSchoolType)) add("hsStatement", "إفادة بنسبة الثانوية", false);

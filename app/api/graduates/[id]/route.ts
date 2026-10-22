@@ -35,11 +35,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
     // "مطلوب استكمال" و"مرفوض" لازم يكون معاهم سبب
     if ((body.status === "NEEDS_COMPLETION" || body.status === "REJECTED") && !String(body.adminNote || "").trim()) {
-      return NextResponse.json({ error: "من فضلك اكتب السبب" }, { status: 400 });
+      return NextResponse.json({ error: "يرجى كتابة السبب" }, { status: 400 });
     }
         // "تم القيد" مبتتعملش يدوي، لازم من زرار "إصدار رقم القيد"
     if (body.status === "REGISTERED" && application.status !== "REGISTERED") {
-      return NextResponse.json({ error: "حالة «تم القيد» بتتعمل من زرار «إصدار رقم القيد» بس" }, { status: 400 });
+      return NextResponse.json({ error: "لا تُعيَّن حالة «تم القيد» إلا من خلال زر «إصدار رقم القيد»" }, { status: 400 });
     }
     data.status = body.status as typeof application.status;
   }
@@ -69,7 +69,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
   const user = await getCurrentUser();
   if (!user) {
-    return NextResponse.json({ error: "لازم تسجّل دخول الأول" }, { status: 401 });
+    return NextResponse.json({ error: "يجب تسجيل الدخول أولًا" }, { status: 401 });
   }
 
   const application = await prisma.graduateApplication.findUnique({ where: { id } });
@@ -78,7 +78,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
   }
   if (application.status !== "NEEDS_COMPLETION") {
-    return NextResponse.json({ error: "الطلب ده مش محتاج استكمال حاليًا" }, { status: 400 });
+    return NextResponse.json({ error: "هذا الطلب لا يحتاج إلى استكمال حاليًا" }, { status: 400 });
   }
 
   const body = await request.json();

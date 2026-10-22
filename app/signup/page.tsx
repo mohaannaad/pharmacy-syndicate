@@ -33,13 +33,13 @@ export default function SignupPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "حصلت مشكلة");
+        setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
         return;
       }
       setDemoCode(data.demoCode);
       setStep(2);
     } catch {
-      setError("حصلت مشكلة في الاتصال، حاول مرة تانية");
+      setError("تعذّر الاتصال، يرجى المحاولة مرة أخرى");
     } finally {
       setLoading(false);
     }
@@ -48,8 +48,8 @@ export default function SignupPage() {
   // الخطوة 2: نتأكد من الرمز ونعمل الحساب
   async function createAccount() {
     setError("");
-    if (password.length < 8) return setError("كلمة المرور لازم تكون 8 حروف أو أرقام على الأقل");
-    if (password !== confirm) return setError("كلمتين المرور مش متطابقين");
+    if (password.length < 8) return setError("يجب ألا تقل كلمة المرور عن 8 أحرف أو أرقام");
+    if (password !== confirm) return setError("كلمتا المرور غير متطابقتين");
 
     setLoading(true);
     try {
@@ -60,13 +60,13 @@ export default function SignupPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "حصلت مشكلة");
+        setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
         return;
       }
       // الحساب اتعمل والمستخدم دخل → نوديه على طلب القيد
       window.location.href = "/register/new-graduate";
     } catch {
-      setError("حصلت مشكلة في الاتصال، حاول مرة تانية");
+      setError("تعذّر الاتصال، يرجى المحاولة مرة أخرى");
     } finally {
       setLoading(false);
     }
@@ -88,12 +88,12 @@ export default function SignupPage() {
               </div>
               <div>
                 <label className="text-sm text-gray-700">الرقم القومي</label>
-                <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, "").slice(0, 14))} placeholder="14 رقم" className={inputClass} dir="ltr" />
+                <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, "").slice(0, 14))} placeholder="14 رقمًا" className={inputClass} dir="ltr" />
               </div>
               <div>
                 <label className="text-sm text-gray-700">رقم الهاتف</label>
                 <input type="tel" inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01xxxxxxxxx" className={inputClass} dir="ltr" />
-                <p className="mt-1 text-xs text-gray-400">هيوصلك رمز تحقق على الرقم ده</p>
+                <p className="mt-1 text-xs text-gray-400">سيصلك رمز تحقق على هذا الرقم</p>
               </div>
             </div>
           )}
@@ -104,7 +104,7 @@ export default function SignupPage() {
                 <div className="flex items-start gap-2 bg-yellow-50 text-yellow-800 text-sm rounded-xl px-4 py-3 border border-yellow-200">
                   <Info className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>
-                    وضع تجريبي: الرسائل لسه مش متفعلة. رمز التحقق هو <b dir="ltr">{demoCode}</b>
+                    وضع تجريبي: خدمة الرسائل غير مفعّلة بعد. رمز التحقق هو <b dir="ltr">{demoCode}</b>
                   </span>
                 </div>
               )}
@@ -112,13 +112,13 @@ export default function SignupPage() {
                 <label className="text-sm text-gray-700">رمز التحقق</label>
                 <input type="text" inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="الرمز المكون من 6 أرقام" className={`${inputClass} text-center tracking-widest`} dir="ltr" />
                 <p className="mt-1 text-xs text-gray-400">
-                  اتبعت على <span dir="ltr">{phone}</span>
+                  تم الإرسال إلى <span dir="ltr">{phone}</span>
                 </p>
               </div>
               <div>
                 <label className="text-sm text-gray-700">كلمة المرور</label>
                 <div className="relative">
-                  <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8 حروف أو أرقام على الأقل" className={`${inputClass} pl-11`} />
+                  <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8 أحرف أو أرقام على الأقل" className={`${inputClass} pl-11`} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 translate-y-[-25%] text-gray-400">
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>

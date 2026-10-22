@@ -76,7 +76,7 @@ export default function AdminComplaintsPage() {
   }
 
   async function handleDelete(id: string) {
-    const confirmed = window.confirm("متأكد إنك عايز تحذف الشكوى دي نهائيًا؟");
+    const confirmed = window.confirm("هل أنت متأكد من حذف هذه الشكوى نهائيًا؟");
     if (!confirmed) return;
     await fetch(`/api/complaints/${id}`, { method: "DELETE" });
     loadComplaints();

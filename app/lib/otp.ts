@@ -31,7 +31,7 @@ export async function createOtp(phone: string, purpose: string) {
     orderBy: { createdAt: "desc" },
   });
   if (last && Date.now() - last.createdAt.getTime() < RESEND_SECONDS * 1000) {
-    throw new Error("استنى دقيقة قبل ما تطلب رمز جديد");
+    throw new Error("يرجى الانتظار دقيقة قبل طلب رمز جديد");
   }
 
   const code = String(randomInt(100000, 1000000)); // 6 أرقام
@@ -55,8 +55,8 @@ export async function verifyOtp(phone: string, purpose: string, code: string) {
     orderBy: { createdAt: "desc" },
   });
 
-  if (!otp || otp.expiresAt < new Date()) return "الرمز انتهت صلاحيته، اطلب رمز جديد";
-  if (otp.attempts >= MAX_ATTEMPTS) return "محاولات كتير غلط، اطلب رمز جديد";
+  if (!otp || otp.expiresAt < new Date()) return "انتهت صلاحية الرمز، يرجى طلب رمز جديد";
+  if (otp.attempts >= MAX_ATTEMPTS) return "تجاوزت عدد المحاولات المسموح بها، يرجى طلب رمز جديد";
 
   if (otp.codeHash !== sha256(code.trim())) {
     await prisma.otpCode.update({ where: { id: otp.id }, data: { attempts: { increment: 1 } } });

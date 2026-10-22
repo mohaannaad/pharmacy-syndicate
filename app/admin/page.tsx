@@ -61,7 +61,7 @@ export default function AdminHomePage() {
     <div className="space-y-8">
       <div>
         <p className="text-sm text-gray-400">{today}</p>
-        <h1 className="text-xl font-bold text-gray-900 mt-1">أهلاً بيك في لوحة التحكم</h1>
+        <h1 className="text-xl font-bold text-gray-900 mt-1">مرحبًا بك في لوحة التحكم</h1>
       </div>
 
       <div className="rounded-2xl overflow-hidden bg-primary relative">

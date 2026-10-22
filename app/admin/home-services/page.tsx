@@ -55,11 +55,11 @@ export default function AdminHomeServicesPage() {
     const data = await res.json();
     setSaving(false);
     if (!res.ok) {
-      setMessage({ type: "error", text: data.error || "حصلت مشكلة" });
+      setMessage({ type: "error", text: data.error || "حدث خطأ، يرجى المحاولة مرة أخرى" });
       return;
     }
     setSavedKeys(data.keys);
-    setMessage({ type: "success", text: "تم الحفظ، والتغيير ظاهر دلوقتي في الصفحة الرئيسية" });
+    setMessage({ type: "success", text: "تم الحفظ، وأصبح التغيير ظاهرًا الآن في الصفحة الرئيسية" });
   }
 
   return (
@@ -69,7 +69,7 @@ export default function AdminHomeServicesPage() {
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div>
             <h2 className="font-bold text-gray-900">الخدمات الظاهرة في الصفحة الرئيسية</h2>
-            <p className="text-xs text-gray-400 mt-1">رتّبها بالأسهم — أول خدمة بتظهر على اليمين</p>
+            <p className="text-xs text-gray-400 mt-1">رتّبها باستخدام الأسهم — تظهر الخدمة الأولى على اليمين</p>
           </div>
           <span className={`text-sm font-bold px-3 py-1 rounded-full ${isFull ? "bg-primary/10 text-primary" : "bg-yellow-100 text-yellow-700"}`}>
             {keys.length} / {FEATURED_COUNT}
@@ -99,7 +99,7 @@ export default function AdminHomeServicesPage() {
 
           {Array.from({ length: FEATURED_COUNT - selected.length }).map((_, i) => (
             <div key={`empty-${i}`} className="border-2 border-dashed border-gray-200 rounded-xl px-4 py-4 text-center text-sm text-gray-400">
-              مكان فاضي — اختار خدمة من تحت
+              مكان فارغ — اختر خدمة من القائمة أدناه
             </div>
           ))}
         </div>
@@ -112,17 +112,17 @@ export default function AdminHomeServicesPage() {
         )}
 
         <button type="button" onClick={save} disabled={!changed || !isFull || saving} className="mt-5 w-full bg-primary text-white py-3 rounded-pill font-medium disabled:opacity-40">
-          {saving ? "جاري الحفظ..." : !isFull ? `اختار ${FEATURED_COUNT - keys.length} خدمة كمان عشان تقدر تحفظ` : "حفظ التغييرات"}
+          {saving ? "جاري الحفظ..." : !isFull ? `اختر ${FEATURED_COUNT - keys.length} خدمة إضافية لتتمكن من الحفظ` : "حفظ التغييرات"}
         </button>
       </div>
 
       {/* ---------- باقي الخدمات ---------- */}
       <div className="bg-white rounded-2xl shadow-sm p-6">
         <h2 className="font-bold text-gray-900 mb-1">الخدمات المتاحة</h2>
-        <p className="text-xs text-gray-400 mb-4">{isFull ? "عشان تضيف خدمة، شيل واحدة من اللي فوق الأول" : "دوس إضافة على الخدمة اللي عايزها تظهر"}</p>
+        <p className="text-xs text-gray-400 mb-4">{isFull ? "لإضافة خدمة، أزل إحدى الخدمات المختارة أعلاه أولًا" : "اضغط «إضافة» على الخدمة التي تريد إظهارها"}</p>
 
         {available.length === 0 ? (
-          <p className="text-center text-sm text-gray-400 py-6">كل الخدمات ظاهرة بالفعل</p>
+          <p className="text-center text-sm text-gray-400 py-6">جميع الخدمات ظاهرة بالفعل</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {available.map((service) => (

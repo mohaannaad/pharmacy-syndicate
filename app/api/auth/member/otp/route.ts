@@ -19,17 +19,17 @@ export async function POST(request: Request) {
 
   if (newPhone) {
     if (!isValidPhone(newPhone)) {
-      return NextResponse.json({ error: "رقم الهاتف لازم يكون 11 رقم ويبدأ بـ 01" }, { status: 400 });
+      return NextResponse.json({ error: "يجب أن يتكون رقم الهاتف من 11 رقمًا ويبدأ بـ 01" }, { status: 400 });
     }
     if (newPhone === result.member.phone) {
-      return NextResponse.json({ error: "ده نفس الرقم المسجل في النقابة، اختار «الرقم ده معايا»" }, { status: 400 });
+      return NextResponse.json({ error: "هذا هو الرقم المسجل في النقابة نفسه، يرجى اختيار «هذا الرقم ما زال معي»" }, { status: 400 });
     }
     phone = newPhone;
   }
 
   const phoneUsed = await prisma.user.findUnique({ where: { phone } });
   if (phoneUsed) {
-    return NextResponse.json({ error: "رقم الهاتف ده مستخدم في حساب تاني على البوابة. لو ده مش رقمك، اختار «غيّرت رقمي»" }, { status: 409 });
+    return NextResponse.json({ error: "رقم الهاتف هذا مستخدم في حساب آخر على البوابة. إن لم يكن رقمك، يرجى اختيار «قمت بتغيير رقمي»" }, { status: 409 });
   }
 
   try {

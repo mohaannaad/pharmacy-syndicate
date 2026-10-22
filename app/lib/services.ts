@@ -15,7 +15,7 @@ export interface SiteService {
 }
 
 export const ALL_SERVICES: SiteService[] = [
-  { key: "ad", icon: "/service-ad.png", title: "اضافة اعلان", desc: "انشاء وادارة إعلاناتك داخل المنصة", href: "/services/ad" },
+  { key: "ad", icon: "/service-ad.png", title: "إضافة إعلان", desc: "إنشاء إعلاناتك وإدارتها داخل المنصة", href: "/services/ad" },
   { key: "certificate", icon: "/service-certificate.png", title: "استخراج شهادة", desc: "طلب الشهادات الرسمية ومتابعتها بشكل فوري", href: "/certificates" },
   { key: "complaint", icon: "/service-complaint.png", title: "تقديم شكوى", desc: "إرسال الشكاوى ومتابعتها إلكترونيًا", href: "/services/complaint" },
   { key: "fees", icon: "/service-fees.png", title: "رسوم", desc: "جميع الرسوم المعتمدة لخدمات النقابة", href: "/services/fees" },

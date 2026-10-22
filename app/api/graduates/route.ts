@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   // 1) لازم يكون داخل بحساب خريج
   const user = await getCurrentUser();
   if (!user) {
-    return NextResponse.json({ error: "لازم تسجّل دخول الأول" }, { status: 401 });
+    return NextResponse.json({ error: "يجب تسجيل الدخول أولًا" }, { status: 401 });
   }
   if (user.role !== "GRADUATE") {
     return NextResponse.json({ error: "طلب القيد متاح لحسابات الخريجين فقط" }, { status: 403 });

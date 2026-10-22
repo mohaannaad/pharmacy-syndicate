@@ -51,12 +51,12 @@ export default function DocumentUploadRow({ label, original = false, uploaded = 
         <span className={`w-2 h-2 rounded-full shrink-0 ${done ? "bg-primary" : "bg-gray-300"}`} />
         <span className="text-sm text-gray-700">{label}</span>
         {original && <span className="text-[11px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full shrink-0">أصل</span>}
-        {error && <span className="text-[11px] text-red-600 shrink-0">فشل الرفع، حاول تاني</span>}
+        {error && <span className="text-[11px] text-red-600 shrink-0">فشل الرفع، يرجى المحاولة مرة أخرى</span>}
       </div>
 
       <label className="flex items-center gap-2 bg-primary text-white text-xs px-4 py-2 rounded-pill cursor-pointer shrink-0">
         {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : done ? <CheckCircle className="w-3.5 h-3.5" /> : <Paperclip className="w-3.5 h-3.5" />}
-        {loading ? "جاري الرفع..." : done ? "تم الإرفاق" : "اضافة المستند"}
+        {loading ? "جاري الرفع..." : done ? "تم الإرفاق" : "إضافة المستند"}
         <input type="file" className="hidden" accept=".pdf,.jpg,.jpeg,.png" disabled={loading} onChange={handleChange} />
       </label>
     </div>

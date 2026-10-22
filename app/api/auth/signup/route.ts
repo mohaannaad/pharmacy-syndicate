@@ -13,10 +13,10 @@ export async function POST(request: Request) {
   const code = String(body.code || "");
 
   if (!fullName || !isValidNationalId(nationalId) || !isValidPhone(phone)) {
-    return NextResponse.json({ error: "بيانات غير صحيحة، ارجع للخطوة الأولى" }, { status: 400 });
+    return NextResponse.json({ error: "بيانات غير صحيحة، يرجى الرجوع إلى الخطوة الأولى" }, { status: 400 });
   }
   if (!isValidPassword(password)) {
-    return NextResponse.json({ error: "كلمة المرور لازم تكون 8 حروف أو أرقام على الأقل" }, { status: 400 });
+    return NextResponse.json({ error: "يجب ألا تقل كلمة المرور عن 8 أحرف أو أرقام" }, { status: 400 });
   }
 
   const otpError = await verifyOtp(phone, "SIGNUP", code);

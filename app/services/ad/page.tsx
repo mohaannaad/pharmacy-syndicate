@@ -10,7 +10,7 @@ type Placement = "WEBSITE" | "HQ" | "BOTH";
 const DURATIONS = [
   { value: "week", label: "أسبوع" },
   { value: "month", label: "شهر" },
-  { value: "3months", label: "3 شهور" },
+  { value: "3months", label: "3 أشهر" },
 ];
 
 // أسعار مبدئية (Placeholder) — تتغير لاحقًا حسب الجدول الرسمي من النقابة
@@ -86,7 +86,7 @@ export default function AdPage() {
 
   return (
     <main>
-      <PageHeader title="اضافة اعلان" subtitle="انشاء وادارة إعلاناتك داخل المنصة" />
+      <PageHeader title="إضافة إعلان" subtitle="إنشاء إعلاناتك وإدارتها داخل المنصة" />
       <section className="bg-surface-muted py-14">
         <div className="max-w-3xl mx-auto px-6">
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 md:p-8 space-y-6">

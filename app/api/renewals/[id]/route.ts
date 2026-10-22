@@ -16,21 +16,21 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   // الطلب المرفوض نهائي، مينفعش يتعدل
   if (renewal.status === "REJECTED") {
-    return NextResponse.json({ error: "الطلب المرفوض نهائي ولا يمكن تعديله، والعضو يقدر يعمل طلب جديد" }, { status: 400 });
+    return NextResponse.json({ error: "الطلب المرفوض نهائي ولا يمكن تعديله، ويمكن للعضو تقديم طلب جديد" }, { status: 400 });
   }
 
   if (!RENEWAL_STATUS_LABELS[body.status]) {
     return NextResponse.json({ error: "حالة غير صحيحة" }, { status: 400 });
   }
   if (body.status === "REJECTED" && !String(body.adminNote || "").trim()) {
-    return NextResponse.json({ error: "من فضلك اكتب سبب الرفض" }, { status: 400 });
+    return NextResponse.json({ error: "يرجى كتابة سبب الرفض" }, { status: 400 });
   }
 
     const wasPaid = renewal.status !== "AWAITING_PAYMENT";
 
   // طلب مدفوع مينفعش يرجع "في انتظار الدفع"
   if (wasPaid && body.status === "AWAITING_PAYMENT") {
-    return NextResponse.json({ error: "الطلب ده مدفوع بالفعل، مينفعش يرجع لحالة في انتظار الدفع" }, { status: 400 });
+    return NextResponse.json({ error: "هذا الطلب مدفوع بالفعل، ولا يمكن إعادته إلى حالة «في انتظار الدفع»" }, { status: 400 });
   }
 
   const justPaid = !wasPaid && body.status !== "AWAITING_PAYMENT" && body.status !== "REJECTED";

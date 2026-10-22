@@ -247,24 +247,24 @@ export default function NewGraduateRegisterPage() {
 
   function validateStep(current: number) {
     const missing = (REQUIRED_BY_STEP[current] || []).filter((key) => !String(form[key]).trim());
-    if (missing.length > 0) return "من فضلك استكمل كل الحقول المطلوبة";
+    if (missing.length > 0) return "يرجى استكمال جميع الحقول المطلوبة";
 
     if (current === 1) {
-      if (!/^\d{14}$/.test(form.nationalId)) return "الرقم القومي لازم يكون 14 رقم";
-      if (!/^01\d{9}$/.test(form.phone)) return "رقم الهاتف لازم يكون 11 رقم ويبدأ بـ 01";
+      if (!/^\d{14}$/.test(form.nationalId)) return "يجب أن يتكون الرقم القومي من 14 رقمًا";
+      if (!/^01\d{9}$/.test(form.phone)) return "يجب أن يتكون رقم الهاتف من 11 رقمًا ويبدأ بـ 01";
       if (!/^\S+@\S+\.\S+$/.test(form.email)) return "البريد الإلكتروني غير صحيح";
             if (!isNationalityAllowed(form.nationality)) return "لا يتم قيد الجنسيات الأجنبية بالنقابة باستثناء الجنسيتين الفلسطينية والسودانية";
     }
     if (current === 3) {
-      if (form.universityType === "FOREIGN" && !form.universityCountry.trim()) return "من فضلك اكتب دولة الجامعة";
-      if (Number(form.graduationYear) < Number(form.studyStartYear)) return "سنة التخرج لازم تكون بعد سنة بداية الدراسة";
-      if (form.hasPreviousQualification && !form.previousQualification.trim()) return "من فضلك اكتب بيانات المؤهل السابق";
+      if (form.universityType === "FOREIGN" && !form.universityCountry.trim()) return "يرجى إدخال دولة الجامعة";
+      if (Number(form.graduationYear) < Number(form.studyStartYear)) return "يجب أن تكون سنة التخرج بعد سنة بداية الدراسة";
+      if (form.hasPreviousQualification && !form.previousQualification.trim()) return "يرجى إدخال بيانات المؤهل السابق";
             const percent = Number(form.highSchoolPercent);
       if (!(percent > 0 && percent <= 100)) return "نسبة الثانوية العامة غير صحيحة";
     }
     if (current === 4) {
       const missingDocs = requiredDocs.filter((d) => !documents[d.key]);
-      if (missingDocs.length > 0) return `باقي ${missingDocs.length} مستند لازم يترفع`;
+      if (missingDocs.length > 0) return `لم يتم رفع ${missingDocs.length} من المستندات المطلوبة`;
     }
     return "";
   }
@@ -285,7 +285,7 @@ export default function NewGraduateRegisterPage() {
 
   async function handleSubmit() {
     if (!declaration) {
-      setError("لازم توافق على إقرار صحة البيانات");
+      setError("يجب الموافقة على إقرار صحة البيانات");
       return;
     }
     setSubmitting(true);
@@ -299,13 +299,13 @@ export default function NewGraduateRegisterPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error || "حصلت مشكلة، حاول مرة تانية");
+        setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
         return;
       }
       setResult({ trackingNumber: data.trackingNumber, fee: data.fee });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
-      setError("حصلت مشكلة في الاتصال، حاول مرة تانية");
+      setError("تعذّر الاتصال، يرجى المحاولة مرة أخرى");
     } finally {
       setSubmitting(false);
     }
@@ -322,17 +322,17 @@ export default function NewGraduateRegisterPage() {
           <div className="max-w-md mx-auto px-6">
             {pageState === "loading" && <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />}
 
-            {pageState === "error" && <p className="text-center text-gray-500">حصلت مشكلة في التحميل، حاول تحديث الصفحة.</p>}
+            {pageState === "error" && <p className="text-center text-gray-500">حدث خطأ أثناء التحميل، يرجى تحديث الصفحة.</p>}
 
             {pageState === "guest" && (
               <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
                 <Lock className="w-12 h-12 text-primary mx-auto" />
-                <h2 className="mt-4 font-bold text-gray-900">لازم يكون عندك حساب الأول</h2>
-                <p className="mt-2 text-sm text-gray-500 leading-relaxed">أنشئ حساب خريج برقم هاتفك ورقمك القومي، وبعدها تقدر تقدّم طلب القيد وتتابعه.</p>
+                <h2 className="mt-4 font-bold text-gray-900">يجب أن يكون لديك حساب أولًا</h2>
+                <p className="mt-2 text-sm text-gray-500 leading-relaxed">أنشئ حساب خريج برقم هاتفك ورقمك القومي، ثم يمكنك تقديم طلب القيد ومتابعته.</p>
                 <a href="/signup" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
                   إنشاء حساب خريج
                 </a>
-                <p className="mt-4 text-sm text-gray-500">عندك حساب؟ سجّل دخول من الزرار اللي فوق.</p>
+                <p className="mt-4 text-sm text-gray-500">لديك حساب؟ سجّل الدخول من الزر أعلى الصفحة.</p>
               </div>
             )}
 
@@ -370,7 +370,7 @@ export default function NewGraduateRegisterPage() {
   if (result) {
     return (
       <main>
-                <PageHeader title={editingId ? "تم إعادة إرسال طلب القيد" : "تم إرسال طلب القيد"} subtitle="تقدر تتابع حالة طلبك في أي وقت من صفحة «طلباتي»" />
+                <PageHeader title={editingId ? "تم إعادة إرسال طلب القيد" : "تم إرسال طلب القيد"} subtitle="يمكنك متابعة حالة طلبك في أي وقت من صفحة «طلباتي»" />
         <section className="bg-surface-muted py-14">
           <div className="max-w-2xl mx-auto px-6">
             <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
@@ -422,9 +422,9 @@ export default function NewGraduateRegisterPage() {
             <div className="mb-6 flex items-start gap-2 bg-red-50 text-red-800 text-sm rounded-xl px-4 py-3 border border-red-200 leading-relaxed">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold">طلبك محتاج استكمال</p>
+                <p className="font-bold">طلبك بحاجة إلى استكمال</p>
                 {adminNote && <p className="mt-1">ملاحظة النقابة: {adminNote}</p>}
-                <p className="mt-1 text-red-700">عدّل المطلوب وارفع المستندات من جديد، وبعدين ابعت الطلب تاني من خطوة المراجعة.</p>
+                <p className="mt-1 text-red-700">عدّل البيانات المطلوبة وأعد رفع المستندات، ثم أعد إرسال الطلب من خطوة المراجعة.</p>
               </div>
             </div>
           )}
@@ -438,7 +438,7 @@ export default function NewGraduateRegisterPage() {
               <Field label="الاسم بالكامل (إنجليزي)">
                 <input type="text" value={form.fullNameEn} onChange={(e) => update("fullNameEn", e.target.value)} placeholder="Full name as in passport" className={inputClass} dir="ltr" />
               </Field>
-                            <Field label="الرقم القومي" hint="من حسابك — تاريخ الميلاد والنوع بيتملوا منه تلقائيًا">
+                            <Field label="الرقم القومي" hint="من حسابك — يُستخرج منه تاريخ الميلاد والنوع تلقائيًا">
                 <input type="text" value={form.nationalId} readOnly className={`${inputClass} bg-gray-100 text-gray-500 cursor-not-allowed`} dir="ltr" />
               </Field>
               <Field label="جهة إصدار البطاقة">
@@ -636,7 +636,7 @@ export default function NewGraduateRegisterPage() {
                 {form.universityType === "FOREIGN" && (
                   <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                     <input type="checkbox" checked={form.previousRejection} onChange={(e) => update("previousRejection", e.target.checked)} className="w-4 h-4 accent-primary" />
-                    سبق رفض طلب قيدي من النقابة
+                    سبق أن رُفض طلب قيدي من النقابة
                   </label>
                 )}
               </div>
@@ -648,7 +648,7 @@ export default function NewGraduateRegisterPage() {
             <div>
               <div className="flex items-start gap-2 bg-yellow-50 text-yellow-800 text-sm rounded-xl px-4 py-3 border border-yellow-200 leading-relaxed">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                <span>ارفع صورة واضحة من كل مستند (PDF أو JPG). المستندات المميزة بعلامة «أصل» هترفع صورتها دلوقتي، وتسلّم الأصل نفسه عند حضورك للنقابة.</span>
+                <span>ارفع صورة واضحة من كل مستند (PDF أو JPG). المستندات المميزة بعلامة «أصل» تُرفع صورتها الآن، ويُسلَّم أصلها عند حضورك إلى النقابة.</span>
               </div>
 
               <div className="mt-6 bg-white rounded-2xl px-5 py-2 shadow-sm">
@@ -707,7 +707,7 @@ export default function NewGraduateRegisterPage() {
                 ) : (
                   <div className="flex items-start gap-2 text-sm text-gray-600">
                     <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>رسوم الجامعات الخاصة والخارجية بتتحدد حسب فئة الجامعة، وهيتم إخطارك بيها بعد مراجعة النقابة.</span>
+                    <span>تُحدد رسوم الجامعات الخاصة والخارجية وفقًا لفئة الجامعة، وسيتم إخطارك بها بعد مراجعة النقابة.</span>
                   </div>
                 )}
               </div>

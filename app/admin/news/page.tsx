@@ -78,7 +78,7 @@ export default function AdminNewsPage() {
   }
 
   async function handleDelete(id: string) {
-    const confirmed = window.confirm("هل تريد حذف الخبر ؟ هذا الاجراء لا يمكن التراجع عنه.");
+    const confirmed = window.confirm("هل تريد حذف الخبر؟ لا يمكن التراجع عن هذا الإجراء.");
     if (!confirmed) return;
 
     await fetch(`/api/news/${id}`, { method: "DELETE" });

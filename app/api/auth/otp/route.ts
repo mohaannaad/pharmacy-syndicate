@@ -11,18 +11,18 @@ export async function POST(request: Request) {
   const phone = String(body.phone || "").trim();
 
   if (fullName.split(/\s+/).length < 3) {
-    return NextResponse.json({ error: "اكتب الاسم ثلاثي على الأقل" }, { status: 400 });
+    return NextResponse.json({ error: "يرجى كتابة الاسم ثلاثيًا على الأقل" }, { status: 400 });
   }
   if (!isValidNationalId(nationalId)) {
-    return NextResponse.json({ error: "الرقم القومي لازم يكون 14 رقم" }, { status: 400 });
+    return NextResponse.json({ error: "يجب أن يتكون الرقم القومي من 14 رقمًا" }, { status: 400 });
   }
   if (!isValidPhone(phone)) {
-    return NextResponse.json({ error: "رقم الهاتف لازم يكون 11 رقم ويبدأ بـ 01" }, { status: 400 });
+    return NextResponse.json({ error: "يجب أن يتكون رقم الهاتف من 11 رقمًا ويبدأ بـ 01" }, { status: 400 });
   }
 
   const existing = await prisma.user.findFirst({ where: { OR: [{ nationalId }, { phone }] } });
   if (existing) {
-    return NextResponse.json({ error: "يوجد حساب مسجل بهذا الرقم القومي أو رقم الهاتف، سجّل دخول بدلًا من ذلك" }, { status: 409 });
+    return NextResponse.json({ error: "يوجد حساب مسجل بهذا الرقم القومي أو رقم الهاتف، يرجى تسجيل الدخول بدلًا من ذلك" }, { status: 409 });
   }
 
   try {

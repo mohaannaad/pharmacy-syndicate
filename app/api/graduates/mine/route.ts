@@ -7,7 +7,7 @@ import { trackingNumber } from "../../../lib/graduate";
 export async function GET() {
   const user = await getCurrentUser();
   if (!user) {
-    return NextResponse.json({ error: "لازم تسجّل دخول الأول" }, { status: 401 });
+    return NextResponse.json({ error: "يجب تسجيل الدخول أولًا" }, { status: 401 });
   }
 
   const applications = await prisma.graduateApplication.findMany({

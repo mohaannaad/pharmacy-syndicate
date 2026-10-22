@@ -16,14 +16,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     return NextResponse.json({ error: "الطلب غير موجود" }, { status: 404 });
   }
   if (application.status !== "LICENSING") {
-    return NextResponse.json({ error: "لازم الطلب يكون في مرحلة «لدى إدارة التراخيص» الأول" }, { status: 400 });
+    return NextResponse.json({ error: "يجب أن يكون الطلب في مرحلة «لدى إدارة التراخيص» أولًا" }, { status: 400 });
   }
   const user = application.user;
   if (!user) {
-    return NextResponse.json({ error: "الطلب ده مش مربوط بحساب خريج (طلب قديم)، فمينفعش يتحول لعضو تلقائيًا" }, { status: 400 });
+    return NextResponse.json({ error: "هذا الطلب غير مرتبط بحساب خريج (طلب قديم)، لذا لا يمكن تحويله إلى عضو تلقائيًا" }, { status: 400 });
   }
   if (user.membershipNumber) {
-    return NextResponse.json({ error: `صاحب الطلب عنده رقم قيد بالفعل: ${user.membershipNumber}` }, { status: 400 });
+    return NextResponse.json({ error: `لدى صاحب الطلب رقم قيد بالفعل: ${user.membershipNumber}` }, { status: 400 });
   }
 
   const address = [application.buildingNo && `عقار ${application.buildingNo}`, application.apartment && `شقة ${application.apartment}`, application.street, application.district, application.city, application.governorate].filter(Boolean).join("، ");

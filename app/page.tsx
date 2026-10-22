@@ -15,7 +15,7 @@ export default async function Home() {
       <ServicesSection />
       <NewsSection />
             <NewsSection
-        title="اخبار النقابات الفرعية"
+        title="أخبار النقابات الفرعية"
         subtitle="تابع مستجدات وأنشطة نقابات الصيادلة الفرعية في جميع المحافظات"
         useRealData={false}
       />

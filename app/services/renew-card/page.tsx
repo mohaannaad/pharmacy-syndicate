@@ -81,7 +81,7 @@ export default function RenewCardPage() {
       if (!res.ok || !json.url) throw new Error();
       setPhotoUrl(json.url);
     } catch {
-      setError("فشل رفع الصورة، حاول مرة تانية");
+      setError("فشل رفع الصورة، يرجى المحاولة مرة أخرى");
     } finally {
       setUploading(false);
     }
@@ -89,10 +89,10 @@ export default function RenewCardPage() {
 
   async function handleSubmit() {
     setError("");
-    if (!/^01\d{9}$/.test(phone)) return setError("رقم الهاتف لازم يكون 11 رقم ويبدأ بـ 01");
-    if (!address.trim()) return setError("من فضلك اكتب العنوان");
+    if (!/^01\d{9}$/.test(phone)) return setError("يجب أن يتكون رقم الهاتف من 11 رقمًا ويبدأ بـ 01");
+    if (!address.trim()) return setError("يرجى إدخال العنوان");
     if (!deliveryMethod) return setError("اختر طريقة استلام الكارنيه");
-    if (deliveryMethod === "DELIVERY" && !deliveryAddress.trim()) return setError("اكتب عنوان التوصيل");
+    if (deliveryMethod === "DELIVERY" && !deliveryAddress.trim()) return setError("يرجى إدخال عنوان التوصيل");
 
     setSubmitting(true);
     try {
@@ -103,13 +103,13 @@ export default function RenewCardPage() {
       });
       const json = await res.json();
       if (!res.ok) {
-        setError(json.error || "حصلت مشكلة، حاول مرة تانية");
+        setError(json.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
         return;
       }
       setResult({ number: json.number, total: json.total });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
-      setError("حصلت مشكلة في الاتصال، حاول مرة تانية");
+      setError("تعذّر الاتصال، يرجى المحاولة مرة أخرى");
     } finally {
       setSubmitting(false);
     }
@@ -130,9 +130,9 @@ export default function RenewCardPage() {
                 <p className="mt-4 font-bold text-gray-900">{access.message}</p>
                 {access.status === 401 && (
                   <>
-                    <p className="mt-2 text-sm text-gray-500">ادخل من زرار «تسجيل الدخول» اللي فوق، برقم القيد وكلمة المرور.</p>
+                    <p className="mt-2 text-sm text-gray-500">سجّل الدخول من زر «تسجيل الدخول» أعلى الصفحة، باستخدام رقم القيد وكلمة المرور.</p>
                     <a href="/register/existing-member" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
-                      معنديش حساب؟ سجّل كعضو حالي
+                      ليس لديك حساب؟ سجّل كعضو حالي
                     </a>
                   </>
                 )}
@@ -144,7 +144,7 @@ export default function RenewCardPage() {
               </div>
             </div>
           ) : loadError ? (
-            <p>حصلت مشكلة في تحميل بياناتك، حاول تحديث الصفحة.</p>
+            <p>حدث خطأ أثناء تحميل بياناتك، يرجى تحديث الصفحة.</p>
           ) : (
             <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />
           )}

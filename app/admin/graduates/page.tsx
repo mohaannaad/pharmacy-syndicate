@@ -94,21 +94,21 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
     const data = await res.json();
     setSaving(false);
     if (!res.ok) {
-      setError(data.error || "حصلت مشكلة");
+      setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
       return;
     }
     onChanged();
   }
     // إصدار رقم القيد → الحساب يتحول لعضو
   async function issueMembershipNumber() {
-    if (!window.confirm("هيتم إصدار رقم قيد وتحويل حساب الخريج لعضو. متأكد؟")) return;
+    if (!window.confirm("سيتم إصدار رقم قيد وتحويل حساب الخريج إلى حساب عضو. هل أنت متأكد؟")) return;
     setSaving(true);
     setError("");
     const res = await fetch(`/api/graduates/${app.id}/register`, { method: "POST" });
     const data = await res.json();
     setSaving(false);
     if (!res.ok) {
-      setError(data.error || "حصلت مشكلة");
+      setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
       return;
     }
     window.alert(`تم القيد بنجاح ✅ رقم القيد: ${data.membershipNumber}`);
@@ -116,7 +116,7 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
   }
 
   async function handleDelete() {
-    if (!window.confirm("متأكد إنك عايز تحذف الطلب ده نهائيًا؟")) return;
+    if (!window.confirm("هل أنت متأكد من حذف هذا الطلب نهائيًا؟")) return;
     await fetch(`/api/graduates/${app.id}`, { method: "DELETE" });
     onChanged();
   }
@@ -136,7 +136,7 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
               {UNIVERSITY_TYPE_LABELS[app.universityType]}
             </span>
             <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-              {app.fee !== null ? `${app.fee} جنيه` : "الرسوم لم تحدد"}
+              {app.fee !== null ? `${app.fee} جنيه` : "لم تُحدد الرسوم بعد"}
             </span>
                         {app.user?.membershipNumber && (
               <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-bold">
@@ -248,7 +248,7 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
                         {app.status === "LICENSING" && (
               <div className="flex items-center justify-between gap-3 flex-wrap bg-green-50 border border-green-200 rounded-lg p-3">
                 <p className="text-xs text-green-800">
-                  الطلب خلص كل المراحل. لما تدوس "إصدار رقم القيد" الخريج هياخد رقم قيد، وحسابه هيتحول لعضو.
+                  اجتاز الطلب جميع المراحل. عند الضغط على «إصدار رقم القيد» سيحصل الخريج على رقم قيد، ويتحول حسابه إلى حساب عضو.
                 </p>
                 <button type="button" disabled={saving} onClick={issueMembershipNumber} className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-xs px-4 py-2.5 rounded-lg font-bold disabled:opacity-50">
                   <BadgeCheck className="w-4 h-4" />
@@ -267,8 +267,8 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
                 </select>
               </div>
               <div className="md:col-span-2">
-                <label className="text-xs text-gray-500">{needsReason ? "السبب (إجباري — هيظهر للخريج)" : "ملاحظة (اختياري)"}</label>
-                <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder={needsReason ? "مثال: صورة البطاقة غير واضحة، برجاء إعادة رفعها" : ""} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white outline-none resize-none" />
+                <label className="text-xs text-gray-500">{needsReason ? "السبب (إلزامي — سيظهر للخريج)" : "ملاحظة (اختياري)"}</label>
+                <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder={needsReason ? "مثال: صورة البطاقة غير واضحة، يرجى إعادة رفعها" : ""} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white outline-none resize-none" />
               </div>
             </div>
 
@@ -346,7 +346,7 @@ export default function AdminGraduatesPage() {
           <div className="flex items-center gap-2 flex-wrap">
             <div className="relative">
               <Search className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
-              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="اسم، رقم قومي، أو رقم متابعة" className="text-sm border border-gray-200 rounded-lg pr-9 pl-3 py-2 outline-none w-64" />
+              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="الاسم أو الرقم القومي أو رقم المتابعة" className="text-sm border border-gray-200 rounded-lg pr-9 pl-3 py-2 outline-none w-64" />
             </div>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white outline-none">
               <option value="ALL">كل الحالات</option>

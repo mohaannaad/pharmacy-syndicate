@@ -31,10 +31,10 @@ function RequestCard({ item, onChanged }: { item: AccountRequest; onChanged: () 
 
   async function decide(action: "approve" | "reject") {
     if (action === "reject" && !note.trim()) {
-      setError("اكتب سبب الرفض الأول (هيوصل للعضو في رسالة)");
+      setError("يرجى كتابة سبب الرفض أولًا (سيُرسل إلى العضو في رسالة)");
       return;
     }
-    const question = action === "approve" ? "هيتعمل حساب للعضو بالرقم الجديد، والرقم هيتحدث في سجلات النقابة. متأكد؟" : "متأكد إنك عايز ترفض الطلب؟";
+    const question = action === "approve" ? "سيتم إنشاء حساب للعضو بالرقم الجديد، وتحديث الرقم في سجلات النقابة. هل أنت متأكد؟" : "هل أنت متأكد من رفض هذا الطلب؟";
     if (!window.confirm(question)) return;
 
     setSaving(true);
@@ -47,7 +47,7 @@ function RequestCard({ item, onChanged }: { item: AccountRequest; onChanged: () 
     const data = await res.json();
     setSaving(false);
     if (!res.ok) {
-      setError(data.error || "حصلت مشكلة");
+      setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
       return;
     }
     onChanged();
@@ -82,12 +82,12 @@ function RequestCard({ item, onChanged }: { item: AccountRequest; onChanged: () 
         {/* صور البطاقة */}
         <div className="flex gap-2 shrink-0">
           <a href={item.idFrontUrl} target="_blank" rel="noopener noreferrer" className="block text-center">
-            <img src={item.idFrontUrl} alt="البطاقة - الوش" className="w-32 h-20 object-cover rounded-lg border border-gray-200 bg-white" />
-            <span className="text-[11px] text-gray-500">الوش</span>
+            <img src={item.idFrontUrl} alt="البطاقة - الوجه" className="w-32 h-20 object-cover rounded-lg border border-gray-200 bg-white" />
+            <span className="text-[11px] text-gray-500">الوجه</span>
           </a>
           <a href={item.idBackUrl} target="_blank" rel="noopener noreferrer" className="block text-center">
-            <img src={item.idBackUrl} alt="البطاقة - الضهر" className="w-32 h-20 object-cover rounded-lg border border-gray-200 bg-white" />
-            <span className="text-[11px] text-gray-500">الضهر</span>
+            <img src={item.idBackUrl} alt="البطاقة - الظهر" className="w-32 h-20 object-cover rounded-lg border border-gray-200 bg-white" />
+            <span className="text-[11px] text-gray-500">الظهر</span>
           </a>
         </div>
       </div>
@@ -102,9 +102,9 @@ function RequestCard({ item, onChanged }: { item: AccountRequest; onChanged: () 
       {item.status === "PENDING" && (
         <div className="mt-4 bg-white rounded-xl p-4 space-y-3">
           <p className="text-xs text-gray-500">
-            قارن الاسم والرقم القومي بصورة البطاقة. لو كله مطابق دوس «قبول»، ولو فيه مشكلة اكتب السبب ودوس «رفض».
+            قارن الاسم والرقم القومي بصورة البطاقة؛ فإن كانت البيانات مطابقة اضغط «قبول»، وإن وُجدت مشكلة فاكتب السبب واضغط «رفض».
           </p>
-          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="سبب الرفض (إجباري في الرفض)، مثال: صورة البطاقة غير واضحة" className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white outline-none resize-none" />
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="سبب الرفض (إلزامي عند الرفض)، مثال: صورة البطاقة غير واضحة" className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white outline-none resize-none" />
 
           {error && (
             <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
@@ -163,7 +163,7 @@ export default function AdminMemberAccountsPage() {
             <Clock className="w-4 h-4 text-orange-600" />
           </div>
           <div>
-            <p className="text-xs text-gray-400">مستني مراجعة</p>
+            <p className="text-xs text-gray-400">بانتظار المراجعة</p>
             <p className="font-bold text-gray-900">{pendingCount}</p>
           </div>
         </div>
@@ -173,12 +173,12 @@ export default function AdminMemberAccountsPage() {
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div>
             <h2 className="font-bold text-gray-900">طلبات حسابات الأعضاء</h2>
-            <p className="text-xs text-gray-400 mt-1">أعضاء قدام غيّروا رقم موبايلهم وعايزين يعملوا حساب على البوابة</p>
+            <p className="text-xs text-gray-400 mt-1">أعضاء مقيدون غيّروا أرقام هواتفهم ويرغبون في إنشاء حساب على البوابة</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="relative">
               <Search className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
-              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="اسم، رقم قيد، رقم قومي، أو موبايل" className="text-sm border border-gray-200 rounded-lg pr-9 pl-3 py-2 outline-none w-64" />
+              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="الاسم أو رقم القيد أو الرقم القومي أو الهاتف" className="text-sm border border-gray-200 rounded-lg pr-9 pl-3 py-2 outline-none w-64" />
             </div>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white outline-none">
               <option value="ALL">كل الحالات</option>

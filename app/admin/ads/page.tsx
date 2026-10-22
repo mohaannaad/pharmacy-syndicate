@@ -26,7 +26,7 @@ const PLACEMENT_LABELS: Record<string, string> = {
 const DURATION_LABELS: Record<string, string> = {
   week: "أسبوع",
   month: "شهر",
-  "3months": "3 شهور",
+  "3months": "3 أشهر",
 };
 
 const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -62,7 +62,7 @@ export default function AdminAdsPage() {
   }
 
   async function handleDelete(id: string) {
-    const confirmed = window.confirm("متأكد إنك عايز تحذف الإعلان ده نهائيًا؟");
+    const confirmed = window.confirm("هل أنت متأكد من حذف هذا الإعلان نهائيًا؟");
     if (!confirmed) return;
     await fetch(`/api/ads/${id}`, { method: "DELETE" });
     loadAds();

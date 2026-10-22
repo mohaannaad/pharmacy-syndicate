@@ -8,7 +8,7 @@ interface NewsSectionProps {
   useRealData?: boolean;
 }
 
-export default async function NewsSection({ title = "أخر الاخبار", subtitle = "تابع اخر الاخبار والفعاليات", useRealData = true }: NewsSectionProps) {
+export default async function NewsSection({ title = "آخر الأخبار", subtitle = "تابع آخر الأخبار والفعاليات", useRealData = true }: NewsSectionProps) {
   const news = useRealData
     ? await prisma.news.findMany({ orderBy: { order: "asc" } })
     : [];

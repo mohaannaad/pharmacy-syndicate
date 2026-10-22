@@ -67,7 +67,7 @@ export default function AdminCertificatesPage() {
   }
 
   async function handleDelete(id: string) {
-    const confirmed = window.confirm("متأكد إنك عايز تحذف الطلب ده نهائيًا؟");
+    const confirmed = window.confirm("هل أنت متأكد من حذف هذا الطلب نهائيًا؟");
     if (!confirmed) return;
     await fetch(`/api/certificates/${id}`, { method: "DELETE" });
     loadRequests();

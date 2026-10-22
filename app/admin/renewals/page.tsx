@@ -48,14 +48,14 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
     const data = await res.json();
     setSaving(false);
     if (!res.ok) {
-      setError(data.error || "حصلت مشكلة");
+      setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
       return;
     }
     onChanged();
   }
 
   async function handleDelete() {
-    if (!window.confirm("متأكد إنك عايز تحذف الطلب ده نهائيًا؟")) return;
+    if (!window.confirm("هل أنت متأكد من حذف هذا الطلب نهائيًا؟")) return;
     await fetch(`/api/renewals/${item.id}`, { method: "DELETE" });
     onChanged();
   }
@@ -120,7 +120,7 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
           </select>
         </div>
         <div className="md:col-span-2">
-          <label className="text-xs text-gray-500">{status === "REJECTED" ? "سبب الرفض (إجباري — هيظهر للعضو)" : "ملاحظة للعضو (اختياري)"}</label>
+          <label className="text-xs text-gray-500">{status === "REJECTED" ? "سبب الرفض (إلزامي — سيظهر للعضو)" : "ملاحظة للعضو (اختياري)"}</label>
           <input type="text" value={note} disabled={isFinal} onChange={(e) => setNote(e.target.value)} placeholder={status === "ISSUED" ? "مثال: الكارنيه جاهز للاستلام من مقر النقابة" : ""} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-3 py-2 bg-white outline-none" />
         </div>
         <button type="button"    disabled={!changed || saving || isFinal} onClick={save} className="bg-primary text-white text-sm py-2 rounded-lg font-medium disabled:opacity-40">
@@ -129,13 +129,13 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
       </div>
 
       {item.status === "AWAITING_PAYMENT" && status !== "AWAITING_PAYMENT" && status !== "REJECTED" && (
-        <p className="mt-2 text-xs text-amber-700">⚠️ عند الحفظ هيتسجل إن الطلب اتدفع، وآخر عام مسدد عند العضو هيتحدث لـ {Math.max(...item.years)}.</p>
+        <p className="mt-2 text-xs text-amber-700">⚠️ عند الحفظ سيُسجَّل الطلب على أنه مدفوع، وسيُحدَّث آخر عام مسدد للعضو إلى {Math.max(...item.years)}.</p>
       )}
       {item.status !== "AWAITING_PAYMENT" && !isFinal && status === "REJECTED" && (
-        <p className="mt-2 text-xs text-red-700">⚠️ الطلب ده مدفوع. عند الرفض، آخر عام مسدد عند العضو هيرجع لـ {Math.min(...item.years) - 1}، والمبلغ يتم استرداده يدويًا.</p>
+        <p className="mt-2 text-xs text-red-700">⚠️ هذا الطلب مدفوع. عند الرفض سيعود آخر عام مسدد للعضو إلى {Math.min(...item.years) - 1}، ويُسترد المبلغ يدويًا.</p>
       )}
 
-      {isFinal && <p className="mt-2 text-xs text-gray-500">الطلب مرفوض (نهائي). العضو يقدر يعمل طلب جديد.</p>}
+      {isFinal && <p className="mt-2 text-xs text-gray-500">الطلب مرفوض نهائيًا، ويمكن للعضو تقديم طلب جديد.</p>}
       {error && (
         <div className="mt-2 flex items-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
@@ -203,7 +203,7 @@ export default function AdminRenewalsPage() {
           <div className="flex items-center gap-2 flex-wrap">
             <div className="relative">
               <Search className="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2" />
-              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="اسم، رقم قيد، أو رقم طلب" className="text-sm border border-gray-200 rounded-lg pr-9 pl-3 py-2 outline-none w-64" />
+              <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="الاسم أو رقم القيد أو رقم الطلب" className="text-sm border border-gray-200 rounded-lg pr-9 pl-3 py-2 outline-none w-64" />
             </div>
             <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white outline-none">
               <option value="ALL">كل الحالات</option>

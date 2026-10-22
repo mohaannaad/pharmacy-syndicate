@@ -11,7 +11,7 @@ export async function PUT(request: Request) {
   const body = await request.json();
 
   if (!isValidFeatured(body.keys)) {
-    return NextResponse.json({ error: `لازم تختار ${FEATURED_COUNT} خدمات بالظبط، من غير تكرار` }, { status: 400 });
+    return NextResponse.json({ error: `يجب اختيار ${FEATURED_COUNT} خدمات بالضبط دون تكرار` }, { status: 400 });
   }
 
   await saveFeaturedServiceKeys(body.keys);

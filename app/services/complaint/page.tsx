@@ -96,7 +96,7 @@ export default function ComplaintPage() {
 
             <div>
               <label className="text-sm text-gray-700">عنوان الشكوى</label>
-              <input value={title} onChange={(e) => setTitle(e.target.value)} required type="text" placeholder="اكتب عنوان مختصر للشكوى" className="mt-2 w-full bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none text-right" />
+              <input value={title} onChange={(e) => setTitle(e.target.value)} required type="text" placeholder="اكتب عنوانًا مختصرًا للشكوى" className="mt-2 w-full bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none text-right" />
             </div>
 
             <div>

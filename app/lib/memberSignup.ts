@@ -19,10 +19,10 @@ export async function checkMemberEligibility(membershipNumberInput: unknown, nat
   const nationalId = String(nationalIdInput || "").trim();
 
   if (!/^\d+$/.test(membershipNumber)) {
-    return { error: "رقم القيد لازم يكون أرقام بس", status: 400 };
+    return { error: "يجب أن يتكون رقم القيد من أرقام فقط", status: 400 };
   }
   if (!isValidNationalId(nationalId)) {
-    return { error: "الرقم القومي لازم يكون 14 رقم", status: 400 };
+    return { error: "يجب أن يتكون الرقم القومي من 14 رقمًا", status: 400 };
   }
 
     let member: SyndicateMember | null;
@@ -35,21 +35,21 @@ export async function checkMemberEligibility(membershipNumberInput: unknown, nat
     throw e;
   }
   if (!member) {
-    return { error: "البيانات دي مش مطابقة لسجلات النقابة، اتأكد من رقم القيد والرقم القومي", status: 404 };
+    return { error: "البيانات غير مطابقة لسجلات النقابة، يرجى التأكد من رقم القيد والرقم القومي", status: 404 };
   }
 
   const existingUser = await prisma.user.findFirst({
     where: { OR: [{ membershipNumber }, { nationalId }] },
   });
   if (existingUser) {
-    return { error: "عندك حساب على البوابة بالفعل، سجّل دخول برقم القيد وكلمة المرور", status: 409 };
+    return { error: "لديك حساب على البوابة بالفعل، يرجى تسجيل الدخول برقم القيد وكلمة المرور", status: 409 };
   }
 
   const pending = await prisma.memberAccountRequest.findFirst({
     where: { nationalId, status: "PENDING" },
   });
   if (pending) {
-    return { error: "عندك طلب إنشاء حساب قيد المراجعة، هيوصلك رسالة أول ما يتراجع", status: 409 };
+    return { error: "لديك طلب إنشاء حساب قيد المراجعة، وستصلك رسالة فور مراجعته", status: 409 };
   }
 
   return { member };

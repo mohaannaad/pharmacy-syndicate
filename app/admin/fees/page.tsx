@@ -68,7 +68,7 @@ export default function AdminFeesPage() {
   }
 
   async function handleDelete(id: string) {
-    const confirmed = window.confirm("متأكد إنك عايز تحذف الرسم ده؟");
+    const confirmed = window.confirm("هل أنت متأكد من حذف هذا الرسم؟");
     if (!confirmed) return;
     await fetch(`/api/fees/${id}`, { method: "DELETE" });
     loadFees();

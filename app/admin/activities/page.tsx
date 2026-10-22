@@ -95,7 +95,7 @@ export default function AdminActivitiesPage() {
   }
 
   async function handleDelete(id: string) {
-    const confirmed = window.confirm("متأكد إنك عايز تحذف النشاط ده؟");
+    const confirmed = window.confirm("هل أنت متأكد من حذف هذا النشاط؟");
     if (!confirmed) return;
     await fetch(`/api/activities/${id}`, { method: "DELETE" });
     loadActivities();

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
   const password = String(body.password || "");
   if (!isValidPassword(password)) {
-    return NextResponse.json({ error: "كلمة المرور لازم تكون 8 حروف أو أرقام على الأقل" }, { status: 400 });
+    return NextResponse.json({ error: "يجب ألا تقل كلمة المرور عن 8 أحرف أو أرقام" }, { status: 400 });
   }
 
   const newPhone = String(body.newPhone || "").trim();
@@ -27,10 +27,10 @@ export async function POST(request: Request) {
 
   if (changingPhone) {
     if (!isValidPhone(newPhone) || newPhone === member.phone) {
-      return NextResponse.json({ error: "رقم الهاتف الجديد غير صحيح، ارجع للخطوة اللي فاتت" }, { status: 400 });
+      return NextResponse.json({ error: "رقم الهاتف الجديد غير صحيح، يرجى الرجوع إلى الخطوة السابقة" }, { status: 400 });
     }
     if (!idFrontUrl.startsWith("https://") || !idBackUrl.startsWith("https://")) {
-      return NextResponse.json({ error: "ارفع صورة البطاقة من الوش والضهر" }, { status: 400 });
+      return NextResponse.json({ error: "يرجى رفع صورة البطاقة من الوجه والظهر" }, { status: 400 });
     }
   }
 
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
 
   const phoneUsed = await prisma.user.findUnique({ where: { phone } });
   if (phoneUsed) {
-    return NextResponse.json({ error: "رقم الهاتف ده مستخدم في حساب تاني على البوابة" }, { status: 409 });
+    return NextResponse.json({ error: "رقم الهاتف هذا مستخدم في حساب آخر على البوابة" }, { status: 409 });
   }
 
   // (أ) رقمه زي ما هو → حساب عضو على طول
