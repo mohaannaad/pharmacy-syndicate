@@ -101,8 +101,9 @@ async function findMemberFromApi(membershipNumber: string, nationalId: string): 
   try {
     const res = await fetch(`${SYNDICATE_API_URL}/getMemberDataByRegId`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ registerNo: membershipNumber }),
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      // بنبعت رقم القيد + الرقم القومي، والنقابة بتتأكد إنهم لنفس الشخص
+      body: JSON.stringify({ registerNo: membershipNumber, nationalId }),
       signal: AbortSignal.timeout(10000), // لو مردّش في 10 ثواني نعتبره واقع
       cache: "no-store",
     });
@@ -114,15 +115,26 @@ async function findMemberFromApi(membershipNumber: string, nationalId: string): 
 
   console.log(`📡 [API النقابة] رقم القيد ${membershipNumber} → ${data?.statusCode} ${data?.statusMessage}`);
 
-  // statusCode = "1" يعني عضو صحيح، أي حاجة تانية يعني مش موجود
-  if (String(data?.statusCode) !== "1" || !data?.member) return null;
+  // statusCode = "1" يعني عضو صحيح، أي حاجة تانية يعني مش موجود أو مش مطابق
+  if (String(data?.statusCode) !== "1" || !data?.member) {
+    console.log("📤 [API النقابة] اللي اتبعت:", JSON.stringify({ registerNo: membershipNumber, nationalId }));
+    console.log("📥 [API النقابة] الرد كامل:", JSON.stringify(data));
+    return null;
+  }
+
+  const m = data.member;
+
+  // تأكيد إضافي من عندنا: الرقم القومي اللي راجع لازم يطابق اللي العضو كتبه
+  if (String(m.nationalId || "").trim() !== nationalId) {
+    console.warn(`⚠️ [API النقابة] الرقم القومي مش مطابق لرقم القيد ${membershipNumber}`);
+    return null;
+  }
 
   return {
-    membershipNumber,
-    // ⚠️ الـ API لسه مش بيرجع الرقم القومي، فمش بنقدر نتأكد إنه مطابق لرقم القيد
+    membershipNumber: String(m.membershipNumber || membershipNumber).trim(),
     nationalId,
-    fullName: String(data.member.name || "").trim(),
-    phone: normalizeMobile(data.member.mobile),
+    fullName: String(m.fullNameAr || m.name || "").trim(),
+    phone: normalizeMobile(m.mobile),
   };
 }
 
