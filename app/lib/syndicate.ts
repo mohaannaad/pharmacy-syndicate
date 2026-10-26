@@ -121,7 +121,7 @@ async function callSyndicate(service: string, payload: Record<string, string>) {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(10000), // لو مردّش في 10 ثواني نعتبره واقع
+      signal: AbortSignal.timeout(25000), // لو مردّش في 25 ثانية نعتبره واقع
       cache: "no-store",
     });
     data = await res.json();
