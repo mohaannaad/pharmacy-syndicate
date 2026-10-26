@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAutoRefresh } from "../../lib/useAutoRefresh";
-import { IdCard, Search, Trash2, Clock, Truck, Building2, ExternalLink, AlertCircle } from "lucide-react";
+import { IdCard, Search, Trash2, Clock, Truck, Building2, ExternalLink, AlertCircle, RefreshCw } from "lucide-react";
 import { RENEWAL_STATUS_LABELS, DELIVERY_LABELS, renewalNumber } from "../../lib/renewal";
 
 interface RenewalItem {
@@ -36,6 +36,29 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
   const [note, setNote] = useState(item.adminNote || "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [checking, setChecking] = useState(false);
+  const [checkMessage, setCheckMessage] = useState("");
+
+  // نسأل النقابة: الطلب ده اتدفع؟
+  async function checkPayment() {
+    setChecking(true);
+    setError("");
+    setCheckMessage("");
+    try {
+      const res = await fetch(`/api/renewals/${item.id}/check-payment`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "حدث خطأ، يرجى المحاولة مرة أخرى");
+      } else if (data.paid) {
+        onChanged();
+      } else {
+        setCheckMessage(data.message);
+      }
+    } catch {
+      setError("تعذّر الاتصال، يرجى المحاولة مرة أخرى");
+    }
+    setChecking(false);
+  }
 
   async function save() {
     setSaving(true);
@@ -133,6 +156,16 @@ function RenewalCard({ item, onChanged }: { item: RenewalItem; onChanged: () => 
       )}
       {item.status !== "AWAITING_PAYMENT" && !isFinal && status === "REJECTED" && (
         <p className="mt-2 text-xs text-red-700">⚠️ هذا الطلب مدفوع. عند الرفض سيعود آخر عام مسدد للعضو إلى {Math.min(...item.years) - 1}، ويُسترد المبلغ يدويًا.</p>
+      )}
+
+      {item.status === "AWAITING_PAYMENT" && (
+        <div className="mt-3 flex items-center gap-3 flex-wrap">
+          <button type="button" onClick={checkPayment} disabled={checking} className="flex items-center gap-1.5 text-xs font-medium text-primary bg-white border border-primary/30 hover:bg-primary/5 px-3 py-1.5 rounded-lg disabled:opacity-50">
+            <RefreshCw className={`w-3.5 h-3.5 ${checking ? "animate-spin" : ""}`} />
+            {checking ? "جارٍ التحقق..." : "التحقق من السداد لدى النقابة"}
+          </button>
+          {checkMessage && <span className="text-xs text-gray-500">{checkMessage}</span>}
+        </div>
       )}
 
       {isFinal && <p className="mt-2 text-xs text-gray-500">الطلب مرفوض نهائيًا، ويمكن للعضو تقديم طلب جديد.</p>}

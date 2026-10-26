@@ -9,8 +9,18 @@ export const CARD_DELIVERY_FEE = 50; // رسوم توصيل الكارنيه
 
 export interface RenewalYear {
   year: number;
-  subscription: number;
-  late: number;
+  subscription: number | null; // null = النقابة بترجع الإجمالي بس من غير تفاصيل كل سنة
+  late: number | null;
+}
+
+export interface RenewalDues {
+  years: RenewalYear[];
+  subscriptionTotal: number;
+  lateTotal: number;
+  total: number;
+  detailed: boolean; // فيه تفاصيل لكل سنة (الحسبة التجريبية) ولا إجمالي بس (من النقابة)
+  canRenew: boolean;
+  blockReason: string;
 }
 
 // بتحسب السنين المستحقة من بعد آخر سنة مدفوعة لحد السنة الحالية
@@ -27,6 +37,12 @@ export function calculateRenewal(lastPaidYear: number, currentYear = new Date().
   const subscriptionTotal = years.reduce((sum, y) => sum + y.subscription, 0);
   const lateTotal = years.reduce((sum, y) => sum + y.late, 0);
   return { years, subscriptionTotal, lateTotal, total: subscriptionTotal + lateTotal };
+}
+
+// نفس الحسبة التجريبية بالشكل الموحّد
+export function calculateRenewalDues(lastPaidYear: number): RenewalDues {
+  const r = calculateRenewal(lastPaidYear);
+  return { ...r, detailed: true, canRenew: true, blockReason: "" };
 }
 
 export function renewalNumber(serial: number, createdAt: string | Date) {

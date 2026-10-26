@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "../../../lib/prisma";
 import { sendSms } from "../../../lib/otp";
-import { updateSyndicateMemberPhone } from "../../../lib/syndicate";
+import { pushMemberPhoneToSyndicate, updateSyndicateMemberPhone, SyndicateUnavailableError } from "../../../lib/syndicate";
 
 // الموظف بيقبل أو يرفض طلب حساب عضو غيّر رقمه
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -50,6 +50,20 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "يوجد حساب على البوابة بنفس رقم القيد أو الرقم القومي أو رقم الهاتف، يرجى رفض الطلب مع كتابة السبب" }, { status: 409 });
   }
 
+  // الرقم الجديد يتسجل في سجلات النقابة الأول (updateMemberMobile)
+  // لو النقابة رفضت أو مش بترد → منعملش الحساب، والموظف يحاول تاني
+  try {
+    const syndicateError = await pushMemberPhoneToSyndicate(accountRequest.membershipNumber, accountRequest.newPhone);
+    if (syndicateError) {
+      return NextResponse.json({ error: syndicateError }, { status: 502 });
+    }
+  } catch (e) {
+    if (e instanceof SyndicateUnavailableError) {
+      return NextResponse.json({ error: "تعذّر الاتصال بسجلات النقابة حاليًا، يرجى المحاولة بعد قليل" }, { status: 503 });
+    }
+    throw e;
+  }
+
   // كل الخطوات مع بعض: لو واحدة فشلت، ولا حاجة تتسجل
   await prisma.$transaction(
     async (tx) => {
@@ -65,7 +79,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         },
       });
 
-      // ب) الرقم الجديد يتسجل في سجلات النقابة
+      // ب) الرقم الجديد يتسجل في نسختنا من بيانات العضو
       await updateSyndicateMemberPhone(tx, accountRequest.membershipNumber, accountRequest.newPhone);
 
       // ج) الطلب يبقى "مقبول"

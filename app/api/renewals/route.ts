@@ -1,6 +1,11 @@
 import { prisma } from "../../lib/prisma";
 import { NextResponse } from "next/server";
-import { calculateRenewal, renewalNumber, CARD_DELIVERY_FEE } from "../../lib/renewal";
+import { renewalNumber, CARD_DELIVERY_FEE } from "../../lib/renewal";
+import { getRenewalDues } from "../../lib/renewalServer";
+import { SyndicateUnavailableError } from "../../lib/syndicate";
+
+const UNAVAILABLE = "تعذّر الاتصال بسجلات النقابة حاليًا، يرجى المحاولة بعد قليل";
+
 import { getCurrentMember } from "../../lib/currentMember";
 
 // لوحة التحكم: كل طلبات التجديد
@@ -23,7 +28,16 @@ export async function POST(request: Request) {
   const member = current.member;
 
   // 2) لازم يكون عليه سنين مستحقة
-  const renewal = calculateRenewal(member.lastPaidYear);
+  let renewal;
+  try {
+    renewal = await getRenewalDues(member);
+  } catch (e) {
+    if (e instanceof SyndicateUnavailableError) return NextResponse.json({ error: UNAVAILABLE }, { status: 503 });
+    throw e;
+  }
+  if (!renewal.canRenew) {
+    return NextResponse.json({ error: renewal.blockReason || "لا يمكن تجديد الاشتراك حاليًا، يرجى التواصل مع النقابة" }, { status: 400 });
+  }
   if (renewal.years.length === 0) {
     return NextResponse.json({ error: "اشتراكك مسدد حتى العام الحالي، لا توجد مستحقات" }, { status: 400 });
   }

@@ -1,7 +1,12 @@
 import { prisma } from "../../../lib/prisma";
 import { NextResponse } from "next/server";
 import { getCurrentMember } from "../../../lib/currentMember";
-import { calculateRenewal, renewalNumber } from "../../../lib/renewal";
+import { renewalNumber } from "../../../lib/renewal";
+import { getRenewalDues } from "../../../lib/renewalServer";
+import { SyndicateUnavailableError } from "../../../lib/syndicate";
+
+const UNAVAILABLE = "تعذّر الاتصال بسجلات النقابة حاليًا، يرجى المحاولة بعد قليل";
+
 
 // بيرجّع بيانات العضو الحالي + السنين المستحقة عليه + أي طلب تجديد مفتوح
 export async function GET() {
@@ -10,6 +15,14 @@ export async function GET() {
     return NextResponse.json({ error: current.error }, { status: current.status });
   }
   const member = current.member;
+
+  let renewal;
+  try {
+    renewal = await getRenewalDues(member);
+  } catch (e) {
+    if (e instanceof SyndicateUnavailableError) return NextResponse.json({ error: UNAVAILABLE }, { status: 503 });
+    throw e;
+  }
 
   const openRequest = await prisma.renewalRequest.findFirst({
     where: { memberId: member.id, status: { in: ["AWAITING_PAYMENT", "RECEIVED", "UNDER_REVIEW", "ISSUED"] } },
@@ -34,7 +47,7 @@ export async function GET() {
       photoUrl: member.photoUrl,
       lastPaidYear: member.lastPaidYear,
     },
-    renewal: calculateRenewal(member.lastPaidYear),
+    renewal,
     openRequest: openRequest
       ? {
           number: renewalNumber(openRequest.serial, openRequest.createdAt),

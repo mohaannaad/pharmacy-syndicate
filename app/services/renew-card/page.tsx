@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { IdCard, CheckCircle2, Clock3, AlertCircle, Truck, Building2, Camera, Loader2, User } from "lucide-react";
 import PageHeader from "../../components/PageHeader";
-import { CARD_DELIVERY_FEE, RENEWAL_STATUS_LABELS, type RenewalYear } from "../../lib/renewal";
+import { CARD_DELIVERY_FEE, RENEWAL_STATUS_LABELS, type RenewalDues } from "../../lib/renewal";
 
 interface MemberData {
   member: {
@@ -14,12 +14,7 @@ interface MemberData {
     photoUrl: string | null;
     lastPaidYear: number;
   };
-  renewal: {
-    years: RenewalYear[];
-    subscriptionTotal: number;
-    lateTotal: number;
-    total: number;
-  };
+  renewal: RenewalDues;
   openRequest: { number: string; status: string; total: number; adminNote: string | null } | null;
     rejectedRequest: { number: string; adminNote: string | null } | null;
 }
@@ -239,7 +234,17 @@ export default function RenewCardPage() {
           )}
 
           {/* ---------- مسدد ---------- */}
-          {!openRequest && renewal.years.length === 0 && (
+          {/* ---------- التجديد موقوف من النقابة ---------- */}
+          {!openRequest && !renewal.canRenew && (
+            <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+              <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
+              <p className="mt-3 font-bold text-gray-900">لا يمكن تجديد الاشتراك إلكترونيًا حاليًا</p>
+              {renewal.blockReason && <p className="mt-2 text-sm text-gray-600">{renewal.blockReason}</p>}
+              <p className="mt-2 text-sm text-gray-500">يرجى التواصل مع النقابة لمزيد من التفاصيل.</p>
+            </div>
+          )}
+
+          {!openRequest && renewal.canRenew && renewal.years.length === 0 && (
             <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
               <CheckCircle2 className="w-12 h-12 text-primary-light mx-auto" />
               <p className="mt-3 font-bold text-gray-900">اشتراكك مسدد حتى عام {member.lastPaidYear}</p>
@@ -248,31 +253,44 @@ export default function RenewCardPage() {
           )}
 
           {/* ---------- فورم التجديد ---------- */}
-          {!openRequest && renewal.years.length > 0 && (
+          {!openRequest && renewal.canRenew && renewal.years.length > 0 && (
             <>
               {/* السنوات المستحقة */}
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h3 className="font-bold text-gray-900 mb-3">السنوات المستحقة</h3>
-                <div className="overflow-hidden rounded-xl border border-gray-100">
-                  <table className="w-full text-sm">
-                    <thead className="bg-surface-muted text-gray-500">
-                      <tr>
-                        <th className="text-right font-medium px-4 py-2">العام</th>
-                        <th className="text-right font-medium px-4 py-2">الاشتراك</th>
-                        <th className="text-right font-medium px-4 py-2">غرامة التأخير</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {renewal.years.map((y) => (
-                        <tr key={y.year} className="border-t border-gray-100">
-                          <td className="px-4 py-2 font-medium text-gray-900">{y.year}</td>
-                          <td className="px-4 py-2 text-gray-600">{money(y.subscription)}</td>
-                          <td className={`px-4 py-2 ${y.late ? "text-red-600" : "text-gray-400"}`}>{y.late ? money(y.late) : "—"}</td>
+                {renewal.detailed ? (
+                  <div className="overflow-hidden rounded-xl border border-gray-100">
+                    <table className="w-full text-sm">
+                      <thead className="bg-surface-muted text-gray-500">
+                        <tr>
+                          <th className="text-right font-medium px-4 py-2">العام</th>
+                          <th className="text-right font-medium px-4 py-2">الاشتراك</th>
+                          <th className="text-right font-medium px-4 py-2">غرامة التأخير</th>
                         </tr>
+                      </thead>
+                      <tbody>
+                        {renewal.years.map((y) => (
+                          <tr key={y.year} className="border-t border-gray-100">
+                            <td className="px-4 py-2 font-medium text-gray-900">{y.year}</td>
+                            <td className="px-4 py-2 text-gray-600">{money(y.subscription ?? 0)}</td>
+                            <td className={`px-4 py-2 ${y.late ? "text-red-600" : "text-gray-400"}`}>{y.late ? money(y.late) : "—"}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex flex-wrap gap-2">
+                      {renewal.years.map((y) => (
+                        <span key={y.year} className="text-sm bg-surface-muted text-gray-900 font-medium px-3 py-1.5 rounded-lg" dir="ltr">{y.year}</span>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
+                    </div>
+                    <p className="mt-3 text-sm text-gray-600">
+                      المبلغ المستحق وفق سجلات النقابة (شامل غرامات التأخير): <span className="font-bold text-gray-900">{money(renewal.total)}</span>
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* مراجعة البيانات */}
@@ -331,7 +349,7 @@ export default function RenewCardPage() {
               {/* الإجمالي */}
               <div className="bg-white rounded-2xl shadow-sm p-6">
                 <h3 className="font-bold text-gray-900 mb-2">الإجمالي</h3>
-                <Row label={`الاشتراك (${renewal.years.length} ${renewal.years.length === 1 ? "سنة" : "سنوات"})`} value={money(renewal.subscriptionTotal)} />
+                <Row label={`${renewal.detailed ? "الاشتراك" : "الاشتراكات والغرامات"} (${renewal.years.length} ${renewal.years.length === 1 ? "سنة" : "سنوات"})`} value={money(renewal.subscriptionTotal)} />
                 {renewal.lateTotal > 0 && <Row label="غرامات التأخير" value={money(renewal.lateTotal)} />}
                 {deliveryFee > 0 && <Row label="رسوم التوصيل" value={money(deliveryFee)} />}
                 <Row label="الإجمالي المطلوب" value={money(total)} bold />

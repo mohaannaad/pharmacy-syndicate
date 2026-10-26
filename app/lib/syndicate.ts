@@ -59,6 +59,9 @@ export interface SyndicateMember {
   nationalId: string;
   fullName: string;
   phone: string; // رقم الموبايل المسجل في النقابة
+  address: string;
+  lastPaidYear: number;
+  photoUrl: string | null;
 }
 
 // أعضاء تجريبيين للتجربة (كأنهم مسجلين في النقابة من زمان)
@@ -86,6 +89,10 @@ async function seedMockRegistry() {
 // ---------------------------------------------------------------------
 const SYNDICATE_API_URL = process.env.SYNDICATE_API_URL;
 
+export function isSyndicateApiEnabled() {
+  return !!SYNDICATE_API_URL;
+}
+
 // خطأ خاص: API النقابة مش بيرد (الـ VPN مقفول، أو السيرفر واقع)
 export class SyndicateUnavailableError extends Error {}
 
@@ -96,33 +103,47 @@ function normalizeMobile(value: unknown) {
   return /^01\d{9}$/.test(digits) ? digits : "";
 }
 
-async function findMemberFromApi(membershipNumber: string, nationalId: string): Promise<SyndicateMember | null> {
+function toNumber(value: unknown, fallback = 0) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+// النقابة بترجع statusCode، وفي واجهة تحديث الموبايل بترجعه StatusCode (بحرف S كبير)
+function isSuccess(data: Record<string, unknown> | null) {
+  return String(data?.statusCode ?? data?.StatusCode ?? "") === "1";
+}
+
+// دالة واحدة بتكلّم أي خدمة عند النقابة
+async function callSyndicate(service: string, payload: Record<string, string>) {
   let data;
   try {
-    const res = await fetch(`${SYNDICATE_API_URL}/getMemberDataByRegId`, {
+    const res = await fetch(`${SYNDICATE_API_URL}/${service}`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
-      // بنبعت رقم القيد + الرقم القومي، والنقابة بتتأكد إنهم لنفس الشخص
-      body: JSON.stringify({ registerNo: membershipNumber, nationalId }),
+      body: JSON.stringify(payload),
       signal: AbortSignal.timeout(10000), // لو مردّش في 10 ثواني نعتبره واقع
       cache: "no-store",
     });
     data = await res.json();
   } catch (e) {
-    console.error("❌ [API النقابة] مش بيرد:", e);
+    console.error(`❌ [API النقابة] ${service} مش بيرد:`, e);
     throw new SyndicateUnavailableError();
   }
-
-  console.log(`📡 [API النقابة] رقم القيد ${membershipNumber} → ${data?.statusCode} ${data?.statusMessage}`);
-
-  // statusCode = "1" يعني عضو صحيح، أي حاجة تانية يعني مش موجود أو مش مطابق
-  if (String(data?.statusCode) !== "1" || !data?.member) {
-    console.log("📤 [API النقابة] اللي اتبعت:", JSON.stringify({ registerNo: membershipNumber, nationalId }));
-    console.log("📥 [API النقابة] الرد كامل:", JSON.stringify(data));
-    return null;
+  console.log(`📡 [API النقابة] ${service} → ${data?.statusCode ?? data?.StatusCode} ${data?.statusMessage ?? ""}`);
+  if (!isSuccess(data)) {
+    console.log(`📥 [API النقابة] ${service} الرد كامل:`, JSON.stringify(data));
   }
+  return data as Record<string, unknown>;
+}
 
-  const m = data.member;
+// ---------------------------------------------------------------------
+// (1) getMemberDataByRegId — بيانات العضو برقم القيد + الرقم القومي
+// ---------------------------------------------------------------------
+async function findMemberFromApi(membershipNumber: string, nationalId: string): Promise<SyndicateMember | null> {
+  const data = await callSyndicate("getMemberDataByRegId", { registerNo: membershipNumber, nationalId });
+  if (!isSuccess(data) || !data.member) return null;
+
+  const m = data.member as Record<string, unknown>;
 
   // تأكيد إضافي من عندنا: الرقم القومي اللي راجع لازم يطابق اللي العضو كتبه
   if (String(m.nationalId || "").trim() !== nationalId) {
@@ -130,11 +151,16 @@ async function findMemberFromApi(membershipNumber: string, nationalId: string): 
     return null;
   }
 
+  const photo = String(m.photoUrl || "").trim();
   return {
     membershipNumber: String(m.membershipNumber || membershipNumber).trim(),
     nationalId,
     fullName: String(m.fullNameAr || m.name || "").trim(),
     phone: normalizeMobile(m.mobile),
+    address: String(m.address || "").trim(),
+    lastPaidYear: toNumber(m.lastPaidYear),
+    // النقابة بترجع "0" لو مفيش صورة
+    photoUrl: photo.startsWith("http") ? photo : null,
   };
 }
 
@@ -154,11 +180,99 @@ export async function findSyndicateMember(membershipNumber: string, nationalId: 
     nationalId: member.nationalId,
     fullName: member.fullName,
     phone: member.phone,
+    address: member.address,
+    lastPaidYear: member.lastPaidYear,
+    photoUrl: member.photoUrl,
   };
 }
 
-// تحديث رقم موبايل العضو في سجلات النقابة (بعد ما الموظف يوافق على الرقم الجديد)
+// بنجيب أحدث بيانات العضو من النقابة، ونحفظ نسخة منها في جدول الأعضاء عندنا
+// (عشان طلبات التجديد مربوطة بالجدول ده)
+export async function syncMemberFromSyndicate(membershipNumber: string, nationalId: string) {
+  const fresh = await findSyndicateMember(membershipNumber, nationalId);
+  if (!fresh) return null;
+  if (!SYNDICATE_API_URL) {
+    return prisma.member.findUnique({ where: { membershipNumber } });
+  }
+  const data = {
+    nationalId: fresh.nationalId,
+    fullName: fresh.fullName,
+    phone: fresh.phone,
+    address: fresh.address,
+    lastPaidYear: fresh.lastPaidYear,
+  };
+  return prisma.member.upsert({
+    where: { membershipNumber },
+    update: { ...data, ...(fresh.photoUrl ? { photoUrl: fresh.photoUrl } : {}) },
+    create: { membershipNumber, ...data, ...(fresh.photoUrl ? { photoUrl: fresh.photoUrl } : {}) },
+  });
+}
+
+// ---------------------------------------------------------------------
+// (2) updateMemberMobile — تسجيل رقم الموبايل الجديد في سجلات النقابة
+// ---------------------------------------------------------------------
+// بترجع null لو نجح، أو رسالة الخطأ
+export async function pushMemberPhoneToSyndicate(membershipNumber: string, phone: string): Promise<string | null> {
+  if (!SYNDICATE_API_URL) return null; // الوضع التجريبي: مفيش حاجة نبعتها
+  const data = await callSyndicate("updateMemberMobile", { registerNo: membershipNumber, mobileNo: phone });
+  if (isSuccess(data)) return null;
+  return `تعذّر تحديث رقم الهاتف في سجلات النقابة${data.statusMessage ? `: ${data.statusMessage}` : ""}`;
+}
+
+// تحديث رقم موبايل العضو في جدول الأعضاء عندنا (بعد ما الموظف يوافق على الرقم الجديد)
 export async function updateSyndicateMemberPhone(tx: Prisma.TransactionClient, membershipNumber: string, phone: string) {
-  // updateMany عشان لو العضو مش موجود في الجدول التجريبي (جاي من API النقابة) ميحصلش خطأ
+  // updateMany عشان لو العضو مش موجود في الجدول ميحصلش خطأ
   await tx.member.updateMany({ where: { membershipNumber }, data: { phone } });
+}
+
+// ---------------------------------------------------------------------
+// (3) getMemberDues — المستحقات على العضو
+// ---------------------------------------------------------------------
+export interface SyndicateDues {
+  lastPaidYear: number;
+  noOfYears: number;
+  total: number;
+  canRenew: boolean;
+  blockReason: string;
+}
+
+export async function getMemberDuesFromSyndicate(membershipNumber: string): Promise<SyndicateDues | null> {
+  const data = await callSyndicate("getMemberDues", { registerNo: membershipNumber });
+  if (!isSuccess(data)) return null;
+  return {
+    lastPaidYear: toNumber(data.lastPaidYear),
+    noOfYears: toNumber(data.noOfYears),
+    total: toNumber(data.total),
+    canRenew: String(data.canRenew).toLowerCase() === "true",
+    blockReason: String(data.blockReason || "").trim(),
+  };
+}
+
+// ---------------------------------------------------------------------
+// (4) checkPaymentStatus — هل العضو دفع؟
+// ---------------------------------------------------------------------
+export interface SyndicatePayment {
+  paid: boolean;
+  message: string;
+  receiptNumber: string;
+  lastPaidYear: number;
+  paidYears: number;
+  channel: string;
+  amount: number;
+  paidAt: Date | null;
+}
+
+export async function checkPaymentStatusFromSyndicate(membershipNumber: string, paymentRef: string): Promise<SyndicatePayment> {
+  const data = await callSyndicate("checkPaymentStatus", { registerNo: membershipNumber, paymentRef });
+  const paidAt = data.paidAt ? new Date(String(data.paidAt).replace(" ", "T")) : null;
+  return {
+    paid: isSuccess(data),
+    message: String(data.statusMessage || ""),
+    receiptNumber: String(data.receiptNumber || ""),
+    lastPaidYear: toNumber(data.lastPaidYear),
+    paidYears: toNumber(data.paidYears),
+    channel: String(data.channel || ""),
+    amount: toNumber(data.amount),
+    paidAt: paidAt && !isNaN(paidAt.getTime()) ? paidAt : null,
+  };
 }
