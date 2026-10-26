@@ -203,7 +203,7 @@ export default function AdminActivitiesPage() {
                   </div>
                   <button
                     onClick={() => handleDelete(a.id)}
-                    className="flex items-center gap-1 text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0"
+                    className="flex items-center gap-1 text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors shrink-0"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     حذف

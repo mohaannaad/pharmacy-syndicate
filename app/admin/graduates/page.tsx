@@ -159,7 +159,7 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
             {open ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             {open ? "إخفاء التفاصيل" : "عرض التفاصيل"}
           </button>
-          <button type="button" onClick={handleDelete} className="flex items-center gap-1 text-gray-500 bg-white border border-gray-200 hover:bg-gray-50 px-3 py-1.5 rounded-lg text-xs font-medium">
+          <button type="button" onClick={handleDelete} className="flex items-center gap-1 text-red-600 bg-red-50 border border-red-200 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium">
             <Trash2 className="w-3.5 h-3.5" />
             حذف
           </button>

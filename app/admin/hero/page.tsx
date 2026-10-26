@@ -307,7 +307,7 @@ export default function AdminHeroPage() {
                   <button type="button" onClick={() => startEdit(slide)} title="تعديل" className="p-2 rounded-lg text-gray-500 hover:bg-gray-100">
                     <Pencil className="w-4 h-4" />
                   </button>
-                  <button type="button" onClick={() => handleDelete(slide)} title="حذف" className="p-2 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600">
+                  <button type="button" onClick={() => handleDelete(slide)} title="حذف" className="p-2 rounded-lg text-red-600 hover:bg-red-50">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
