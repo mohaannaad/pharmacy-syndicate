@@ -34,8 +34,8 @@ export function calculateRenewal(lastPaidYear: number, currentYear = new Date().
       late: year < currentYear ? LATE_FEE_PER_YEAR : 0,
     });
   }
-  const subscriptionTotal = years.reduce((sum, y) => sum + y.subscription, 0);
-  const lateTotal = years.reduce((sum, y) => sum + y.late, 0);
+  const subscriptionTotal = years.reduce((sum, y) => sum + (y.subscription ?? 0), 0);
+  const lateTotal = years.reduce((sum, y) => sum + (y.late ?? 0), 0);
   return { years, subscriptionTotal, lateTotal, total: subscriptionTotal + lateTotal };
 }
 
