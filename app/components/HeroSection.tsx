@@ -25,7 +25,7 @@ export default function HeroSection({ slides }: { slides: HeroSlideData[] }) {
 
   return (
     <div className="bg-white px-4 md:px-8 pt-4">
-      <section className="relative overflow-hidden rounded-3xl h-[420px] md:h-[480px]">
+      <section className="relative overflow-hidden rounded-3xl h-[420px] md:h-[480px] animate-hero-in">
         {slides.map((slide, i) => (
           <div key={slide.id} className="absolute inset-0 transition-opacity duration-700" style={{ opacity: i === active ? 1 : 0, pointerEvents: i === active ? "auto" : "none" }}>
             <img src={slide.imageUrl} alt={slide.title || "النقابة العامة لصيادلة مصر"} className="absolute inset-0 w-full h-full object-cover" />

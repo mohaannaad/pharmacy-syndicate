@@ -16,10 +16,10 @@ export default function NewsCard({ id, type, title, content, imageUrl, youtubeUr
   const date = new Date(createdAt).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
 
   const cardContent = (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300">
+    <div className="group bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out h-full">
       <div className="relative aspect-video bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center overflow-hidden">
         {imageUrl ? (
-          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" />
         ) : (
           <Newspaper className="w-10 h-10 text-gray-400" />
         )}

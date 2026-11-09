@@ -1,5 +1,6 @@
 import NewsCard from "./NewsCard";
 import AdBanner from "./AdBanner";
+import Reveal from "./Reveal";
 import { prisma } from "../lib/prisma";
 
 interface NewsSectionProps {
@@ -19,32 +20,36 @@ export default async function NewsSection({ title = "آخر الأخبار", sub
   return (
     <section className="bg-white py-16">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-right">
+        <Reveal className="text-right">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{title}</h2>
           <p className="mt-2 text-gray-500">{subtitle}</p>
-        </div>
+        </Reveal>
 
         {useRealData ? (
           <>
             {firstGroup.length > 0 && (
               <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {firstGroup.map((item) => (
-                  <NewsCard key={item.id} id={item.id} type={item.type} title={item.title} content={item.content} imageUrl={item.imageUrl} youtubeUrl={item.youtubeUrl} createdAt={item.createdAt.toString()} />
+                {firstGroup.map((item, i) => (
+                  <Reveal key={item.id} delay={(i % 2) * 120}>
+                  <NewsCard id={item.id} type={item.type} title={item.title} content={item.content} imageUrl={item.imageUrl} youtubeUrl={item.youtubeUrl} createdAt={item.createdAt.toString()} />
+                  </Reveal>
                 ))}
               </div>
             )}
 
-            <div className="mt-6">
+            <Reveal className="mt-6">
               <AdBanner variant="dark" />
-            </div>
-            <div className="mt-6">
+            </Reveal>
+            <Reveal className="mt-6">
               <AdBanner variant="blue" />
-            </div>
+            </Reveal>
 
             {secondGroup.length > 0 && (
               <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {secondGroup.map((item) => (
-                  <NewsCard key={item.id} id={item.id} type={item.type} title={item.title} content={item.content} imageUrl={item.imageUrl} youtubeUrl={item.youtubeUrl} createdAt={item.createdAt.toString()} />
+                {secondGroup.map((item, i) => (
+                  <Reveal key={item.id} delay={(i % 2) * 120}>
+                  <NewsCard id={item.id} type={item.type} title={item.title} content={item.content} imageUrl={item.imageUrl} youtubeUrl={item.youtubeUrl} createdAt={item.createdAt.toString()} />
+                  </Reveal>
                 ))}
               </div>
             )}
@@ -52,7 +57,9 @@ export default async function NewsSection({ title = "آخر الأخبار", sub
             {news.length === 0 && <p className="mt-10 text-center text-gray-400">لا توجد أخبار حاليًا</p>}
           </>
         ) : (
-          <p className="mt-10 text-center text-gray-400">قريبًا: أخبار النقابات الفرعية</p>
+          <Reveal>
+            <p className="mt-10 text-center text-gray-400">قريبًا: أخبار النقابات الفرعية</p>
+          </Reveal>
         )}
       </div>
     </section>
