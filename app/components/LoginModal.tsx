@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { X, Eye, EyeOff, AlertCircle } from "lucide-react";
 
 interface LoginModalProps {
@@ -14,6 +15,9 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  // الخانات بتبدأ "للقراءة فقط" لحد ما المستخدم يدوس عليها،
+  // عشان المتصفح ما يملاهاش لوحده ببيانات حسابات قديمة (Autofill)
+  const [unlocked, setUnlocked] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,25 +43,27 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
-      <div className="relative w-full max-w-sm bg-white rounded-2xl p-6 text-right">
+  // createPortal: بنرسم النافذة في آخر الصفحة (body) مش جوه الهيدر،
+  // عشان الهيدر عليه تأثير blur كان بيقص النافذة من فوق
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
+      <div className="relative w-full max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-3xl shadow-lift p-6 md:p-7 text-right" onClick={(e) => e.stopPropagation()}>
         <button type="button" onClick={onClose} className="absolute top-4 left-4 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
           <X className="w-4 h-4 text-gray-500" />
         </button>
 
         <h2 className="text-lg font-bold text-gray-900">تسجيل الدخول</h2>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} autoComplete="off" className="mt-6 space-y-4">
           <div>
             <label className="text-sm text-gray-600">رقم القيد / الرقم القومي / رقم الهاتف</label>
-            <input type="text" value={identifier} onChange={(e) => setIdentifier(e.target.value.trim())} placeholder="أدخل أيًّا منها" className="mt-2 w-full bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none text-right" dir="ltr" />
+            <input type="text" name="syndicate-login-id" autoComplete="off" readOnly={!unlocked} onPointerDown={() => setUnlocked(true)} onFocus={() => setUnlocked(true)} value={identifier} onChange={(e) => setIdentifier(e.target.value.trim())} placeholder="أدخل أيًّا منها" className="mt-2 w-full bg-surface-muted border border-line rounded-2xl px-4 py-3 text-sm outline-none text-right" dir="ltr" />
           </div>
 
           <div>
             <label className="text-sm text-gray-600">كلمة المرور</label>
             <div className="mt-2 relative">
-              <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="أدخل كلمة المرور" className="w-full bg-gray-100 rounded-xl px-4 py-3 pl-11 text-sm outline-none text-right" />
+              <input type={showPassword ? "text" : "password"} name="syndicate-login-pass" autoComplete="off" readOnly={!unlocked} onPointerDown={() => setUnlocked(true)} onFocus={() => setUnlocked(true)} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="أدخل كلمة المرور" className="w-full bg-surface-muted border border-line rounded-2xl px-4 py-3 pl-11 text-sm outline-none text-right" />
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -83,6 +89,7 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
