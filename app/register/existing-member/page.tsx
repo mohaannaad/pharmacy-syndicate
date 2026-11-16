@@ -136,11 +136,11 @@ export default function ExistingMemberRegisterPage() {
                 <div className="space-y-5">
                   <div>
                     <label className="text-sm text-gray-700">رقم القيد</label>
-                    <input type="text" inputMode="numeric" value={membershipNumber} onChange={(e) => setMembershipNumber(e.target.value.replace(/\D/g, ""))} placeholder="رقم القيد بالنقابة" className={inputClass} dir="ltr" />
+                    <input type="text" inputMode="numeric" autoComplete="off" value={membershipNumber} onChange={(e) => setMembershipNumber(e.target.value.replace(/\D/g, ""))} placeholder="رقم القيد بالنقابة" className={inputClass} dir="ltr" />
                   </div>
                   <div>
                     <label className="text-sm text-gray-700">الرقم القومي</label>
-                    <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, "").slice(0, 14))} placeholder="14 رقمًا" className={inputClass} dir="ltr" />
+                    <input type="text" inputMode="numeric" autoComplete="off" value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, "").slice(0, 14))} placeholder="14 رقمًا" className={inputClass} dir="ltr" />
                   </div>
                 </div>
               )}
@@ -179,7 +179,7 @@ export default function ExistingMemberRegisterPage() {
                     <div className="bg-white rounded-xl shadow-sm p-4 space-y-3">
                       <div>
                         <label className="text-sm text-gray-700">رقم الهاتف المحمول الجديد</label>
-                        <input type="tel" inputMode="numeric" value={newPhone} onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01xxxxxxxxx" className={`${inputClass} bg-surface-muted`} dir="ltr" />
+                        <input type="tel" inputMode="numeric" autoComplete="off" value={newPhone} onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01xxxxxxxxx" className={`${inputClass} bg-surface-muted`} dir="ltr" />
                       </div>
                       <div>
                         <DocumentUploadRow label="صورة البطاقة (الوجه)" uploaded={!!idFrontUrl} onUpload={setIdFrontUrl} />
@@ -202,7 +202,7 @@ export default function ExistingMemberRegisterPage() {
                   )}
                   <div>
                     <label className="text-sm text-gray-700">رمز التحقق</label>
-                    <input type="text" inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="الرمز المكون من 6 أرقام" className={`${inputClass} text-center tracking-widest`} dir="ltr" />
+                    <input type="text" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="الرمز المكون من 6 أرقام" className={`${inputClass} text-center tracking-widest`} dir="ltr" />
                     <p className="mt-1 text-xs text-gray-400">
                       تم الإرسال إلى <span dir="ltr">{sentTo}</span>
                     </p>
@@ -210,7 +210,7 @@ export default function ExistingMemberRegisterPage() {
                   <div>
                     <label className="text-sm text-gray-700">كلمة المرور</label>
                     <div className="relative">
-                      <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8 أحرف أو أرقام على الأقل" className={`${inputClass} pl-11`} />
+                      <input type={showPassword ? "text" : "password"} autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8 أحرف أو أرقام على الأقل" className={`${inputClass} pl-11`} />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 translate-y-[-25%] text-gray-400">
                         {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                       </button>
@@ -218,7 +218,7 @@ export default function ExistingMemberRegisterPage() {
                   </div>
                   <div>
                     <label className="text-sm text-gray-700">تأكيد كلمة المرور</label>
-                    <input type={showPassword ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} className={inputClass} />
+                    <input type={showPassword ? "text" : "password"} autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className={inputClass} />
                   </div>
                   {changingPhone && (
                     <p className="text-xs text-gray-500 bg-white rounded-xl px-4 py-3">
@@ -254,4 +254,4 @@ export default function ExistingMemberRegisterPage() {
       </section>
     </main>
   );
-}
+}

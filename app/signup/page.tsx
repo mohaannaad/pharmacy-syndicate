@@ -84,15 +84,15 @@ export default function SignupPage() {
             <div className="space-y-5">
               <div>
                 <label className="text-sm text-gray-700">الاسم بالكامل</label>
-                <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="الاسم رباعي كما في البطاقة" className={inputClass} />
+                <input type="text" autoComplete="off" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="الاسم رباعي كما في البطاقة" className={inputClass} />
               </div>
               <div>
                 <label className="text-sm text-gray-700">الرقم القومي</label>
-                <input type="text" inputMode="numeric" value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, "").slice(0, 14))} placeholder="14 رقمًا" className={inputClass} dir="ltr" />
+                <input type="text" inputMode="numeric" autoComplete="off" value={nationalId} onChange={(e) => setNationalId(e.target.value.replace(/\D/g, "").slice(0, 14))} placeholder="14 رقمًا" className={inputClass} dir="ltr" />
               </div>
               <div>
                 <label className="text-sm text-gray-700">رقم الهاتف</label>
-                <input type="tel" inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01xxxxxxxxx" className={inputClass} dir="ltr" />
+                <input type="tel" inputMode="numeric" autoComplete="off" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))} placeholder="01xxxxxxxxx" className={inputClass} dir="ltr" />
                 <p className="mt-1 text-xs text-gray-400">سيصلك رمز تحقق على هذا الرقم</p>
               </div>
             </div>
@@ -110,7 +110,7 @@ export default function SignupPage() {
               )}
               <div>
                 <label className="text-sm text-gray-700">رمز التحقق</label>
-                <input type="text" inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="الرمز المكون من 6 أرقام" className={`${inputClass} text-center tracking-widest`} dir="ltr" />
+                <input type="text" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="الرمز المكون من 6 أرقام" className={`${inputClass} text-center tracking-widest`} dir="ltr" />
                 <p className="mt-1 text-xs text-gray-400">
                   تم الإرسال إلى <span dir="ltr">{phone}</span>
                 </p>
@@ -118,7 +118,7 @@ export default function SignupPage() {
               <div>
                 <label className="text-sm text-gray-700">كلمة المرور</label>
                 <div className="relative">
-                  <input type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8 أحرف أو أرقام على الأقل" className={`${inputClass} pl-11`} />
+                  <input type={showPassword ? "text" : "password"} autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="8 أحرف أو أرقام على الأقل" className={`${inputClass} pl-11`} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute left-3 top-1/2 translate-y-[-25%] text-gray-400">
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -126,7 +126,7 @@ export default function SignupPage() {
               </div>
               <div>
                 <label className="text-sm text-gray-700">تأكيد كلمة المرور</label>
-                <input type={showPassword ? "text" : "password"} value={confirm} onChange={(e) => setConfirm(e.target.value)} className={inputClass} />
+                <input type={showPassword ? "text" : "password"} autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className={inputClass} />
               </div>
             </div>
           )}
