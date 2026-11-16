@@ -65,7 +65,7 @@ export default function AdminHomeServicesPage() {
   return (
     <div className="space-y-6">
       {/* ---------- الخدمات الظاهرة ---------- */}
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div>
             <h2 className="font-bold text-gray-900">الخدمات الظاهرة في الصفحة الرئيسية</h2>
@@ -117,7 +117,7 @@ export default function AdminHomeServicesPage() {
       </div>
 
       {/* ---------- باقي الخدمات ---------- */}
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <h2 className="font-bold text-gray-900 mb-1">الخدمات المتاحة</h2>
         <p className="text-xs text-gray-400 mb-4">{isFull ? "لإضافة خدمة، أزل إحدى الخدمات المختارة أعلاه أولًا" : "اضغط «إضافة» على الخدمة التي تريد إظهارها"}</p>
 

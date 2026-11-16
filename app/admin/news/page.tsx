@@ -107,7 +107,7 @@ export default function AdminNewsPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <form onSubmit={handleSubmit} className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="lg:col-span-2 bg-white rounded-3xl border border-line shadow-card p-6 space-y-4">
           <h2 className="font-bold text-gray-900">إضافة خبر جديد</h2>
 
           <div>
@@ -161,11 +161,11 @@ export default function AdminNewsPage() {
         </form>
 
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl shadow-sm p-5">
+          <div className="bg-white rounded-3xl border border-line shadow-card p-5">
             <p className="text-xs text-gray-400">إجمالي الأخبار</p>
             <p className="text-3xl font-bold text-gray-900 mt-1">{newsList.length}</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+          <div className="bg-white rounded-3xl border border-line shadow-card p-5 flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
               <FileText className="w-4 h-4 text-primary" />
             </div>
@@ -174,7 +174,7 @@ export default function AdminNewsPage() {
               <p className="font-bold text-gray-900">{articleCount}</p>
             </div>
           </div>
-          <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+          <div className="bg-white rounded-3xl border border-line shadow-card p-5 flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center shrink-0">
               <Video className="w-4 h-4 text-red-500" />
             </div>
@@ -186,7 +186,7 @@ export default function AdminNewsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <div className="flex items-center justify-between mb-1">
           <h2 className="font-bold text-gray-900">الأخبار الحالية</h2>
           <span className="text-xs text-gray-400">اسحب من المقبض لإعادة الترتيب</span>

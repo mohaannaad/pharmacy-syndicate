@@ -103,7 +103,7 @@ export default function AdminActivitiesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <h2 className="font-bold text-gray-900 mb-4">إضافة نشاط جديد</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -171,7 +171,7 @@ export default function AdminActivitiesPage() {
         </form>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <h2 className="font-bold text-gray-900 mb-4">الأنشطة الحالية ({activities.length})</h2>
 
         {activities.length === 0 ? (

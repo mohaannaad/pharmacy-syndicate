@@ -168,7 +168,7 @@ export default function AdminHeroPage() {
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ---------------- النموذج ---------------- */}
-        <form onSubmit={handleSave} className="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6 space-y-5">
+        <form onSubmit={handleSave} className="lg:col-span-2 bg-white rounded-3xl border border-line shadow-card p-6 space-y-5">
           <div className="flex items-center justify-between">
             <h2 className="font-bold text-gray-900">{editingId ? "تعديل الشريحة" : "إضافة شريحة جديدة"}</h2>
             {editingId && (
@@ -191,7 +191,7 @@ export default function AdminHeroPage() {
                       <div className="max-w-sm text-right">
                         {previewTitle && <p className="text-lg font-bold text-white leading-relaxed">{previewTitle}</p>}
                         {previewSubtitle && <p className="mt-1 text-xs text-white/85">{previewSubtitle}</p>}
-                        {previewButton && <span className="inline-block mt-3 bg-[#D1AA43] text-white px-4 py-1.5 rounded-pill text-xs font-medium">{previewButton}</span>}
+                        {previewButton && <span className="inline-block mt-3 bg-gold text-[#1B1A12] px-4 py-1.5 rounded-pill text-xs font-medium">{previewButton}</span>}
                       </div>
                     </div>
                   )}
@@ -249,11 +249,11 @@ export default function AdminHeroPage() {
 
         {/* ---------------- الإحصائيات ---------------- */}
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl shadow-sm p-5">
+          <div className="bg-white rounded-3xl border border-line shadow-card p-5">
             <p className="text-xs text-gray-400">إجمالي الشرائح</p>
             <p className="text-3xl font-bold text-gray-900 mt-1">{slides.length}</p>
           </div>
-          <div className="bg-white rounded-2xl shadow-sm p-5">
+          <div className="bg-white rounded-3xl border border-line shadow-card p-5">
             <p className="text-xs text-gray-400">الظاهرة في الصفحة الرئيسية</p>
             <p className="text-3xl font-bold text-primary mt-1">{activeCount}</p>
           </div>
@@ -264,7 +264,7 @@ export default function AdminHeroPage() {
       </div>
 
       {/* ---------------- القائمة ---------------- */}
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <h2 className="font-bold text-gray-900 mb-4">الشرائح الحالية (بترتيب الظهور)</h2>
 
         {slides.length === 0 ? (

@@ -8,7 +8,7 @@ interface PharmacyCardProps {
 
 export default function PharmacyCard({ name, address, hours }: PharmacyCardProps) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-5 text-right">
+    <div className="bg-white rounded-3xl border border-line shadow-card p-5 text-right">
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
           <MapPin className="w-4 h-4 text-primary" />

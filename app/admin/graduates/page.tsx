@@ -316,11 +316,11 @@ export default function AdminGraduatesPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm p-5">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5">
           <p className="text-xs text-gray-400">إجمالي الطلبات</p>
           <p className="text-3xl font-bold text-gray-900 mt-1">{applications.length}</p>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4 text-orange-600" />
           </div>
@@ -329,7 +329,7 @@ export default function AdminGraduatesPage() {
             <p className="font-bold text-gray-900">{pendingCount}</p>
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-red-50 flex items-center justify-center shrink-0">
             <AlertCircle className="w-4 h-4 text-red-600" />
           </div>
@@ -340,7 +340,7 @@ export default function AdminGraduatesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <h2 className="font-bold text-gray-900">طلبات قيد الخريجين</h2>
           <div className="flex items-center gap-2 flex-wrap">

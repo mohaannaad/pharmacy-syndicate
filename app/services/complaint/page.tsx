@@ -71,7 +71,7 @@ export default function ComplaintPage() {
       <PageHeader title="تقديم شكوى" subtitle="إرسال الشكاوى ومتابعتها إلكترونيًا" />
       <section className="bg-surface-muted py-14">
         <div className="max-w-2xl mx-auto px-6">
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 md:p-8 space-y-6">
+          <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-line shadow-card p-6 md:p-8 space-y-6">
             <p className="text-xs text-gray-400 -mb-2">هذه الخدمة متاحة للأعضاء وغير الأعضاء على حد سواء</p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

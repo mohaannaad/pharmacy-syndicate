@@ -76,7 +76,7 @@ export default function AdminFeesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <h2 className="font-bold text-gray-900 mb-4">إضافة رسم جديد</h2>
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div className="md:col-span-2">
@@ -99,7 +99,7 @@ export default function AdminFeesPage() {
         </form>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <h2 className="font-bold text-gray-900 mb-4">الرسوم الحالية ({fees.length})</h2>
 
         {fees.length === 0 ? (

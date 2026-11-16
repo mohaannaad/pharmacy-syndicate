@@ -44,11 +44,11 @@ const socials = [LinkedinIcon, InstagramIcon, TwitterIcon, FacebookIcon];
 function FooterColumn({ title, links }: { title: string; links: string[] }) {
   return (
     <div className="text-right">
-      <h4 className="font-bold text-white mb-4">{title}</h4>
+      <h4 className="font-bold text-white mb-4 text-base">{title}</h4>
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link}>
-            <a href="#" className="text-sm text-white/60 hover:text-white transition-colors">{link}</a>
+            <a href="#" className="text-sm text-[#D4D4D4] hover:text-white transition-colors">{link}</a>
           </li>
         ))}
       </ul>
@@ -58,17 +58,18 @@ function FooterColumn({ title, links }: { title: string; links: string[] }) {
 
 export default function Footer() {
   return (
-    <footer className="bg-dark text-white pt-16 pb-6">
-      <div className="max-w-7xl mx-auto px-6">
+    <footer className="bg-[#212121] text-white pt-16 pb-6 relative overflow-hidden">
+      <span className="pointer-events-none absolute -left-24 -top-24 w-80 h-80 rounded-full border-[56px] border-white/5" />
+      <div className="relative max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           <div className="text-right col-span-2 md:col-span-1 flex flex-col items-start">
             <Image src="/logo-white.png" alt="النقابة العامة لصيادلة مصر" width={405} height={180} className="h-14 w-auto" />
-            <p className="mt-4 text-sm text-white/60 leading-relaxed w-full">
+            <p className="mt-4 text-sm text-[#D4D4D4] leading-relaxed w-full">
               نقابة الصيادلة جمعية مهنية تهدف إلى دعم الصيادلة، تطوير القطاع الدوائي، تقديم خدمات مهنية ومالية وصحية، وتمثيل الصيادلة أمام الجهات الرسمية.
             </p>
             <div className="mt-5 flex gap-3 justify-end">
               {socials.map((Icon, i) => (
-                <a key={i} href="#" className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary-light transition-colors">
+                <a key={i} href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-gold hover:text-[#1B1A12] transition-colors">
                   <Icon />
                 </a>
               ))}
@@ -80,13 +81,13 @@ export default function Footer() {
           <FooterColumn title="المصادر" links={resources} />
 
           <div className="text-right col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 text-sm text-white/60">
+            <div className="flex items-center gap-2 text-sm text-[#D4D4D4]">
               <Phone className="w-4 h-4 text-primary-light" />
               اتصل بنا على
             </div>
             <div className="mt-1 font-bold">800 2656</div>
 
-            <div className="mt-6 flex items-center gap-2 text-sm text-white/60">
+            <div className="mt-6 flex items-center gap-2 text-sm text-[#D4D4D4]">
               <Mail className="w-4 h-4 text-primary-light" />
               هل لديك سؤال؟
             </div>
@@ -94,10 +95,10 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 pt-6 border-t border-white/10 text-center text-xs text-white/40">
+        <div className="mt-14 pt-6 border-t border-white/10 text-center text-xs text-[#A3A3A3]">
           © 2026 جميع الحقوق محفوظة - نقابة الصيادلة
         </div>
       </div>
     </footer>
   );
-}
+}

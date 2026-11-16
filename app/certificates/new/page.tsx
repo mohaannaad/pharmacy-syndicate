@@ -77,7 +77,7 @@ export default function NewCertificateRequestPage() {
       <PageHeader title="طلب شهادة جديدة" subtitle="اختر نوع الشهادة واملأ البيانات المطلوبة" />
       <section className="bg-surface-muted py-14">
         <div className="max-w-2xl mx-auto px-6">
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 md:p-8 space-y-6">
+          <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-line shadow-card p-6 md:p-8 space-y-6">
             <div>
               <label className="text-sm text-gray-700">نوع الشهادة</label>
               <select value={type} onChange={(e) => setType(e.target.value)} className="mt-2 w-full bg-gray-100 rounded-xl px-4 py-3 text-sm outline-none text-right text-gray-700">

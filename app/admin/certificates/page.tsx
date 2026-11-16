@@ -78,11 +78,11 @@ export default function AdminCertificatesPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm p-5">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5">
           <p className="text-xs text-gray-400">إجمالي الطلبات</p>
           <p className="text-3xl font-bold text-gray-900 mt-1">{requests.length}</p>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-yellow-50 flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4 text-yellow-600" />
           </div>
@@ -93,7 +93,7 @@ export default function AdminCertificatesPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <h2 className="font-bold text-gray-900 mb-4">جميع طلبات الشهادات</h2>
 
         {requests.length === 0 ? (

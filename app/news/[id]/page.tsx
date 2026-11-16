@@ -18,7 +18,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
       <section className="bg-surface-muted py-14">
         <div className="max-w-3xl mx-auto px-6">
           {item.imageUrl && <img src={item.imageUrl} alt={item.title} className="w-full rounded-2xl shadow-sm mb-8" />}
-          <div className="bg-white rounded-2xl shadow-sm p-8 text-gray-700 leading-loose whitespace-pre-line">{item.content}</div>
+          <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-gray-700 leading-loose whitespace-pre-line">{item.content}</div>
         </div>
       </section>
     </main>

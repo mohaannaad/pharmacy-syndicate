@@ -13,7 +13,7 @@ export default function BranchCard({ name, address, phone, hours, representative
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-5">
+    <div className="bg-white rounded-3xl border border-line shadow-card p-5">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">

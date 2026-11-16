@@ -78,7 +78,7 @@ export default function MyRequestsPage() {
           {state === "error" && <p className="text-center text-gray-500">حدث خطأ أثناء التحميل، يرجى تحديث الصفحة.</p>}
 
           {state === "guest" && (
-            <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+            <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
               <Lock className="w-12 h-12 text-primary mx-auto" />
               <h2 className="mt-4 font-bold text-gray-900">سجّل الدخول لعرض طلباتك</h2>
               <p className="mt-2 text-sm text-gray-500">اضغط «تسجيل دخول» أعلى الصفحة، أو أنشئ حسابًا جديدًا.</p>
@@ -92,7 +92,7 @@ export default function MyRequestsPage() {
             <>
               {/* عضو مقيد */}
               {data.user.membershipNumber && (
-                <div className="bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4">
+                <div className="bg-white rounded-3xl border border-line shadow-card p-6 flex items-center gap-4">
                   <BadgeCheck className="w-10 h-10 text-primary-light shrink-0" />
                   <div>
                     <p className="font-bold text-gray-900">أنت عضو مقيد بالنقابة</p>
@@ -108,7 +108,7 @@ export default function MyRequestsPage() {
 
               {/* خريج لسه ما قدمش */}
               {data.applications.length === 0 && data.user.role === "GRADUATE" && (
-                <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+                <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
                   <FileText className="w-12 h-12 text-primary mx-auto" />
                   <h2 className="mt-4 font-bold text-gray-900">لم تقدّم طلب القيد بعد</h2>
                   <p className="mt-2 text-sm text-gray-500">قدّم طلبك وارفع المستندات المطلوبة.</p>
@@ -120,7 +120,7 @@ export default function MyRequestsPage() {
 
               {/* طلبات القيد */}
               {data.applications.map((app) => (
-                <div key={app.id} className="bg-white rounded-2xl shadow-sm p-6">
+                <div key={app.id} className="bg-white rounded-3xl border border-line shadow-card p-6">
                   <div className="flex items-start justify-between gap-3 flex-wrap">
                     <div>
                       <p className="text-xs text-gray-400">طلب القيد بسجلات النقابة</p>

@@ -1,20 +1,48 @@
 @import "tailwindcss";
 
 @theme {
+  /* ---------- هوية النقابة ---------- */
   --color-primary: #0B5D3B;
   --color-primary-dark: #083D28;
   --color-primary-light: #6FBF4A;
-  --color-brand-green: #00AA29;
-  --color-dark: #141B29;
-  --color-surface-muted: #F2F3F5;
+  --color-brand-green: #0B5D3B;
+  --color-gold: #C9A227;
+  --color-gold-dark: #B8901C;
+  --color-gold-soft: #FBF4DF;
+  --color-mint: #E8F3EC;
+  --color-ink: #14201A;
+  --color-ink-muted: #5D6B63;
+  --color-line: #E3ECE7;
+  --color-dark: #083D28;
+  --color-surface-muted: #F5F8F6;
 
   --font-sans: var(--font-cairo), sans-serif;
   --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(8, 61, 40, 0.04);
+  --shadow-lift: 0 18px 40px -18px rgba(8, 61, 40, 0.35);
 }
 
 body {
   background-color: #ffffff;
-  color: #1a1a1a;
+  color: #14201a;
+}
+
+::selection {
+  background: #cfe8d8;
+  color: #083d28;
+}
+
+/* ---------- حقول الإدخال في كل الموقع ---------- */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #0b5d3b;
+  box-shadow: 0 0 0 4px rgba(11, 93, 59, 0.12);
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: #0b5d3b;
 }
 @keyframes slideFadeIn {
   from {

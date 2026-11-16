@@ -1,5 +1,7 @@
 import HeroSection from "./components/HeroSection";
+import QuickAccess from "./components/QuickAccess";
 import ServicesSection from "./components/ServicesSection";
+import GraduateJourney from "./components/GraduateJourney";
 import NewsSection from "./components/NewsSection";
 import { getActiveHeroSlides } from "./lib/heroSlides";
 
@@ -10,13 +12,15 @@ export default async function Home() {
   const heroSlides = await getActiveHeroSlides();
 
   return (
-    <main>
-            <HeroSection slides={heroSlides} />
+    <main className="bg-surface-muted">
+      <HeroSection slides={heroSlides} />
+      <QuickAccess />
       <ServicesSection />
+      <GraduateJourney />
       <NewsSection />
-            <NewsSection
+      <NewsSection
         title="أخبار النقابات الفرعية"
-        subtitle="تابع مستجدات وأنشطة نقابات الصيادلة الفرعية في جميع المحافظات"
+        subtitle="من المحافظات"
         useRealData={false}
       />
     </main>

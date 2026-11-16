@@ -1,28 +1,17 @@
-interface AdBannerProps {
-  variant?: "dark" | "blue";
-}
+import Image from "next/image";
+import Link from "next/link";
 
-export default function AdBanner({ variant = "dark" }: AdBannerProps) {
-  if (variant === "blue") {
-    return (
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-l from-blue-600 to-cyan-400 text-white p-6 flex items-center justify-between">
-        <div className="text-right">
-          <div className="text-xs font-bold bg-white/20 inline-block px-2 py-1 rounded">إعلان</div>
-          <div className="mt-2 text-lg md:text-xl font-bold">حلول صحية تصل إليك أينما كنت</div>
-        </div>
-        <div className="text-2xl md:text-3xl font-extrabold shrink-0">خصم 15%</div>
-      </div>
-    );
-  }
-
+// مساحة إعلانية: بتشجّع الزائر يضيف إعلانه من خدمة «إضافة إعلان»
+export default function AdBanner() {
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-dark text-white p-6 flex items-center justify-between">
-      <div className="absolute -left-8 -top-8 w-32 h-32 bg-primary-light/30 rotate-45" />
-      <div className="relative text-right">
-        <div className="text-xs text-white/60">إعلان</div>
-        <div className="mt-2 text-lg md:text-xl font-bold">أفضل خدمة صيدلية أونلاين</div>
+    <div className="relative overflow-hidden rounded-[32px] bg-mint flex items-center justify-between gap-6 px-7 md:px-14 min-h-[240px] flex-wrap">
+      <span className="absolute -left-20 -top-20 w-72 h-72 rounded-full border-[48px] border-white/40" />
+      <div className="relative flex flex-col gap-3 py-9 max-w-xl text-right">
+        <span className="text-[#3F8F2A] font-bold text-sm">مساحة إعلانية</span>
+        <p className="text-2xl md:text-3xl font-extrabold text-primary-dark leading-snug">أعلن عن صيدليتك أو خدماتك على بوابة النقابة</p>
+        <Link href="/services/ad" className="self-start bg-primary hover:bg-primary-dark text-white font-bold px-6 py-3 rounded-pill transition-colors">أضف إعلانك</Link>
       </div>
-      <div className="relative text-sm text-white/70 shrink-0">01234567800</div>
+      <Image src="/doctor.png" alt="" width={420} height={560} className="relative hidden md:block h-[270px] w-auto self-end" />
     </div>
   );
 }

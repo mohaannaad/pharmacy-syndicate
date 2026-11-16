@@ -4,14 +4,13 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Search } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import LoginModal from "./LoginModal";
 import RegisterDropdown from "./RegisterDropdown";
 import UserMenu, { type CurrentUser } from "./UserMenu";
 
 const navLinks = [
   { label: "الرئيسية", href: "/" },
-  { label: "الشهادات", href: "/certificates" },
   { label: "الخدمات", href: "/services" },
   { label: "نقابات فرعية", href: "/branches" },
   { label: "الصيدليات", href: "/services/pharmacies" },
@@ -21,6 +20,7 @@ export default function Header() {
   const [showLogin, setShowLogin] = useState(false);
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [userLoaded, setUserLoaded] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const navRef = useRef<HTMLDivElement>(null);
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
@@ -61,39 +61,54 @@ export default function Header() {
   }, [activeIndex, pathname]);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
+    <header className="sticky top-0 z-50 w-full bg-white/85 backdrop-blur-xl border-b border-line">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between gap-4">
         <Link href="/" className="shrink-0">
-          <Image src="/logo.png" alt="النقابة العامة لصيادلة مصر" width={220} height={70} className="h-14 w-auto" priority />
+          <Image src="/logo.png" alt="النقابة العامة لصيادلة مصر" width={220} height={70} className="h-11 md:h-13 w-auto" priority />
         </Link>
 
-        <nav ref={navRef} className="hidden md:flex items-center gap-8 text-sm font-medium relative">
+        <nav ref={navRef} className="hidden lg:flex items-center gap-1 bg-[#F1F5F3] rounded-pill p-1.5 text-[15px] font-semibold relative">
+          <span className="absolute top-1.5 bottom-1.5 bg-white rounded-pill shadow-[0_1px_3px_rgba(8,61,40,0.12)] transition-all duration-300 ease-out" style={{ left: underline.left, width: underline.width, opacity: activeIndex === -1 ? 0 : 1 }} />
           {navLinks.map((link, i) => (
-            <Link key={link.label} href={link.href} ref={(el) => { linkRefs.current[i] = el; }} className={i === activeIndex ? "text-primary pb-1" : "text-gray-600 hover:text-primary transition-colors pb-1"}>
+            <Link key={link.label} href={link.href} ref={(el) => { linkRefs.current[i] = el; }} className={`relative px-4 py-2 rounded-pill transition-colors ${i === activeIndex ? "text-primary" : "text-[#3E4B44] hover:text-primary"}`}>
               {link.label}
             </Link>
           ))}
-          <span className="absolute bottom-0 h-0.5 bg-primary-light transition-all duration-300 ease-out" style={{ left: underline.left, width: underline.width }} />
         </nav>
 
-        <div className="flex items-center gap-3">
-          <div className="hidden lg:flex items-center bg-gray-100 rounded-pill px-4 py-2 gap-2 w-64">
-            <input type="text" placeholder="ابحث في الموقع عن .." className="bg-transparent outline-none text-sm w-full text-right" />
-            <Search className="w-4 h-4 text-primary shrink-0" />
-          </div>
-
+        <div className="flex items-center gap-2">
           {userLoaded && user && <UserMenu user={user} />}
 
           {userLoaded && !user && (
             <>
-              <RegisterDropdown />
-              <button type="button" onClick={() => setShowLogin(true)} className="bg-primary text-white px-5 py-2 rounded-pill text-sm font-medium whitespace-nowrap">
-                تسجيل دخول
+              <div className="hidden sm:block"><RegisterDropdown /></div>
+              <button type="button" onClick={() => setShowLogin(true)} className="h-11 bg-primary hover:bg-primary-dark text-white px-5 rounded-pill text-sm md:text-[15px] font-bold whitespace-nowrap transition-colors">
+                تسجيل الدخول
               </button>
             </>
           )}
+
+          <button type="button" onClick={() => setMenuOpen(!menuOpen)} aria-label="القائمة" className="lg:hidden w-11 h-11 rounded-pill border border-line bg-white flex items-center justify-center text-primary">
+            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
       </div>
+
+      {menuOpen && (
+        <nav className="lg:hidden border-t border-line bg-white px-4 py-3 flex flex-col gap-1">
+          {navLinks.map((link, i) => (
+            <Link key={link.label} href={link.href} onClick={() => setMenuOpen(false)} className={`px-4 py-3 rounded-2xl font-semibold ${i === activeIndex ? "bg-mint text-primary" : "text-[#3E4B44] hover:bg-surface-muted"}`}>
+              {link.label}
+            </Link>
+          ))}
+          {userLoaded && !user && (
+            <div className="sm:hidden mt-2 pt-3 border-t border-line grid grid-cols-2 gap-2">
+              <a href="/register/existing-member" className="text-center px-3 py-3 rounded-2xl border border-line font-semibold text-sm text-primary">تسجيل عضو حالي</a>
+              <a href="/signup" className="text-center px-3 py-3 rounded-2xl border border-line font-semibold text-sm text-primary">تسجيل خريج جديد</a>
+            </div>
+          )}
+        </nav>
+      )}
 
       {showLogin && (
         <LoginModal onClose={() => setShowLogin(false)} onSwitchToRegister={() => { window.location.href = "/signup"; }} />

@@ -25,6 +25,23 @@ export const ALL_SERVICES: SiteService[] = [
   { key: "activities", icon: "/service-activities.png", title: "الرحلات والفعاليات", desc: "احجز في الرحلات والكورسات والفعاليات القادمة", href: "/services/activities" },
 ];
 
+// =====================================================================
+// صلاحيات الخدمات
+// ---------------------------------------------------------------------
+// العضو الحالي (MEMBER) والمدير (ADMIN): كل الخدمات متاحة.
+// الزائر والخريج الجديد: الخدمات اللي هنا بس، والباقي بيظهر مقفول.
+// (صفحة النقابات الفرعية متاحة للجميع دايمًا لأنها مش خدمة)
+// =====================================================================
+export const PUBLIC_SERVICE_KEYS = ["complaint", "pharmacies"];
+
+export function isMemberRole(role: string | null | undefined) {
+  return role === "MEMBER" || role === "ADMIN";
+}
+
+export function canUseService(key: string, role: string | null | undefined) {
+  return isMemberRole(role) || PUBLIC_SERVICE_KEYS.includes(key);
+}
+
 // عدد الخدمات اللي بتظهر في الصفحة الرئيسية
 export const FEATURED_COUNT = 5;
 

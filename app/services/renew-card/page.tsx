@@ -120,7 +120,7 @@ export default function RenewCardPage() {
         <section className="bg-surface-muted py-20 text-center text-gray-500">
                   {access ? (
             <div className="max-w-md mx-auto px-6">
-              <div className="bg-white rounded-2xl shadow-sm p-8">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-8">
                 <User className="w-12 h-12 text-primary mx-auto" />
                 <p className="mt-4 font-bold text-gray-900">{access.message}</p>
                 {access.status === 401 && (
@@ -159,7 +159,7 @@ export default function RenewCardPage() {
         {header}
         <section className="bg-surface-muted py-14">
           <div className="max-w-md mx-auto px-6">
-            <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+            <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
               <CheckCircle2 className="w-16 h-16 text-primary-light mx-auto" />
               <h2 className="mt-4 font-bold text-lg text-gray-900">تم تسجيل طلب التجديد</h2>
               <p className="mt-4 text-gray-500 text-sm">رقم الطلب</p>
@@ -184,7 +184,7 @@ export default function RenewCardPage() {
       <section className="bg-surface-muted py-14">
         <div className="max-w-2xl mx-auto px-6 space-y-5">
           {/* ---------- بيانات العضو ---------- */}
-          <div className="bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4">
+          <div className="bg-white rounded-3xl border border-line shadow-card p-6 flex items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0 overflow-hidden">
               {photoUrl || member.photoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -221,7 +221,7 @@ export default function RenewCardPage() {
 
           {/* ---------- عنده طلب مفتوح ---------- */}
           {openRequest && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+            <div className="bg-white rounded-3xl border border-line shadow-card p-6 text-center">
               <IdCard className="w-12 h-12 text-primary mx-auto" />
               <p className="mt-3 text-gray-700">لديك طلب تجديد جارٍ</p>
               <p className="mt-1 font-bold text-primary text-xl" dir="ltr">{openRequest.number}</p>
@@ -236,7 +236,7 @@ export default function RenewCardPage() {
           {/* ---------- مسدد ---------- */}
           {/* ---------- التجديد موقوف من النقابة ---------- */}
           {!openRequest && !renewal.canRenew && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+            <div className="bg-white rounded-3xl border border-line shadow-card p-6 text-center">
               <AlertCircle className="w-12 h-12 text-red-500 mx-auto" />
               <p className="mt-3 font-bold text-gray-900">لا يمكن تجديد الاشتراك إلكترونيًا حاليًا</p>
               {renewal.blockReason && <p className="mt-2 text-sm text-gray-600">{renewal.blockReason}</p>}
@@ -245,7 +245,7 @@ export default function RenewCardPage() {
           )}
 
           {!openRequest && renewal.canRenew && renewal.years.length === 0 && (
-            <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+            <div className="bg-white rounded-3xl border border-line shadow-card p-6 text-center">
               <CheckCircle2 className="w-12 h-12 text-primary-light mx-auto" />
               <p className="mt-3 font-bold text-gray-900">اشتراكك مسدد حتى عام {member.lastPaidYear}</p>
               <p className="mt-1 text-sm text-gray-500">لا توجد مستحقات عليك حاليًا.</p>
@@ -256,7 +256,7 @@ export default function RenewCardPage() {
           {!openRequest && renewal.canRenew && renewal.years.length > 0 && (
             <>
               {/* السنوات المستحقة */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-6">
                 <h3 className="font-bold text-gray-900 mb-3">السنوات المستحقة</h3>
                 {renewal.detailed ? (
                   <div className="overflow-hidden rounded-xl border border-gray-100">
@@ -294,7 +294,7 @@ export default function RenewCardPage() {
               </div>
 
               {/* مراجعة البيانات */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-6 space-y-4">
                 <h3 className="font-bold text-gray-900">راجع بياناتك</h3>
                 <div>
                   <label className="text-sm text-gray-700">رقم الهاتف</label>
@@ -315,7 +315,7 @@ export default function RenewCardPage() {
               </div>
 
               {/* طريقة الاستلام */}
-              <div className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-6 space-y-4">
                 <h3 className="font-bold text-gray-900">استلام الكارنيه</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <label className={`flex items-center gap-3 border rounded-xl p-4 cursor-pointer ${deliveryMethod === "DELIVERY" ? "border-primary bg-primary/5" : "border-gray-200"}`}>
@@ -347,7 +347,7 @@ export default function RenewCardPage() {
               </div>
 
               {/* الإجمالي */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-6">
                 <h3 className="font-bold text-gray-900 mb-2">الإجمالي</h3>
                 <Row label={`${renewal.detailed ? "الاشتراك" : "الاشتراكات والغرامات"} (${renewal.years.length} ${renewal.years.length === 1 ? "سنة" : "سنوات"})`} value={money(renewal.subscriptionTotal)} />
                 {renewal.lateTotal > 0 && <Row label="غرامات التأخير" value={money(renewal.lateTotal)} />}

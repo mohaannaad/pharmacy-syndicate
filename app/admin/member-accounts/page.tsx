@@ -154,11 +154,11 @@ export default function AdminMemberAccountsPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm p-5">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5">
           <p className="text-xs text-gray-400">إجمالي الطلبات</p>
           <p className="text-3xl font-bold text-gray-900 mt-1">{requests.length}</p>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-orange-50 flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4 text-orange-600" />
           </div>
@@ -169,7 +169,7 @@ export default function AdminMemberAccountsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div>
             <h2 className="font-bold text-gray-900">طلبات حسابات الأعضاء</h2>

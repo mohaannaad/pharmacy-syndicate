@@ -6,7 +6,7 @@ import PageHeader from "../components/PageHeader";
 import RegisterSteps from "../components/RegisterSteps";
 
 const steps = ["بياناتك", "التحقق وكلمة المرور"];
-const inputClass = "mt-2 w-full bg-white rounded-xl px-4 py-3 text-sm outline-none text-right shadow-sm border border-transparent focus:border-primary";
+const inputClass = "mt-2 w-full bg-white rounded-2xl px-4 py-3 text-sm outline-none text-right border border-line focus:border-primary";
 
 export default function SignupPage() {
   const [step, setStep] = useState(1);

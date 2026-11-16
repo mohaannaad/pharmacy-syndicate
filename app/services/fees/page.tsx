@@ -13,7 +13,7 @@ export default async function FeesPage() {
       <PageHeader title="الرسوم" subtitle="جميع الرسوم المعتمدة لخدمات النقابة" />
       <section className="bg-surface-muted py-14">
         <div className="max-w-2xl mx-auto px-6">
-          <div className="bg-white rounded-2xl shadow-sm divide-y divide-gray-100">
+          <div className="bg-white rounded-3xl border border-line shadow-card divide-y divide-gray-100">
             {fees.map((fee) => (
               <div key={fee.id} className="flex items-center justify-between px-6 py-4">
                 <div className="flex items-center gap-3">

@@ -31,7 +31,7 @@ export default async function CertificatesPage() {
         title="الشهادات"
         subtitle="تابع طلباتك وقدّم طلبات جديدة"
         action={
-          <Link href="/certificates/new" className="flex items-center gap-2 bg-brand-green text-white px-5 py-2.5 rounded-pill text-sm font-medium">
+          <Link href="/certificates/new" className="flex items-center gap-2 bg-gold hover:bg-gold-dark text-[#1B1A12] font-bold px-5 py-2.5 rounded-pill text-sm font-medium">
             <Plus className="w-4 h-4" />
             طلب شهادة جديدة
           </Link>

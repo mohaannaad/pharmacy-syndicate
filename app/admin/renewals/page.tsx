@@ -206,11 +206,11 @@ export default function AdminRenewalsPage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl shadow-sm p-5">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5">
           <p className="text-xs text-gray-400">إجمالي الطلبات</p>
           <p className="text-3xl font-bold text-gray-900 mt-1">{renewals.length}</p>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-yellow-50 flex items-center justify-center shrink-0">
             <Clock className="w-4 h-4 text-yellow-600" />
           </div>
@@ -219,7 +219,7 @@ export default function AdminRenewalsPage() {
             <p className="font-bold text-gray-900">{awaitingPayment}</p>
           </div>
         </div>
-        <div className="bg-white rounded-2xl shadow-sm p-5 flex items-center gap-3">
+        <div className="bg-white rounded-3xl border border-line shadow-card p-5 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
             <IdCard className="w-4 h-4 text-blue-600" />
           </div>
@@ -230,7 +230,7 @@ export default function AdminRenewalsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm p-6">
+      <div className="bg-white rounded-3xl border border-line shadow-card p-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <h2 className="font-bold text-gray-900">طلبات تجديد الاشتراك والكارنيه</h2>
           <div className="flex items-center gap-2 flex-wrap">

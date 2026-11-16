@@ -1,3 +1,5 @@
+import { getCurrentUser } from "../../lib/auth";
+import { isMemberRole } from "../../lib/services";
 import { prisma } from "../../lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -9,6 +11,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  // الخدمة دي لأعضاء النقابة بس
+  const user = await getCurrentUser();
+  if (!user || !isMemberRole(user.role)) {
+    return NextResponse.json({ error: "هذه الخدمة متاحة لأعضاء النقابة فقط" }, { status: 403 });
+  }
+
   const body = await request.json();
 
   const newAd = await prisma.ad.create({

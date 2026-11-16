@@ -7,7 +7,7 @@ import RegisterSteps from "../../components/RegisterSteps";
 import DocumentUploadRow from "../../components/DocumentUploadRow";
 
 const steps = ["التحقق من العضوية", "رقم الهاتف", "التأكيد وكلمة المرور"];
-const inputClass = "mt-2 w-full bg-white rounded-xl px-4 py-3 text-sm outline-none text-right shadow-sm border border-transparent focus:border-primary";
+const inputClass = "mt-2 w-full bg-white rounded-2xl px-4 py-3 text-sm outline-none text-right border border-line focus:border-primary";
 
 export default function ExistingMemberRegisterPage() {
   const [step, setStep] = useState(1);
@@ -118,7 +118,7 @@ export default function ExistingMemberRegisterPage() {
       <section className="bg-surface-muted py-14">
         <div className="max-w-md mx-auto px-6">
           {pendingDone ? (
-            <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+            <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
               <Clock className="w-12 h-12 text-primary mx-auto" />
               <h2 className="mt-4 font-bold text-gray-900">تم إرسال طلبك للمراجعة</h2>
               <p className="mt-2 text-sm text-gray-500 leading-relaxed">

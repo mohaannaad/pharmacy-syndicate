@@ -89,7 +89,7 @@ export default function AdPage() {
       <PageHeader title="إضافة إعلان" subtitle="إنشاء إعلاناتك وإدارتها داخل المنصة" />
       <section className="bg-surface-muted py-14">
         <div className="max-w-3xl mx-auto px-6">
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 md:p-8 space-y-6">
+          <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-line shadow-card p-6 md:p-8 space-y-6">
 
             <div>
               <label className="text-sm text-gray-700">مكان الإعلان</label>

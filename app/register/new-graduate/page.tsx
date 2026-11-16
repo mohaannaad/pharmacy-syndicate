@@ -90,7 +90,7 @@ function parseNationalId(id: string) {
   return { birthDate: `${year}-${month}-${day}`, gender };
 }
 
-const inputClass = "mt-2 w-full bg-white rounded-xl px-4 py-3 text-sm outline-none text-right shadow-sm border border-transparent focus:border-primary";
+const inputClass = "mt-2 w-full bg-white rounded-2xl px-4 py-3 text-sm outline-none text-right border border-line focus:border-primary";
 
 function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
   return (
@@ -325,7 +325,7 @@ export default function NewGraduateRegisterPage() {
             {pageState === "error" && <p className="text-center text-gray-500">حدث خطأ أثناء التحميل، يرجى تحديث الصفحة.</p>}
 
             {pageState === "guest" && (
-              <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
                 <Lock className="w-12 h-12 text-primary mx-auto" />
                 <h2 className="mt-4 font-bold text-gray-900">يجب أن يكون لديك حساب أولًا</h2>
                 <p className="mt-2 text-sm text-gray-500 leading-relaxed">أنشئ حساب خريج برقم هاتفك ورقمك القومي، ثم يمكنك تقديم طلب القيد ومتابعته.</p>
@@ -337,7 +337,7 @@ export default function NewGraduateRegisterPage() {
             )}
 
             {pageState === "notGraduate" && (
-              <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
                 <Info className="w-12 h-12 text-primary mx-auto" />
                 <h2 className="mt-4 font-bold text-gray-900">حسابك مقيد بالفعل</h2>
                 <p className="mt-2 text-sm text-gray-500">خدمة طلب القيد متاحة لحسابات الخريجين الجدد فقط.</p>
@@ -348,7 +348,7 @@ export default function NewGraduateRegisterPage() {
             )}
 
             {pageState === "hasOpen" && openApp && (
-              <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
                 <FileText className="w-12 h-12 text-primary mx-auto" />
                 <h2 className="mt-4 font-bold text-gray-900">لديك طلب قيد بالفعل</h2>
                 <p className="mt-3 font-bold text-primary text-xl" dir="ltr">{openApp.trackingNumber}</p>
@@ -373,7 +373,7 @@ export default function NewGraduateRegisterPage() {
                 <PageHeader title={editingId ? "تم إعادة إرسال طلب القيد" : "تم إرسال طلب القيد"} subtitle="يمكنك متابعة حالة طلبك في أي وقت من صفحة «طلباتي»" />
         <section className="bg-surface-muted py-14">
           <div className="max-w-2xl mx-auto px-6">
-            <div className="bg-white rounded-2xl shadow-sm p-8 text-center">
+            <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
               <CheckCircle2 className="w-16 h-16 text-primary-light mx-auto" />
               <p className="mt-4 text-gray-500 text-sm">رقم المتابعة</p>
               <p className="mt-1 text-3xl font-bold text-primary" dir="ltr">{result.trackingNumber}</p>
@@ -625,7 +625,7 @@ export default function NewGraduateRegisterPage() {
                 </div>
               )}
 
-              <div className="bg-white rounded-2xl shadow-sm p-5 space-y-4">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-5 space-y-4">
                 <label className="flex items-center gap-3 text-sm text-gray-700 cursor-pointer">
                   <input type="checkbox" checked={form.hasPreviousQualification} onChange={(e) => update("hasPreviousQualification", e.target.checked)} className="w-4 h-4 accent-primary" />
                   لدي مؤهل جامعي سابق
@@ -671,7 +671,7 @@ export default function NewGraduateRegisterPage() {
           {/* ---------- الخطوة 5: المراجعة والإقرار ---------- */}
           {step === 5 && (
             <div className="space-y-5">
-              <div className="bg-white rounded-2xl shadow-sm p-5">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-5">
                 <h3 className="font-bold text-gray-900 mb-2">البيانات الشخصية</h3>
                 <ReviewRow label="الاسم (عربي)" value={form.fullNameAr} />
                 <ReviewRow label="الاسم (إنجليزي)" value={form.fullNameEn} />
@@ -681,12 +681,12 @@ export default function NewGraduateRegisterPage() {
                 <ReviewRow label="تاريخ الميلاد" value={form.birthDate} />
               </div>
 
-              <div className="bg-white rounded-2xl shadow-sm p-5">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-5">
                 <h3 className="font-bold text-gray-900 mb-2">محل الإقامة</h3>
                 <ReviewRow label="العنوان" value={[form.buildingNo && `عقار ${form.buildingNo}`, form.street, form.district, form.city, form.governorate].filter(Boolean).join("، ")} />
               </div>
 
-              <div className="bg-white rounded-2xl shadow-sm p-5">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-5">
                 <h3 className="font-bold text-gray-900 mb-2">البيانات الأكاديمية</h3>
                 <ReviewRow label="الجامعة" value={`${form.universityName} (${universityTypeLabel})`} />
                 <ReviewRow label="سنة التخرج" value={form.graduationYear} />
@@ -696,7 +696,7 @@ export default function NewGraduateRegisterPage() {
                 <ReviewRow label="المستندات المرفوعة" value={`${requiredDocs.length} مستند`} />
               </div>
 
-              <div className="bg-white rounded-2xl shadow-sm p-5">
+              <div className="bg-white rounded-3xl border border-line shadow-card p-5">
                 <h3 className="font-bold text-gray-900 mb-2">الرسوم</h3>
                 {fee !== null ? (
                   <>
@@ -712,7 +712,7 @@ export default function NewGraduateRegisterPage() {
                 )}
               </div>
 
-              <label className="flex items-start gap-3 bg-white rounded-2xl shadow-sm p-5 text-sm text-gray-700 cursor-pointer leading-relaxed">
+              <label className="flex items-start gap-3 bg-white rounded-3xl border border-line shadow-card p-5 text-sm text-gray-700 cursor-pointer leading-relaxed">
                 <input type="checkbox" checked={declaration} onChange={(e) => setDeclaration(e.target.checked)} className="w-4 h-4 mt-1 accent-primary shrink-0" />
                 أقر بأن جميع البيانات والمستندات المقدمة صحيحة، وأتحمل المسؤولية القانونية الكاملة في حال ثبوت عدم صحة أي منها.
               </label>
