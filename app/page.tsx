@@ -1,5 +1,4 @@
 import HeroSection from "./components/HeroSection";
-import QuickAccess from "./components/QuickAccess";
 import ServicesSection from "./components/ServicesSection";
 import GraduateJourney from "./components/GraduateJourney";
 import NewsSection from "./components/NewsSection";
@@ -14,7 +13,6 @@ export default async function Home() {
   return (
     <main className="bg-surface-muted">
       <HeroSection slides={heroSlides} />
-      <QuickAccess />
       <ServicesSection />
       <GraduateJourney />
       <NewsSection />
