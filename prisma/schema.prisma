@@ -23,6 +23,9 @@ model User {
   membershipNumber String?   @unique
   sessions         Session[]
     graduateApplications GraduateApplication[]
+  ads                 Ad[]
+  complaints          Complaint[]
+  certificateRequests CertificateRequest[]
   createdAt        DateTime  @default(now())
 }
 
@@ -82,6 +85,10 @@ model Ad {
   status      AdStatus @default(DRAFT)
   startDate   DateTime?
   endDate     DateTime?
+  // صاحب الطلب (حساب العضو) — عشان يظهر له في «طلباتي»
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @default(now()) @updatedAt
   createdAt   DateTime @default(now())
 }
 
@@ -117,6 +124,10 @@ model Complaint {
   escalated        Boolean           @default(false)
   createdAt        DateTime          @default(now())
   respondedAt      DateTime?
+  // صاحب الطلب (حساب العضو) — عشان يظهر له في «طلباتي»
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @default(now()) @updatedAt
 }
 
 enum ComplaintCategory {
@@ -184,6 +195,10 @@ model CertificateRequest {
   membershipNumber String
   contactInfo      String
   status           CertificateStatus  @default(AWAITING_PAYMENT)
+  // صاحب الطلب (حساب العضو) — عشان يظهر له في «طلباتي»
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @default(now()) @updatedAt
   createdAt        DateTime           @default(now())
 }
 
@@ -326,6 +341,7 @@ model RenewalRequest {
   status            RenewalStatus  @default(AWAITING_PAYMENT)
   adminNote         String?
   paidAt            DateTime?
+  updatedAt         DateTime       @default(now()) @updatedAt
   createdAt         DateTime       @default(now())
 }
 

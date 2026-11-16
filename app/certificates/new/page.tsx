@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import PageHeader from "../../components/PageHeader";
 import SuccessModal from "../../components/SuccessModal";
@@ -33,6 +33,19 @@ export default function NewCertificateRequestPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // الاسم ورقم القيد بيتملوا من حساب العضو الداخل
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setMemberName((prev) => prev || data.user.fullName);
+          setMembershipNumber((prev) => prev || data.user.membershipNumber || "");
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const selectedType = CERTIFICATE_TYPES.find((t) => t.value === type)!;
 

@@ -1,9 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { AlertCircle, CheckCircle2, Printer, Info, Loader2, Lock, FileText } from "lucide-react";
+import { AlertCircle, CheckCircle2, Printer, Info, Loader2, Lock } from "lucide-react";
 import PageHeader from "../../components/PageHeader";
 import RegisterSteps from "../../components/RegisterSteps";
 import DocumentUploadRow from "../../components/DocumentUploadRow";
+import GraduateApplicationStatus, { type GraduateApplicationView } from "../../components/GraduateApplicationStatus";
 import {
   GOVERNORATES,
   UNIVERSITY_TYPES,
@@ -19,7 +20,7 @@ import {
   determinePrivateCategory,
   HIGH_SCHOOL_TOTAL,
   CATEGORY_LABELS,
-    GRADUATE_STATUS_LABELS,
+
   type UniversityType,
   type Gender,
 } from "../../lib/graduate";
@@ -165,7 +166,8 @@ export default function NewGraduateRegisterPage() {
   const [pageState, setPageState] = useState<PageState>("loading");
   const [editingId, setEditingId] = useState<string | null>(null); // لو بيستكمل طلب قديم
   const [adminNote, setAdminNote] = useState<string | null>(null);
-  const [openApp, setOpenApp] = useState<{ trackingNumber: string; status: string } | null>(null);
+  const [openApp, setOpenApp] = useState<GraduateApplicationView | null>(null);
+  const [rejectedApp, setRejectedApp] = useState<GraduateApplicationView | null>(null); // آخر طلب مرفوض (لو موجود)
 
   useEffect(() => {
     fetch("/api/graduates/mine")
@@ -185,7 +187,7 @@ export default function NewGraduateRegisterPage() {
 
         if (open && open.status !== "NEEDS_COMPLETION") {
           // عنده طلب شغال → مينفعش يعمل طلب تاني
-          setOpenApp({ trackingNumber: open.trackingNumber, status: open.status });
+          setOpenApp(open);
           setPageState("hasOpen");
           return;
         }
@@ -199,6 +201,9 @@ export default function NewGraduateRegisterPage() {
           setEditingId(open.id);
           setAdminNote(open.adminNote);
         } else {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const rejected = data.applications.find((a: any) => a.status === "REJECTED");
+          if (rejected) setRejectedApp(rejected);
           // طلب جديد → نملا البيانات اللي عندنا من الحساب
           const parsed = parseNationalId(data.user.nationalId);
           setForm((prev) => ({
@@ -317,9 +322,9 @@ export default function NewGraduateRegisterPage() {
   if (pageState !== "ready" && !result) {
     return (
       <main>
-        <PageHeader title="طلب القيد بسجلات نقابة الصيادلة" subtitle="الخدمة متاحة لحسابات الخريجين الجدد" />
+        <PageHeader title="طلب القيد بسجلات نقابة الصيادلة" subtitle={pageState === "hasOpen" ? "تابع حالة طلب القيد وردود النقابة عليه" : "الخدمة متاحة لحسابات الخريجين الجدد"} />
         <section className="bg-surface-muted py-16">
-          <div className="max-w-md mx-auto px-6">
+          <div className={`${pageState === "hasOpen" ? "max-w-2xl" : "max-w-md"} mx-auto px-6`}>
             {pageState === "loading" && <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />}
 
             {pageState === "error" && <p className="text-center text-gray-500">حدث خطأ أثناء التحميل، يرجى تحديث الصفحة.</p>}
@@ -347,19 +352,7 @@ export default function NewGraduateRegisterPage() {
               </div>
             )}
 
-            {pageState === "hasOpen" && openApp && (
-              <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
-                <FileText className="w-12 h-12 text-primary mx-auto" />
-                <h2 className="mt-4 font-bold text-gray-900">لديك طلب قيد بالفعل</h2>
-                <p className="mt-3 font-bold text-primary text-xl" dir="ltr">{openApp.trackingNumber}</p>
-                <span className={`inline-block mt-3 text-xs px-3 py-1 rounded-full font-medium ${GRADUATE_STATUS_LABELS[openApp.status]?.color}`}>
-                  {GRADUATE_STATUS_LABELS[openApp.status]?.label}
-                </span>
-                <a href="/my-requests" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
-                  متابعة طلباتي
-                </a>
-              </div>
-            )}
+            {pageState === "hasOpen" && openApp && <GraduateApplicationStatus app={openApp} />}
           </div>
         </section>
       </main>
@@ -370,7 +363,7 @@ export default function NewGraduateRegisterPage() {
   if (result) {
     return (
       <main>
-                <PageHeader title={editingId ? "تم إعادة إرسال طلب القيد" : "تم إرسال طلب القيد"} subtitle="يمكنك متابعة حالة طلبك في أي وقت من صفحة «طلباتي»" />
+                <PageHeader title={editingId ? "تم إعادة إرسال طلب القيد" : "تم إرسال طلب القيد"} subtitle="يمكنك متابعة حالة طلبك في أي وقت من «طلب القيد» في قائمة حسابك" />
         <section className="bg-surface-muted py-14">
           <div className="max-w-2xl mx-auto px-6">
             <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
@@ -394,8 +387,8 @@ export default function NewGraduateRegisterPage() {
                 <p>٢. بعد الموافقة، سيتم إخطارك بموعد الحضور للنقابة لتسليم أصول المستندات المميزة بعلامة «أصل» وختم إيصال الدفع.</p>
               </div>
 
-                           <a href="/my-requests" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
-                متابعة طلباتي
+                           <a href="/register/new-graduate" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
+                متابعة حالة الطلب
               </a>
 
               <button type="button" onClick={() => window.print()} className="mt-3 w-full border border-primary text-primary py-3 rounded-pill font-medium flex items-center justify-center gap-2">
@@ -418,6 +411,18 @@ export default function NewGraduateRegisterPage() {
         <div className="max-w-3xl mx-auto px-6">
           <RegisterSteps steps={steps} current={step} onStepClick={goToStep} />
           
+          {rejectedApp && !editingId && (
+            <div className="mb-6 flex items-start gap-2 bg-red-50 text-red-800 text-sm rounded-xl px-4 py-3 border border-red-200 leading-relaxed">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold">
+                  تم رفض طلبك السابق (<span dir="ltr">{rejectedApp.trackingNumber}</span>)، ويمكنك تقديم طلب جديد.
+                </p>
+                {rejectedApp.adminNote && <p className="mt-1">سبب الرفض: {rejectedApp.adminNote}</p>}
+              </div>
+            </div>
+          )}
+
           {editingId && (
             <div className="mb-6 flex items-start gap-2 bg-red-50 text-red-800 text-sm rounded-xl px-4 py-3 border border-red-200 leading-relaxed">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />

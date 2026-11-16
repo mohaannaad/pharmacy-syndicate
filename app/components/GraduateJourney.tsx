@@ -31,7 +31,7 @@ export default function GraduateJourney() {
             <div className="lg:w-[34%] flex flex-col gap-3 text-right">
               <span className="text-[#3F8F2A] font-bold text-sm md:text-[15px]">للخريجين الجدد</span>
               <h2 className="text-2xl md:text-[34px] font-extrabold text-ink leading-snug">من التخرج إلى رقم القيد خطوة بخطوة</h2>
-              <p className="text-ink-muted leading-relaxed">قدّم طلب القيد إلكترونيًا، وتابع كل مرحلة من صفحة «طلباتي» حتى تحصل على رقم القيد.</p>
+              <p className="text-ink-muted leading-relaxed">قدّم طلب القيد إلكترونيًا، وتابع كل مرحلة من صفحة «طلب القيد» حتى تحصل على رقم القيد.</p>
               <a href="/signup" className="mt-2 self-start bg-primary hover:bg-primary-dark text-white font-bold px-6 py-3 rounded-pill transition-colors">ابدأ طلب القيد</a>
             </div>
             <ol className="flex-1 grid grid-cols-2 sm:grid-cols-5 gap-4">

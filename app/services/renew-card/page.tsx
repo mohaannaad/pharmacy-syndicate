@@ -132,7 +132,7 @@ export default function RenewCardPage() {
                   </>
                 )}
                 {access.status === 403 && (
-                  <a href="/my-requests" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
+                  <a href="/register/new-graduate" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
                     متابعة طلب القيد
                   </a>
                 )}

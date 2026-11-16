@@ -1,5 +1,6 @@
 import { prisma } from "../../lib/prisma";
 import { NextResponse } from "next/server";
+import { getCurrentUser } from "../../lib/auth";
 
 function generateTicketNumber() {
   const random = Math.floor(100000 + Math.random() * 900000);
@@ -15,6 +16,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = await request.json();
+  // الشكوى متاحة للجميع، ولو صاحبها داخل بحسابه بنربطها بيه عشان يتابع الرد في «طلباتي»
+  const user = await getCurrentUser();
 
   const newComplaint = await prisma.complaint.create({
     data: {
@@ -26,6 +29,7 @@ export async function POST(request: Request) {
       submitterName: body.submitterName,
       submitterContact: body.submitterContact,
       status: "RECEIVED",
+      userId: user?.id ?? null,
     },
   });
 

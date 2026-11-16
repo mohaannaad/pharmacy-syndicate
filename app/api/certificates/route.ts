@@ -41,9 +41,11 @@ export async function POST(request: Request) {
       deliveryMethod: body.deliveryMethod,
       price,
       memberName: body.memberName,
-      membershipNumber: body.membershipNumber,
+      // رقم القيد بييجي من حساب العضو نفسه، عشان الطلب يتربط بيه صح
+      membershipNumber: user.membershipNumber || body.membershipNumber,
       contactInfo: body.contactInfo,
       status: "AWAITING_PAYMENT",
+      userId: user.id,
     },
   });
 

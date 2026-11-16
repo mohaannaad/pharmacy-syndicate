@@ -29,6 +29,7 @@ export async function POST(request: Request) {
       contactInfo: body.contactInfo,
       fileUrl: body.fileUrl || null,
       status: "UNDER_REVIEW",
+      userId: user.id,
     },
   });
 

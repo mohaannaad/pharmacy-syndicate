@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Newspaper, Megaphone, LayoutDashboard, Bell, User, AlertTriangle, CircleDollarSign, CalendarDays, FileText, GraduationCap, IdCard, LayoutGrid, UserCheck, Images, Menu } from "lucide-react";
+import { Newspaper, Megaphone, LayoutDashboard, Bell, User, AlertTriangle, CircleDollarSign, CalendarDays, FileText, GraduationCap, IdCard, LayoutGrid, UserCheck, Images, Menu, Users } from "lucide-react";
 
 // القايمة متقسمة مجموعات: الطلبات اللي محتاجة إجراء، ومحتوى الموقع
 const menuGroups = [
@@ -32,6 +32,10 @@ const menuGroups = [
       { label: "الرسوم", href: "/admin/fees", icon: CircleDollarSign },
       { label: "الرحلات والفعاليات", href: "/admin/activities", icon: CalendarDays },
     ],
+  },
+  {
+    title: "المستخدمون",
+    items: [{ label: "حسابات المستخدمين", href: "/admin/users", icon: Users }],
   },
 ];
 

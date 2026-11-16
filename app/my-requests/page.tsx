@@ -1,180 +1,136 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Loader2, Lock, FileText, AlertCircle, CheckCircle2, BadgeCheck } from "lucide-react";
+import { Loader2, Bell, CreditCard, FileText, Megaphone, MessageSquareWarning, Inbox } from "lucide-react";
 import PageHeader from "../components/PageHeader";
-import { GRADUATE_STATUS_LABELS } from "../lib/graduate";
+import type { MyRequestItem, RequestKind } from "../lib/myRequests";
+import { getSeenAt, markSeen, isUpdated, isUnread } from "../lib/requestsSeen";
 
-interface Application {
-  id: string;
-  trackingNumber: string;
-  status: string;
-  universityName: string;
-  fee: number | null;
-  adminNote: string | null;
-  documents: { key: string }[];
-  createdAt: string;
-  updatedAt: string;
-}
+const KIND_ICONS: Record<RequestKind, typeof Bell> = {
+  renewal: CreditCard,
+  certificate: FileText,
+  ad: Megaphone,
+  complaint: MessageSquareWarning,
+};
 
-interface MineResponse {
-  user: { fullName: string; role: string; membershipNumber: string | null };
-  applications: Application[];
-}
+const TONES: Record<MyRequestItem["tone"], string> = {
+  pending: "bg-amber-50 text-amber-700 border-amber-200",
+  progress: "bg-blue-50 text-blue-700 border-blue-200",
+  success: "bg-mint text-primary border-[#BFDCCB]",
+  danger: "bg-red-50 text-red-700 border-red-200",
+};
 
-// مراحل طلب القيد بالترتيب (عشان نرسم شريط التقدم)
-const STAGES = [
-  { status: "AWAITING_PAYMENT", label: "الدفع" },
-  { status: "UNDER_REVIEW", label: "المراجعة" },
-  { status: "AWAITING_ORIGINALS", label: "تسليم الأصول" },
-  { status: "LICENSING", label: "التراخيص" },
-  { status: "REGISTERED", label: "تم القيد" },
+const FILTERS: { value: "all" | RequestKind; label: string }[] = [
+  { value: "all", label: "الكل" },
+  { value: "renewal", label: "التجديد" },
+  { value: "certificate", label: "الشهادات" },
+  { value: "ad", label: "الإعلانات" },
+  { value: "complaint", label: "الشكاوى" },
 ];
 
-function stageIndex(status: string) {
-  if (status === "NEEDS_COMPLETION") return 1; // راجع لمرحلة المراجعة
-  return STAGES.findIndex((s) => s.status === status);
-}
-
-function ProgressBar({ status }: { status: string }) {
-  const current = stageIndex(status);
-  if (status === "REJECTED") return null;
-  return (
-    <div className="mt-5 flex items-center gap-1">
-      {STAGES.map((stage, i) => (
-        <div key={stage.status} className="flex-1 text-center">
-          <div className={`h-1.5 rounded-full ${i <= current ? "bg-primary" : "bg-gray-200"}`} />
-          <p className={`mt-1.5 text-[10px] sm:text-xs ${i === current ? "text-primary font-bold" : "text-gray-400"}`}>{stage.label}</p>
-        </div>
-      ))}
-    </div>
-  );
+// "منذ ساعتين" ... إلخ
+function timeAgo(iso: string) {
+  const minutes = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (minutes < 1) return "الآن";
+  if (minutes < 60) return `منذ ${minutes.toLocaleString("ar-EG")} دقيقة`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `منذ ${hours.toLocaleString("ar-EG")} ساعة`;
+  const days = Math.round(hours / 24);
+  if (days < 30) return `منذ ${days.toLocaleString("ar-EG")} يوم`;
+  return new Date(iso).toLocaleDateString("ar-EG");
 }
 
 export default function MyRequestsPage() {
-  const [data, setData] = useState<MineResponse | null>(null);
-  const [state, setState] = useState<"loading" | "guest" | "ready" | "error">("loading");
+  const [items, setItems] = useState<MyRequestItem[]>([]);
+  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
+  // وقت آخر زيارة (قبل الزيارة دي) عشان نعلّم التحديثات الجديدة
+  const [seenAt] = useState(() => getSeenAt());
+  const [filter, setFilter] = useState<"all" | RequestKind>("all");
 
   useEffect(() => {
-    fetch("/api/graduates/mine")
+    fetch("/api/my-requests")
       .then(async (res) => {
-        if (res.status === 401) {
-          setState("guest");
-          return;
-        }
-        setData(await res.json());
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        setItems(data.requests);
         setState("ready");
+        markSeen();
       })
       .catch(() => setState("error"));
   }, []);
 
+  const shown = items.filter((i) => filter === "all" || i.kind === filter);
+  const unreadCount = items.filter((i) => isUnread(i, seenAt)).length;
+
   return (
     <main>
-      <PageHeader title="طلباتي" subtitle="تابع حالة طلباتك لدى النقابة" />
-      <section className="bg-surface-muted py-14">
-        <div className="max-w-2xl mx-auto px-6 space-y-5">
+      <PageHeader title="طلباتي" subtitle="ردود النقابة وتحديثات طلباتك في مكان واحد" />
+      <section className="bg-surface-muted py-12 md:py-14">
+        <div className="max-w-3xl mx-auto px-4 md:px-6">
           {state === "loading" && <Loader2 className="w-8 h-8 animate-spin mx-auto text-primary" />}
+          {state === "error" && <p className="text-center text-ink-muted">حدث خطأ أثناء التحميل، يرجى تحديث الصفحة.</p>}
 
-          {state === "error" && <p className="text-center text-gray-500">حدث خطأ أثناء التحميل، يرجى تحديث الصفحة.</p>}
-
-          {state === "guest" && (
-            <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
-              <Lock className="w-12 h-12 text-primary mx-auto" />
-              <h2 className="mt-4 font-bold text-gray-900">سجّل الدخول لعرض طلباتك</h2>
-              <p className="mt-2 text-sm text-gray-500">اضغط «تسجيل دخول» أعلى الصفحة، أو أنشئ حسابًا جديدًا.</p>
-              <a href="/signup" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
-                إنشاء حساب خريج
-              </a>
-            </div>
-          )}
-
-          {state === "ready" && data && (
+          {state === "ready" && (
             <>
-              {/* عضو مقيد */}
-              {data.user.membershipNumber && (
-                <div className="bg-white rounded-3xl border border-line shadow-card p-6 flex items-center gap-4">
-                  <BadgeCheck className="w-10 h-10 text-primary-light shrink-0" />
-                  <div>
-                    <p className="font-bold text-gray-900">أنت عضو مقيد بالنقابة</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      رقم القيد: <span className="font-bold text-primary" dir="ltr">{data.user.membershipNumber}</span>
-                    </p>
-                                        <p className="text-xs text-gray-400 mt-1">
-                      يمكنك الآن تسجيل الدخول برقم القيد هذا وبكلمة المرور نفسها
-                    </p>
-                  </div>
+              <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
+                <div className="flex items-center gap-2 text-ink font-bold">
+                  <Bell className="w-5 h-5 text-primary" />
+                  {unreadCount > 0 ? `لديك ${unreadCount.toLocaleString("ar-EG")} تحديث جديد` : "لا توجد تحديثات جديدة"}
                 </div>
-              )}
+                <div className="flex gap-2 flex-wrap">
+                  {FILTERS.map((f) => (
+                    <button key={f.value} type="button" onClick={() => setFilter(f.value)} className={`h-9 px-4 rounded-pill text-sm font-bold border transition-colors ${filter === f.value ? "bg-primary border-primary text-white" : "bg-white border-line text-[#3E4B44] hover:border-primary"}`}>
+                      {f.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-              {/* خريج لسه ما قدمش */}
-              {data.applications.length === 0 && data.user.role === "GRADUATE" && (
-                <div className="bg-white rounded-3xl border border-line shadow-card p-8 text-center">
-                  <FileText className="w-12 h-12 text-primary mx-auto" />
-                  <h2 className="mt-4 font-bold text-gray-900">لم تقدّم طلب القيد بعد</h2>
-                  <p className="mt-2 text-sm text-gray-500">قدّم طلبك وارفع المستندات المطلوبة.</p>
-                  <a href="/register/new-graduate" className="mt-6 block w-full bg-primary text-white py-3 rounded-pill font-medium">
-                    تقديم طلب القيد
+              {shown.length === 0 && (
+                <div className="bg-white rounded-3xl border border-line shadow-card p-10 text-center">
+                  <Inbox className="w-12 h-12 text-primary mx-auto" />
+                  <h2 className="mt-4 font-bold text-ink">لا توجد طلبات بعد</h2>
+                  <p className="mt-2 text-sm text-ink-muted">عند تقديم أي طلب من صفحة الخدمات، ستظهر هنا ردود النقابة وتحديثات حالته.</p>
+                  <a href="/services" className="mt-6 inline-block bg-primary text-white px-6 py-3 rounded-pill font-bold">
+                    تصفّح الخدمات
                   </a>
                 </div>
               )}
 
-              {/* طلبات القيد */}
-              {data.applications.map((app) => (
-                <div key={app.id} className="bg-white rounded-3xl border border-line shadow-card p-6">
-                  <div className="flex items-start justify-between gap-3 flex-wrap">
-                    <div>
-                      <p className="text-xs text-gray-400">طلب القيد بسجلات النقابة</p>
-                      <p className="font-bold text-primary text-lg mt-0.5" dir="ltr">{app.trackingNumber}</p>
+              <div className="space-y-3">
+                {shown.map((item) => {
+                  const Icon = KIND_ICONS[item.kind];
+                  const unread = isUnread(item, seenAt);
+                  return (
+                    <div key={`${item.kind}-${item.id}`} className={`relative bg-white rounded-3xl border p-5 md:p-6 flex gap-4 ${unread ? "border-primary/40 shadow-lift" : "border-line shadow-card"}`}>
+                      {unread && <span className="absolute top-5 left-5 w-2.5 h-2.5 rounded-full bg-red-500" aria-label="جديد" />}
+                      <span className="shrink-0 w-12 h-12 rounded-2xl bg-mint text-primary flex items-center justify-center">
+                        <Icon className="w-6 h-6" />
+                      </span>
+                      <div className="flex-1 min-w-0 text-right">
+                        <div className="flex items-center gap-2 flex-wrap text-xs text-ink-muted">
+                          <span className="font-bold text-primary">{item.kindLabel}</span>
+                          <span>·</span>
+                          <span dir="ltr">{item.ref}</span>
+                          <span>·</span>
+                          <span>{timeAgo(item.updatedAt)}</span>
+                        </div>
+                        <p className="mt-1.5 font-bold text-ink leading-relaxed">
+                          {isUpdated(item) ? "تم تحديث حالة طلبك إلى " : "تم استلام طلبك، وحالته الآن "}
+                          <span className={`inline-block align-middle text-xs px-2.5 py-0.5 rounded-pill border ${TONES[item.tone]}`}>{item.statusLabel}</span>
+                        </p>
+                        <p className="mt-1 text-sm text-ink-muted">{item.title}</p>
+                        {item.note && (
+                          <div className="mt-3 bg-surface-muted border border-line rounded-2xl px-4 py-3 text-sm text-ink leading-relaxed">
+                            <span className="font-bold">رد النقابة: </span>
+                            {item.note}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <span className={`text-xs px-3 py-1 rounded-full font-medium ${GRADUATE_STATUS_LABELS[app.status]?.color}`}>
-                      {GRADUATE_STATUS_LABELS[app.status]?.label}
-                    </span>
-                  </div>
-
-                  <div className="mt-3 flex items-center gap-4 text-xs text-gray-500 flex-wrap">
-                    <span>{app.universityName}</span>
-                    <span>{app.documents.length} مستند</span>
-                    <span>{app.fee !== null ? `${app.fee.toLocaleString("ar-EG")} جنيه` : "الرسوم تُحدد بعد المراجعة"}</span>
-                    <span>تاريخ التقديم: {new Date(app.createdAt).toLocaleDateString("ar-EG")}</span>
-                  </div>
-
-                  <ProgressBar status={app.status} />
-
-                  {app.status === "NEEDS_COMPLETION" && (
-                    <div className="mt-5 bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800">
-                      <p className="font-bold flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4" />
-                        طلبك بحاجة إلى استكمال
-                      </p>
-                      {app.adminNote && <p className="mt-1">ملاحظة النقابة: {app.adminNote}</p>}
-                      <a href="/register/new-graduate" className="mt-3 block w-full bg-primary text-white text-center py-2.5 rounded-pill font-medium">
-                        استكمال الطلب
-                      </a>
-                    </div>
-                  )}
-
-                  {app.status === "REJECTED" && app.adminNote && (
-                    <div className="mt-5 bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm text-gray-700">
-                      <span className="font-bold">سبب الرفض: </span>
-                      {app.adminNote}
-                    </div>
-                  )}
-
-                  {app.status === "AWAITING_ORIGINALS" && (
-                    <div className="mt-5 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
-                      تم قبول طلبك مبدئيًا. يرجى الحضور إلى النقابة لتسليم أصول المستندات المميزة بكلمة «أصل» وختم إيصال الدفع.
-                      {app.adminNote && <p className="mt-1">{app.adminNote}</p>}
-                    </div>
-                  )}
-
-                  {app.status === "REGISTERED" && (
-                    <div className="mt-5 bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800 flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 shrink-0" />
-                      مبروك! تم قيدك بسجلات النقابة.
-                    </div>
-                  )}
-                </div>
-              ))}
+                  );
+                })}
+              </div>
             </>
           )}
         </div>
