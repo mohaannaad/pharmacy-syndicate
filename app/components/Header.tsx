@@ -50,14 +50,19 @@ export default function Header() {
       .finally(() => setUserLoaded(true));
   }, []);
 
+  // مكان الخلفية البيضا تحت اللينك المفتوح.
+  // بنستخدم offsetLeft/offsetWidth (مش getBoundingClientRect) عشان يفضل مظبوط
+  // لما الموقع يتصغّر على اللابتوبات (site-zoom)، وبنعيد الحساب لو حجم الشاشة اتغير
   useEffect(() => {
-    const activeLink = linkRefs.current[activeIndex];
-    const nav = navRef.current;
-    if (activeLink && nav) {
-      const linkRect = activeLink.getBoundingClientRect();
-      const navRect = nav.getBoundingClientRect();
-      setUnderline({ left: linkRect.left - navRect.left, width: linkRect.width });
+    function place() {
+      const activeLink = linkRefs.current[activeIndex];
+      if (activeLink && navRef.current) {
+        setUnderline({ left: activeLink.offsetLeft, width: activeLink.offsetWidth });
+      }
     }
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
   }, [activeIndex, pathname]);
 
   return (
