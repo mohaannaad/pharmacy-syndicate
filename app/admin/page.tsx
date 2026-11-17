@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAutoRefresh } from "../lib/useAutoRefresh";
 import Link from "next/link";
 import { Newspaper, Megaphone, AlertTriangle, CircleDollarSign, CalendarDays, FileText, ChevronLeft, GraduationCap, IdCard, UserCheck } from "lucide-react";
 
@@ -22,8 +23,9 @@ interface Summary {
 export default function AdminHomePage() {
   const [summary, setSummary] = useState<Summary | null>(null);
 
-  useEffect(() => {
-    async function loadSummary() {
+  // الأرقام بتتحدث لوحدها كل 10 ثواني (من غير ريفريش)
+  useAutoRefresh(async () => {
+    {
       const [news, ads, complaints, fees, activities, certificates, graduates, renewals, accounts] = await Promise.all([
         fetch("/api/news?category=MAIN").then((r) => r.json()),
         fetch("/api/ads").then((r) => r.json()),
@@ -51,8 +53,7 @@ export default function AdminHomePage() {
         accountsPending: accounts.filter((a: any) => a.status === "PENDING").length,
       });
     }
-    loadSummary();
-  }, []);
+  }, 10000);
 
   const rows = [
     { label: "الإعلانات", desc: "طلبات الإعلانات المقدمة من الأعضاء", href: "/admin/ads", icon: Megaphone, count: summary?.ads, pending: summary?.adsPending },
