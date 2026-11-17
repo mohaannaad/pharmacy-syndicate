@@ -47,7 +47,7 @@ export default function LoginModal({ onClose, onSwitchToRegister }: LoginModalPr
   // عشان الهيدر عليه تأثير blur كان بيقص النافذة من فوق
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="relative w-full max-w-sm max-h-[calc(100vh/var(--site-zoom)_-_2rem)] overflow-y-auto bg-white rounded-3xl shadow-lift p-6 md:p-7 text-right" onClick={(e) => e.stopPropagation()}>
+      <div className="site-zoom relative w-full max-w-sm max-h-[calc(100vh-2rem)] overflow-y-auto bg-white rounded-3xl shadow-lift p-6 md:p-7 text-right" onClick={(e) => e.stopPropagation()}>
         <button type="button" onClick={onClose} className="absolute top-4 left-4 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
           <X className="w-4 h-4 text-gray-500" />
         </button>
