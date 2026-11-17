@@ -17,7 +17,11 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
 
   return (
     <main dir="rtl">
-      <PageHeader title="الأخبار" subtitle="آخر أخبار ومقالات النقابة العامة لصيادلة مصر" />
+      {item.category === "BRANCH" ? (
+        <PageHeader title="أخبار النقابات الفرعية" subtitle={item.branchName || "من المحافظات"} />
+      ) : (
+        <PageHeader title="الأخبار" subtitle="آخر أخبار ومقالات النقابة العامة لصيادلة مصر" />
+      )}
       <section className="bg-surface-muted py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary-dark mb-6">
@@ -37,6 +41,7 @@ export default async function NewsDetailPage({ params }: { params: Promise<{ id:
               <span className="inline-flex items-center gap-2 text-sm text-ink-muted">
                 <CalendarDays className="w-4 h-4 text-primary" />
                 {date}
+                {item.branchName && <span className="bg-mint text-primary font-bold text-xs px-2.5 py-0.5 rounded-pill">{item.branchName}</span>}
               </span>
               <h1 className="mt-3 text-2xl md:text-[34px] font-extrabold text-ink leading-snug">{item.title}</h1>
               <div className="mt-5 h-1 w-16 rounded-full bg-gold" />

@@ -25,7 +25,7 @@ export default function AdminHomePage() {
   useEffect(() => {
     async function loadSummary() {
       const [news, ads, complaints, fees, activities, certificates, graduates, renewals, accounts] = await Promise.all([
-        fetch("/api/news").then((r) => r.json()),
+        fetch("/api/news?category=MAIN").then((r) => r.json()),
         fetch("/api/ads").then((r) => r.json()),
         fetch("/api/complaints").then((r) => r.json()),
         fetch("/api/fees").then((r) => r.json()),

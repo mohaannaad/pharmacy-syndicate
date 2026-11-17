@@ -6,8 +6,12 @@ function extractYoutubeId(url: string): string | null {
   return match ? match[1] : null;
 }
 
-export async function GET() {
+// ?category=MAIN (أخبار النقابة العامة) أو ?category=BRANCH (أخبار النقابات الفرعية)
+// من غير category بترجع كل الأخبار
+export async function GET(request: Request) {
+  const category = new URL(request.url).searchParams.get("category");
   const news = await prisma.news.findMany({
+    where: category === "MAIN" || category === "BRANCH" ? { category } : undefined,
     orderBy: { order: "asc" },
   });
   return NextResponse.json(news);
@@ -33,6 +37,8 @@ export async function POST(request: Request) {
       imageUrl,
       youtubeUrl: body.youtubeUrl || null,
       order: body.order ?? 0,
+      category: body.category === "BRANCH" ? "BRANCH" : "MAIN",
+      branchName: body.category === "BRANCH" ? body.branchName || null : null,
     },
   });
 

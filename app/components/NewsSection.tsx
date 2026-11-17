@@ -6,13 +6,16 @@ import { prisma } from "../lib/prisma";
 interface NewsSectionProps {
   title?: string;
   subtitle?: string;
-  useRealData?: boolean;
+  // MAIN = أخبار النقابة العامة، BRANCH = أخبار النقابات الفرعية (الاتنين بيتضافوا من الداشبورد)
+  category?: "MAIN" | "BRANCH";
 }
 
-export default async function NewsSection({ title = "آخر الأخبار والفعاليات", subtitle = "المركز الإعلامي", useRealData = true }: NewsSectionProps) {
-  const news = useRealData
-    ? await prisma.news.findMany({ orderBy: { order: "asc" } })
-    : [];
+export default async function NewsSection({ title = "آخر الأخبار والفعاليات", subtitle = "المركز الإعلامي", category = "MAIN" }: NewsSectionProps) {
+  const news = await prisma.news.findMany({ where: { category }, orderBy: { order: "asc" } });
+  const isBranch = category === "BRANCH";
+
+  // قسم النقابات الفرعية مايظهرش خالص لو مفيش أخبار
+  if (isBranch && news.length === 0) return null;
 
   // أول خبر كبير، وجنبه 3 أخبار صغيرة، والباقي كروت عادية تحت الإعلان
   const featured = news[0];
@@ -20,7 +23,7 @@ export default async function NewsSection({ title = "آخر الأخبار وا�
   const more = news.slice(4, 7);
 
   const card = (item: (typeof news)[number], variant: "featured" | "compact" | "default") => (
-    <NewsCard id={item.id} type={item.type} title={item.title} content={item.content} imageUrl={item.imageUrl} youtubeUrl={item.youtubeUrl} createdAt={item.createdAt.toString()} variant={variant} />
+    <NewsCard id={item.id} type={item.type} title={item.title} content={item.content} imageUrl={item.imageUrl} youtubeUrl={item.youtubeUrl} createdAt={item.createdAt.toString()} variant={variant} tag={item.branchName} />
   );
 
   return (
@@ -33,40 +36,35 @@ export default async function NewsSection({ title = "آخر الأخبار وا�
           </div>
         </Reveal>
 
-        {useRealData ? (
-          <>
-            {featured && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                <Reveal className={side.length > 0 ? "lg:col-span-2" : "lg:col-span-3"}>{card(featured, "featured")}</Reveal>
-                {side.length > 0 && (
-                  <div className="grid grid-rows-none gap-5 content-start">
-                    {side.map((item, i) => (
-                      <Reveal key={item.id} delay={(i + 1) * 100}>{card(item, "compact")}</Reveal>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            <Reveal className="mt-10">
-              <AdBanner />
-            </Reveal>
-
-            {more.length > 0 && (
-              <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
-                {more.map((item, i) => (
-                  <Reveal key={item.id} delay={i * 100}>{card(item, "default")}</Reveal>
+        {featured && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <Reveal className={side.length > 0 ? "lg:col-span-2" : "lg:col-span-3"}>{card(featured, "featured")}</Reveal>
+            {side.length > 0 && (
+              <div className="grid grid-rows-none gap-5 content-start">
+                {side.map((item, i) => (
+                  <Reveal key={item.id} delay={(i + 1) * 100}>{card(item, "compact")}</Reveal>
                 ))}
               </div>
             )}
+          </div>
+        )}
 
-            {news.length === 0 && <p className="mt-10 text-center text-ink-muted">لا توجد أخبار حاليًا</p>}
-          </>
-        ) : (
-          <Reveal>
-            <div className="bg-white border border-dashed border-[#BFDCCB] rounded-3xl py-12 text-center text-ink-muted">قريبًا: أخبار النقابات الفرعية</div>
+        {/* الإعلان بيظهر في قسم أخبار النقابة العامة بس */}
+        {!isBranch && (
+          <Reveal className="mt-10">
+            <AdBanner />
           </Reveal>
         )}
+
+        {more.length > 0 && (
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+            {more.map((item, i) => (
+              <Reveal key={item.id} delay={i * 100}>{card(item, "default")}</Reveal>
+            ))}
+          </div>
+        )}
+
+        {news.length === 0 && <p className="mt-10 text-center text-ink-muted">لا توجد أخبار حاليًا</p>}
       </div>
     </section>
   );

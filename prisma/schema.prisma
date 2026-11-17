@@ -66,11 +66,19 @@ model News {
   youtubeUrl String?
   order      Int      @default(0)
   createdAt  DateTime @default(now())
+  category   NewsCategory @default(MAIN)
+  branchName String? // اسم النقابة الفرعية (لأخبار النقابات الفرعية بس)
 }
 
 enum NewsType {
   YOUTUBE
   ARTICLE
+}
+
+// MAIN = أخبار النقابة العامة، BRANCH = أخبار النقابات الفرعية
+enum NewsCategory {
+  MAIN
+  BRANCH
 }
 
 model Ad {

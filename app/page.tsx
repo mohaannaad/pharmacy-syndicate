@@ -16,11 +16,7 @@ export default async function Home() {
       <ServicesSection />
       <GraduateJourney />
       <NewsSection />
-      <NewsSection
-        title="أخبار النقابات الفرعية"
-        subtitle="من المحافظات"
-        useRealData={false}
-      />
+      <NewsSection title="أخبار النقابات الفرعية" subtitle="من المحافظات" category="BRANCH" />
     </main>
   );
 }

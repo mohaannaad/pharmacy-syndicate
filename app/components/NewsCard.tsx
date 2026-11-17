@@ -11,12 +11,14 @@ interface NewsCardProps {
   createdAt: string;
   // featured = الخبر الكبير، compact = خبر صغير جنبه، default = كارت عادي
   variant?: "featured" | "compact" | "default";
+  // اسم النقابة الفرعية (لو الخبر من نقابة فرعية) بيظهر مكان «مقال / فيديو»
+  tag?: string | null;
 }
 
-export default function NewsCard({ id, type, title, content, imageUrl, youtubeUrl, createdAt, variant = "default" }: NewsCardProps) {
+export default function NewsCard({ id, type, title, content, imageUrl, youtubeUrl, createdAt, variant = "default", tag = null }: NewsCardProps) {
   const excerpt = content ? content.slice(0, 100) + (content.length > 100 ? "..." : "") : "";
   const date = new Date(createdAt).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
-  const label = type === "YOUTUBE" ? "فيديو" : "مقال";
+  const label = tag || (type === "YOUTUBE" ? "فيديو" : "مقال");
 
   const image = imageUrl ? (
     <img src={imageUrl} alt="" className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" />
