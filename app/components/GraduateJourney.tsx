@@ -1,4 +1,4 @@
-import { UserPlus, FileText, SquareCheckBig, Building2, GraduationCap, ArrowLeft } from "lucide-react";
+import { UserPlus, FileText, SquareCheckBig, Building2, GraduationCap } from "lucide-react";
 import Reveal from "./Reveal";
 
 // =====================================================================
@@ -26,7 +26,7 @@ export default function GraduateJourney() {
             <span className="pointer-events-none absolute -left-32 -top-36 w-[420px] h-[420px] rounded-full border-[70px] border-primary/5" />
             <span className="pointer-events-none absolute -right-24 -bottom-40 w-[340px] h-[340px] rounded-full border-[56px] border-gold/10" />
 
-            {/* العنوان والزرار */}
+            {/* العنوان */}
             <div className="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8">
               <div className="text-right max-w-xl">
                 <span className="inline-flex items-center gap-2 bg-gold-soft text-[#8A6C0E] font-extrabold text-sm px-3.5 py-1.5 rounded-pill">
@@ -40,10 +40,6 @@ export default function GraduateJourney() {
                 </h2>
                 <p className="mt-3 text-ink-muted text-base md:text-[17px] leading-loose">قدّم طلب القيد إلكترونيًا وتابع كل مرحلة من صفحة «طلب القيد» حتى تحصل على رقم القيد.</p>
               </div>
-              <a href="/signup" className="self-start lg:self-auto inline-flex items-center gap-2.5 bg-primary hover:bg-primary-dark text-white font-black text-base md:text-[17px] px-7 py-4 rounded-pill whitespace-nowrap shadow-[0_18px_40px_-18px_rgba(11,93,59,.6)] transition-colors">
-                ابدأ طلب القيد
-                <ArrowLeft className="w-[18px] h-[18px]" />
-              </a>
             </div>
 
             {/* الخطوات */}
