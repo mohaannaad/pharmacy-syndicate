@@ -13,6 +13,7 @@ import {
   HIGH_SCHOOL_TYPES,
   GRADES,
   getRequiredDocuments,
+  getMandatoryDocuments,
   calculateFee,
   lateFee,
     NATIONALITIES,
@@ -240,6 +241,8 @@ export default function NewGraduateRegisterPage() {
         previousRejection: form.previousRejection,
       })
     : [];
+  const mandatoryDocs = getMandatoryDocuments(requiredDocs);
+  const isOptionalDoc = (key: string) => !mandatoryDocs.some((d) => d.key === key);
 
     // فئة الجامعة الخاصة بتتحدد تلقائيًا من نسبة الثانوية
   const category =
@@ -268,8 +271,9 @@ export default function NewGraduateRegisterPage() {
       if (!(percent > 0 && percent <= 100)) return "نسبة الثانوية العامة غير صحيحة";
     }
     if (current === 4) {
-      const missingDocs = requiredDocs.filter((d) => !documents[d.key]);
-      if (missingDocs.length > 0) return `لم يتم رفع ${missingDocs.length} من المستندات المطلوبة`;
+      // (وضع الاختبار المؤقت: أول مستند بس إلزامي — راجع ONLY_FIRST_DOCUMENT_MANDATORY في lib/graduate.ts)
+      const missingDocs = mandatoryDocs.filter((d) => !documents[d.key]);
+      if (missingDocs.length > 0) return `لم يتم رفع ${missingDocs.length} من المستندات الإلزامية`;
     }
     return "";
   }
@@ -658,7 +662,7 @@ export default function NewGraduateRegisterPage() {
 
               <div className="mt-6 bg-white rounded-2xl px-5 py-2 shadow-sm">
                 {requiredDocs.map((doc) => (
-                  <DocumentUploadRow key={doc.key} label={doc.label} original={doc.original} uploaded={!!documents[doc.key]} onUpload={(url) => setDocuments((prev) => {
+                  <DocumentUploadRow key={doc.key} label={doc.label} original={doc.original} optional={isOptionalDoc(doc.key)} uploaded={!!documents[doc.key]} onUpload={(url) => setDocuments((prev) => {
                     const next = { ...prev };
                     if (url) next[doc.key] = url;
                     else delete next[doc.key];
@@ -698,7 +702,7 @@ export default function NewGraduateRegisterPage() {
                 <ReviewRow label="التقدير" value={form.grade} />
                                 <ReviewRow label="نسبة الثانوية" value={form.highSchoolPercent ? `${form.highSchoolPercent}%` : ""} />
                 {category && <ReviewRow label="الفئة" value={CATEGORY_LABELS[category]} />}
-                <ReviewRow label="المستندات المرفوعة" value={`${requiredDocs.length} مستند`} />
+                <ReviewRow label="المستندات المرفوعة" value={`${requiredDocs.filter((d) => documents[d.key]).length} مستند`} />
               </div>
 
               <div className="bg-white rounded-3xl border border-line shadow-card p-5">
@@ -751,4 +755,4 @@ export default function NewGraduateRegisterPage() {
       </section>
     </main>
   );
-}
+}

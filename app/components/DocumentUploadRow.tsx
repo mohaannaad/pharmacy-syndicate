@@ -7,10 +7,11 @@ interface DocumentUploadRowProps {
   label: string;
   original?: boolean; // لو true بيظهر شارة "أصل" (يعني هيسلّم الأصل عند الحضور)
   uploaded?: boolean; // لو المستند اترفع قبل كده (مثلًا رجع خطوة ورا)
+  optional?: boolean; // لو true بيظهر شارة "اختياري"
   onUpload?: (url: string | null) => void; // بيرجّع رابط الملف بعد رفعه
 }
 
-export default function DocumentUploadRow({ label, original = false, uploaded = false, onUpload }: DocumentUploadRowProps) {
+export default function DocumentUploadRow({ label, original = false, uploaded = false, optional = false, onUpload }: DocumentUploadRowProps) {
   const [fileName, setFileName] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -51,6 +52,7 @@ export default function DocumentUploadRow({ label, original = false, uploaded = 
         <span className={`w-2 h-2 rounded-full shrink-0 ${done ? "bg-primary" : "bg-gray-300"}`} />
         <span className="text-sm text-gray-700">{label}</span>
         {original && <span className="text-[11px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full shrink-0">أصل</span>}
+        {optional && <span className="text-[11px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full shrink-0">اختياري</span>}
         {error && <span className="text-[11px] text-red-600 shrink-0">فشل الرفع، يرجى المحاولة مرة أخرى</span>}
       </div>
 
@@ -61,4 +63,4 @@ export default function DocumentUploadRow({ label, original = false, uploaded = 
       </label>
     </div>
   );
-}
+}

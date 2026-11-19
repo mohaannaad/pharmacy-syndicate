@@ -78,6 +78,19 @@ function needsHighSchoolStatement(highSchoolType: string) {
   return ["ثانوية أزهرية", "دبلومة أمريكية", "شهادة إنجليزية (IGCSE)"].includes(highSchoolType);
 }
 
+// =====================================================================
+// ⚠️ وضع الاختبار (مؤقت): أول مستند بس هو الإلزامي، والباقي اختياري
+// ---------------------------------------------------------------------
+// عشان التيستر ما يضطرش يرفع كل المستندات كل مرة يجرّب طلب قيد.
+// بعد ما الاختبار يخلص: غيّر القيمة لـ false وكل المستندات ترجع إلزامية.
+// =====================================================================
+export const ONLY_FIRST_DOCUMENT_MANDATORY = true;
+
+// المستندات اللي لازم تترفع قبل ما الطلب يتبعت
+export function getMandatoryDocuments(docs: RequiredDocument[]): RequiredDocument[] {
+  return ONLY_FIRST_DOCUMENT_MANDATORY ? docs.slice(0, 1) : docs;
+}
+
 export function getRequiredDocuments(a: DocumentAnswers): RequiredDocument[] {
   const docs: RequiredDocument[] = [];
   const add = (key: string, label: string, original: boolean) => docs.push({ key, label, original });
@@ -243,4 +256,4 @@ export const CATEGORY_LABELS: Record<number, string> = {
   1: "فئة أولى — خاص عادي",
   2: "فئة ثانية — خاص",
   3: "فئة ثالثة — المجموع الأقل",
-};
+};

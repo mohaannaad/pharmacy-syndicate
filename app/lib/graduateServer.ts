@@ -1,4 +1,4 @@
-import { getRequiredDocuments, calculateFee, isNationalityAllowed, determinePrivateCategory } from "./graduate";
+import { getRequiredDocuments, getMandatoryDocuments, calculateFee, isNationalityAllowed, determinePrivateCategory } from "./graduate";
 
 // =====================================================================
 // التحقق من بيانات طلب القيد وتجهيزها للحفظ
@@ -38,7 +38,8 @@ export function buildGraduateApplication(body: any, account: AccountInfo, existi
     previousRejection: !!body.previousRejection,
   });
   const uploaded: Record<string, string> = body.documents || {};
-  const missing = required.filter((d) => !uploaded[d.key]);
+  // (وضع الاختبار المؤقت: أول مستند بس إلزامي — راجع ONLY_FIRST_DOCUMENT_MANDATORY في graduate.ts)
+  const missing = getMandatoryDocuments(required).filter((d) => !uploaded[d.key]);
   if (missing.length > 0) {
     return { error: `مستندات ناقصة: ${missing.map((d) => d.label).join("، ")}` };
   }
@@ -93,10 +94,11 @@ export function buildGraduateApplication(body: any, account: AccountInfo, existi
       previousQualification: body.previousQualification || null,
       previousRejection: !!body.previousRejection,
 
-      documents: required.map((d) => ({ ...d, url: uploaded[d.key] })),
+      // بنحفظ المستندات اللي اترفعت بس
+      documents: required.filter((d) => uploaded[d.key]).map((d) => ({ ...d, url: uploaded[d.key] })),
       declarationAccepted: true,
       category,
       fee,
     },
   };
-}
+}
