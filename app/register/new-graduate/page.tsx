@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { AlertCircle, CheckCircle2, Printer, Info, Loader2, Lock } from "lucide-react";
 import PageHeader from "../../components/PageHeader";
 import RegisterSteps from "../../components/RegisterSteps";
@@ -92,14 +92,52 @@ function parseNationalId(id: string) {
   return { birthDate: `${year}-${month}-${day}`, gender };
 }
 
+// اسم كل حقل إجباري زي ما هو مكتوب فوق الخانة (عشان رسالة الخطأ تقول الخانة الناقصة بالاسم)
+const FIELD_LABELS: Partial<Record<keyof GraduateForm, string[]>> = {
+  fullNameAr: ["الاسم بالكامل (عربي)"],
+  fullNameEn: ["الاسم بالكامل (إنجليزي)"],
+  nationalId: ["الرقم القومي"],
+  phone: ["رقم الهاتف"],
+  email: ["البريد الإلكتروني"],
+  gender: ["النوع"],
+  nationality: ["الجنسية"],
+  religion: ["الديانة"],
+  birthDate: ["تاريخ الميلاد"],
+  birthGovernorate: ["محافظة الميلاد"],
+  idIssuer: ["جهة إصدار البطاقة"],
+  governorate: ["المحافظة"],
+  city: ["المدينة / المركز"],
+  district: ["الحي / القرية"],
+  street: ["الشارع"],
+  buildingNo: ["رقم العقار"],
+  universityType: ["نوع الجامعة"],
+  universityName: ["اسم الجامعة"],
+  studyStartYear: ["سنة بداية الدراسة"],
+  graduationYear: ["سنة التخرج"],
+  studyYears: ["مدة الدراسة (بالسنوات)"],
+  grade: ["التقدير العام"],
+  highSchoolType: ["نوع شهادة الثانوية"],
+  highSchoolYear: ["سنة الحصول على الثانوية"],
+  highSchoolPercent: [`مجموع الثانوية العامة (من ${HIGH_SCHOOL_TOTAL})`, "النسبة المئوية للثانوية (%)"],
+};
+
+// الخانات اللي فيها مشكلة حاليًا (بتتعلّم باللون الأحمر)
+const InvalidFieldsContext = createContext<Set<string>>(new Set());
+
 const inputClass = "mt-2 w-full bg-white rounded-2xl px-4 py-3 text-sm outline-none text-right border border-line focus:border-primary";
 
+// كل خانة مش مكتوب جنبها «اختياري» إجبارية، وبيظهر جنب اسمها نجمة حمرا *
 function Field({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+  const invalid = useContext(InvalidFieldsContext).has(label);
+  const required = !label.includes("اختياري");
   return (
-    <div>
-      <label className="text-sm text-gray-700">{label}</label>
+    <div data-invalid={invalid || undefined} className={invalid ? "[&_input]:!border-red-400 [&_select]:!border-red-400 [&_input]:!bg-red-50/40 [&_select]:!bg-red-50/40" : ""}>
+      <label className={`text-sm ${invalid ? "text-red-600" : "text-gray-700"}`}>
+        {label}
+        {required && <span className="text-red-500 mr-1">*</span>}
+      </label>
       {children}
-      {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      {invalid ? <p className="mt-1 text-xs text-red-600">هذه الخانة مطلوبة</p> : hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
     </div>
   );
 }
@@ -160,6 +198,8 @@ export default function NewGraduateRegisterPage() {
   const [documents, setDocuments] = useState<Record<string, string>>({});
   const [declaration, setDeclaration] = useState(false);
   const [error, setError] = useState("");
+  // بعد ما يدوس «التالي» وفيه خانات ناقصة، بنعلّمها بالأحمر (وبتتشال أول ما تتملا)
+  const [showMissing, setShowMissing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<{ trackingNumber: string; fee: number | null } | null>(null);
   
@@ -253,9 +293,18 @@ export default function NewGraduateRegisterPage() {
   const fee = form.universityType && form.graduationYear ? calculateFee(form.universityType, Number(form.graduationYear), category ?? undefined) : null;
   const late = form.graduationYear ? lateFee(Number(form.graduationYear)) : 0;
 
+  // الخانات الإجبارية الفاضية في الخطوة دي
+  function missingFields(current: number) {
+    return (REQUIRED_BY_STEP[current] || []).filter((key) => !String(form[key]).trim());
+  }
+  const invalidLabels = new Set<string>(showMissing ? missingFields(step).flatMap((key) => FIELD_LABELS[key] || []) : []);
+
   function validateStep(current: number) {
-    const missing = (REQUIRED_BY_STEP[current] || []).filter((key) => !String(form[key]).trim());
-    if (missing.length > 0) return "يرجى استكمال جميع الحقول المطلوبة";
+    const missing = missingFields(current);
+    if (missing.length > 0) {
+      const names = missing.map((key) => FIELD_LABELS[key]?.[0] || key).join("، ");
+      return `يرجى استكمال الخانات المطلوبة: ${names}`;
+    }
 
     if (current === 1) {
       if (!/^\d{14}$/.test(form.nationalId)) return "يجب أن يتكون الرقم القومي من 14 رقمًا";
@@ -282,13 +331,21 @@ export default function NewGraduateRegisterPage() {
     const message = validateStep(step);
     setError(message);
     if (!message) {
+      setShowMissing(false);
       setStep(step + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    // نوري أول خانة ناقصة
+    if (missingFields(step).length > 0) {
+      setShowMissing(true);
+      setTimeout(() => document.querySelector("[data-invalid]")?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
     }
   }
 
   function goToStep(target: number) {
     setError("");
+    setShowMissing(false);
     setStep(target);
   }
 
@@ -438,6 +495,13 @@ export default function NewGraduateRegisterPage() {
             </div>
           )}
 
+          {/* الخانات الناقصة بتتعلّم بالأحمر في الخطوات 1 و2 و3 */}
+          <InvalidFieldsContext.Provider value={invalidLabels}>
+          {step <= 3 && (
+            <p className="mb-4 text-xs text-gray-500">
+              الخانات المميزة بعلامة <span className="text-red-500 font-bold">*</span> إجبارية.
+            </p>
+          )}
           {/* ---------- الخطوة 1: البيانات الشخصية ---------- */}
           {step === 1 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -534,7 +598,10 @@ export default function NewGraduateRegisterPage() {
           {step === 3 && (
             <div className="space-y-5">
               <div>
-                <label className="text-sm text-gray-700">نوع الجامعة</label>
+                <label className={`text-sm ${invalidLabels.has("نوع الجامعة") ? "text-red-600" : "text-gray-700"}`} data-invalid={invalidLabels.has("نوع الجامعة") || undefined}>
+                  نوع الجامعة
+                  <span className="text-red-500 mr-1">*</span>
+                </label>
                 <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
                   {UNIVERSITY_TYPES.map((t) => (
                     <label key={t.value} className={`text-center rounded-xl py-3 text-sm cursor-pointer border bg-white ${form.universityType === t.value ? "border-primary text-primary font-bold" : "border-transparent shadow-sm text-gray-600"}`}>
@@ -652,6 +719,8 @@ export default function NewGraduateRegisterPage() {
             </div>
           )}
 
+          </InvalidFieldsContext.Provider>
+
           {/* ---------- الخطوة 4: المستندات ---------- */}
           {step === 4 && (
             <div>
@@ -755,4 +824,4 @@ export default function NewGraduateRegisterPage() {
       </section>
     </main>
   );
-}
+}
