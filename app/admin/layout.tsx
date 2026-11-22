@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useAutoRefresh } from "../lib/useAutoRefresh";
 import { usePathname } from "next/navigation";
-import { Newspaper, Megaphone, LayoutDashboard, Bell, User, AlertTriangle, CircleDollarSign, CalendarDays, FileText, GraduationCap, IdCard, LayoutGrid, UserCheck, Images, Menu, Users, Building } from "lucide-react";
+import { Newspaper, Megaphone, LayoutDashboard, Bell, User, AlertTriangle, CircleDollarSign, CalendarDays, FileText, GraduationCap, IdCard, LayoutGrid, UserCheck, Images, Menu, Users, Building, BadgeCheck } from "lucide-react";
 
 // القايمة متقسمة مجموعات: الطلبات اللي محتاجة إجراء، ومحتوى الموقع
 const menuGroups = [
@@ -17,6 +17,7 @@ const menuGroups = [
     title: "الطلبات",
     items: [
       { label: "طلبات القيد", href: "/admin/graduates", icon: GraduationCap },
+      { label: "الطلبات المكتملة", href: "/admin/graduates/completed", icon: BadgeCheck },
       { label: "تجديد الاشتراك والكارنيه", href: "/admin/renewals", icon: IdCard },
       { label: "حسابات الأعضاء", href: "/admin/member-accounts", icon: UserCheck },
       { label: "الشهادات", href: "/admin/certificates", icon: FileText },
@@ -68,9 +69,11 @@ function writeSeen(seen: Record<string, string>) {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
+  // القسم المفتوح: أطول رابط مطابق (عشان «الطلبات المكتملة» ما تتلخبطش مع «طلبات القيد»)
   const activeItem =
-    menuItems.find((item) => (item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href))) ??
-    menuItems[0];
+    menuItems
+      .filter((item) => (item.href === "/admin" ? pathname === "/admin" : pathname === item.href || pathname.startsWith(item.href + "/")))
+      .sort((a, b) => b.href.length - a.href.length)[0] ?? menuItems[0];
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [bellOpen, setBellOpen] = useState(false);
