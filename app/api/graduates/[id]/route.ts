@@ -16,6 +16,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   const data: { status?: typeof application.status; adminNote?: string | null; fee?: number; category?: number } = {};
 
+  // الطلب اللي وصل «تم القيد» مقفول نهائيًا: الخريج خد رقم قيد وحسابه بقى عضو،
+  // فمينفعش نغيّر حالته أو فئته بعد كده (BR-3)
+  if (application.status === "REGISTERED" && (body.category || (body.status && body.status !== "REGISTERED"))) {
+    return NextResponse.json({ error: "هذا الطلب مكتمل (تم القيد وصدر رقم القيد)، ولا يمكن تغيير حالته أو فئته بعد ذلك" }, { status: 400 });
+  }
+
   // 1) تحديد فئة الجامعة (للخاص والخارجي) → الرسوم تتحسب والطلب يروح "في انتظار الدفع"
   if (body.category) {
     const category = Number(body.category) as 1 | 2 | 3;
@@ -102,4 +108,4 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
     fee: updated.fee,
     status: updated.status,
   });
-}
+}

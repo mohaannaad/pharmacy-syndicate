@@ -80,7 +80,9 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
   const [error, setError] = useState("");
 
     // الخاص والخارجي: الموظف يقدر يحدد الفئة أو يغيّرها
-  const canSetCategory = app.universityType !== "GOVERNMENT";
+  // الطلب اللي وصل «تم القيد» مقفول نهائيًا (مفيش تغيير حالة ولا فئة)
+  const isCompleted = app.status === "REGISTERED";
+  const canSetCategory = app.universityType !== "GOVERNMENT" && !isCompleted;
   const needsReason = status === "NEEDS_COMPLETION" || status === "REJECTED";
 
   async function save(payload: Record<string, unknown>) {
@@ -257,6 +259,17 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
               </div>
             )}
 
+            {isCompleted && (
+              <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg p-3 text-xs text-green-800 leading-relaxed">
+                <BadgeCheck className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>
+                  هذا الطلب مكتمل: تم القيد{app.user?.membershipNumber ? <> وصدر رقم القيد <b dir="ltr">{app.user.membershipNumber}</b></> : null}، وتحوّل حساب الخريج إلى حساب عضو. لا يمكن تغيير حالة الطلب أو فئته بعد ذلك.
+                </span>
+              </div>
+            )}
+
+            {!isCompleted && (
+            <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               <div>
                 <label className="text-xs text-gray-500">حالة الطلب</label>
@@ -282,6 +295,8 @@ function ApplicationCard({ app, onChanged }: { app: GraduateApplication; onChang
             <button type="button" disabled={saving} onClick={() => save({ status, adminNote: note })} className="bg-primary text-white text-sm px-6 py-2.5 rounded-lg font-medium disabled:opacity-50">
               {saving ? "جاري الحفظ..." : "حفظ"}
             </button>
+            </>
+            )}
           </div>
         </div>
       )}
@@ -372,4 +387,4 @@ export default function AdminGraduatesPage() {
       </div>
     </div>
   );
-}
+}
