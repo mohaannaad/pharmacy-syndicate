@@ -274,9 +274,12 @@ export function ApplicationCard({ app, onChanged }: { app: GraduateApplication; 
               <div>
                 <label className="text-xs text-gray-500">حالة الطلب</label>
                 <select value={status} onChange={(e) => setStatus(e.target.value)} className="mt-1 w-full text-sm border border-gray-200 rounded-lg px-2 py-2 bg-white outline-none">
-                  {Object.entries(GRADUATE_STATUS_LABELS).map(([value, { label }]) => (
-                                        <option key={value} value={value} disabled={value === "REGISTERED" && app.status !== "REGISTERED"}>{label}</option>
-                  ))}
+                  {/* «تم القيد» مش في القائمة: بتتعمل بس من زرار «إصدار رقم القيد» */}
+                  {Object.entries(GRADUATE_STATUS_LABELS)
+                    .filter(([value]) => value !== "REGISTERED")
+                    .map(([value, { label }]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
                 </select>
               </div>
               <div className="md:col-span-2">
